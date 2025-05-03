@@ -1,5 +1,3 @@
-variable "hcloud_token" {}
-
 provider "hcloud" {
   token = var.hcloud_token
 }
@@ -8,7 +6,7 @@ resource "hcloud_server" "server" {
   name        = var.name
   image       = var.base_image
   server_type = var.server_type
-  datacenter    = var.datacenter
+  datacenter  = var.datacenter
   ssh_keys    = var.ssh_keys
 
   network {
@@ -30,7 +28,7 @@ resource "hcloud_server" "server" {
 
   provisioner "remote-exec" {
     on_failure = continue
-    script = local_file.nixos_infect.filename
+    script     = local_file.nixos_infect.filename
   }
 
   provisioner "local-exec" {

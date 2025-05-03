@@ -1,3 +1,3 @@
-export NIX_CONFIG="extra-experimental-features = ${extra_experimental_features}"
+export NIX_CONFIG="extra-experimental-features = ${experimental_features}"
 
 nixos-rebuild switch --flake '${flake}'

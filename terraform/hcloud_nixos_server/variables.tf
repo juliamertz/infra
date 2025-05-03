@@ -1,3 +1,5 @@
+variable "hcloud_token" {}
+
 variable "name" {
   description = "Name of the server"
   type        = string
@@ -12,7 +14,7 @@ variable "base_image" {
 variable "server_type" {
   description = "Type/size of the server"
   type        = string
-  default     = "cx11"  # Smallest instance type
+  default     = "cx11" # Smallest instance type
 }
 
 variable "datacenter" {
@@ -61,8 +63,8 @@ variable "flake" {
   default     = null
 }
 
-variable "extra_experimental_features" {
+variable "experimental_features" {
   description = ""
-  type = string
-  default = "nix-command flakes pipe-operators"
+  type        = string
+  default     = "nix-command flakes pipe-operators"
 }

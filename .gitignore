@@ -1,3 +1,8 @@
-*.tfvars
+.direnv
 .terraform
+
+*.env
+*.tfvars
+
 *terraform.tfstate*
+terraform/hcloud_nixos_server/templated 
