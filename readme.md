@@ -1,7 +1,3 @@
-# bootsrap
-
-## set up secrets
-
 ```hcl
 # terraform/terraform.tfvars
 

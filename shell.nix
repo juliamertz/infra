@@ -1,5 +1,4 @@
 {pkgs ? import <nixpkgs> {}}:
-with pkgs;
-  mkShell {
-    packages = [opentofu];
-  }
+pkgs.mkShell {
+  packages = [pkgs.opentofu];
+}
