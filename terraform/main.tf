@@ -8,6 +8,7 @@ locals {
 
   flake_path_local  = "/home/julia/infra"
   flake_path_github = "github:juliamertz/infra"
+  flake_path = local.flake_path_local
 
   ssh_private_key = file("~/.ssh/id_ed25519")
   ssh_public_key  = file("~/.ssh/id_ed25519.pub")
@@ -37,7 +38,7 @@ module "nixos_main" {
   datacenter  = local.datacenter
   network_id  = hcloud_network.network.id
 
-  flake         = "${local.flake_path_github}#main"
+  flake         = "${local.flake_path}#main"
   nixos_channel = local.nixos_channel
 
   ssh_keys        = [hcloud_ssh_key.julia.id]
@@ -45,17 +46,17 @@ module "nixos_main" {
   hcloud_token    = var.hcloud_token
 }
 
-module "nixos_gatekeeper" {
-  source      = "./hcloud_nixos_server"
-  name        = "gatekeeper"
-  server_type = "cx22"
-  datacenter  = local.datacenter
-  network_id  = hcloud_network.network.id
-
-  flake         = "${local.flake_path_github}#gatekeeper"
-  nixos_channel = local.nixos_channel
-
-  ssh_keys        = [hcloud_ssh_key.julia.id]
-  ssh_private_key = local.ssh_private_key
-  hcloud_token    = var.hcloud_token
-}
+# module "nixos_gatekeeper" {
+#   source      = "./hcloud_nixos_server"
+#   name        = "gatekeeper"
+#   server_type = "cx22"
+#   datacenter  = local.datacenter
+#   network_id  = hcloud_network.network.id
+#
+#   flake         = "${local.flake_path}#gatekeeper"
+#   nixos_channel = local.nixos_channel
+#
+#   ssh_keys        = [hcloud_ssh_key.julia.id]
+#   ssh_private_key = local.ssh_private_key
+#   hcloud_token    = var.hcloud_token
+# }

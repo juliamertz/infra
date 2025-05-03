@@ -19,7 +19,7 @@
       nixpkgs.lib.genAttrs (import systems) (system:
         fun nixpkgs.legacyPackages.${system});
   in {
-    nixosConfigurations = import ./machines {
+    nixosConfigurations = import ./nixosConfigurations {
       inherit inputs;
       inherit (nixpkgs) lib;
     };

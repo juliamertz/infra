@@ -20,5 +20,5 @@ resource "local_file" "remote_rebuild" {
 
 resource "local_file" "local_rebuild" {
   filename = "${local.out}/local-rebuild.sh"
-  content  = file("${local.scripts}/remote-rebuild.sh")
+  content  = file("${local.scripts}/local-rebuild.sh")
 }

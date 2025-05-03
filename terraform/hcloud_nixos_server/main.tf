@@ -35,18 +35,18 @@ resource "hcloud_server" "server" {
     command = "echo Waiting for NixOS to boot... && sleep 10"
   }
 
-  provisioner "remote-exec" {
-    script = local_file.remote_rebuild.filename
-  }
+  # provisioner "remote-exec" {
+  #   script = local_file.remote_rebuild.filename
+  # }
 }
 
-# resource "null_resource" "remote_deploy" {
-#   provisioner "local-exec" {
-#     command = local_file.local_rebuild.content
-#     environment = {
-#       FLAKE = var.flake
-#       SSH_USER = var.ssh_user
-#       SSH_ADDRESS = hcloud_server.server.ipv4_address
-#     }
-#   }
-# }
+resource "null_resource" "remote_deploy" {
+  provisioner "local-exec" {
+    command = local_file.local_rebuild.content
+    environment = {
+      FLAKE = var.flake
+      SSH_USER = var.ssh_user
+      SSH_ADDRESS = hcloud_server.server.ipv4_address
+    }
+  }
+}
