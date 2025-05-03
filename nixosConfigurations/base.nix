@@ -1,10 +1,8 @@
 {
+  pkgs,
   lib,
-  system,
-  inputs,
   ...
 }: let
-  pkgs = inputs.nixpkgs-unstable.legacyPackages.${system};
 in {
   users.users.julia = {
     name = "julia";

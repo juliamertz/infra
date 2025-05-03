@@ -8,14 +8,16 @@ locals {
 
   flake_path_local  = "/home/julia/infra"
   flake_path_github = "github:juliamertz/infra"
-  flake_path = local.flake_path_local
+  flake_path        = local.flake_path_local
 
   ssh_private_key = file("~/.ssh/id_ed25519")
   ssh_public_key  = file("~/.ssh/id_ed25519.pub")
+  ssh_keys        = [hcloud_ssh_key.julia.id]
+  sops_age_key    = file("~/.config/sops/age/keys.txt")
 }
 
 resource "hcloud_ssh_key" "julia" {
-  name       = "ssh-key"
+  name       = "ssh-key-julia"
   public_key = local.ssh_public_key
 }
 
@@ -31,32 +33,52 @@ resource "hcloud_network_subnet" "internal" {
   ip_range     = "10.0.1.0/24"
 }
 
-module "nixos_main" {
-  source      = "./hcloud_nixos_server"
-  name        = "main"
-  server_type = "cpx21"
-  datacenter  = local.datacenter
-  network_id  = hcloud_network.network.id
-
-  flake         = "${local.flake_path}#main"
-  nixos_channel = local.nixos_channel
-
-  ssh_keys        = [hcloud_ssh_key.julia.id]
-  ssh_private_key = local.ssh_private_key
-  hcloud_token    = var.hcloud_token
-}
-
+# resource "hcloud_floating_ip" "entrypoint" {
+#   type      = "ipv4"
+#   server_id = module.nixos_gatekeeper.server_id
+# }
+#
 # module "nixos_gatekeeper" {
-#   source      = "./hcloud_nixos_server"
+#   source      = "./hcloud_nixos"
 #   name        = "gatekeeper"
 #   server_type = "cx22"
 #   datacenter  = local.datacenter
+#
 #   network_id  = hcloud_network.network.id
+#   public_ip = true
 #
 #   flake         = "${local.flake_path}#gatekeeper"
 #   nixos_channel = local.nixos_channel
 #
-#   ssh_keys        = [hcloud_ssh_key.julia.id]
+#   ssh_keys        = local.ssh_keys
 #   ssh_private_key = local.ssh_private_key
+#   sops_age_key    = local.sops_age_key
 #   hcloud_token    = var.hcloud_token
 # }
+#
+# output "ip_gatekeeper" {
+#   value       = module.nixos_gatekeeper.ipv4_address
+# }
+
+module "nixos_main" {
+  source      = "./hcloud_nixos"
+  name        = "main"
+  server_type = "cpx21"
+
+  datacenter = local.datacenter
+  network_id = hcloud_network.network.id
+  public_ip  = true
+
+  flake         = "${local.flake_path}#main"
+  nixos_channel = local.nixos_channel
+  local_build   = true
+
+  ssh_keys        = local.ssh_keys
+  ssh_private_key = local.ssh_private_key
+  sops_age_key    = local.sops_age_key
+  hcloud_token    = var.hcloud_token
+}
+
+output "ip_main" {
+  value = module.nixos_main.ipv4_address
+}

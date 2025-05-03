@@ -1,13 +1,10 @@
 {
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-24.11";
-    nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
+    nixpkgs.follows = "srvos/nixpkgs";
+    srvos.url = "github:nix-community/srvos";
     systems.url = "github:nix-systems/default";
-
-    srvos = {
-      url = "github:nix-community/srvos";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+    dotfiles.url = "github:juliamertz/dotfiles";
+    sops.url = "github:Mic92/sops-nix";
   };
 
   outputs = {

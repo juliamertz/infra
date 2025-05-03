@@ -6,7 +6,7 @@ locals {
 resource "local_file" "nixos_infect" {
   filename = "${local.out}/nixos-infect.sh"
   content = templatefile("${local.scripts}/nixos-infect.sh", {
-    nixos_channel = "nixos-unstable"
+    nixos_channel = var.nixos_channel
   })
 }
 
