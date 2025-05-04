@@ -43,7 +43,10 @@ in {
       virtualHosts =
         cfg.services
         |> lib.mapAttrsToList (name: value: let
-          hostname = if builtins.isNull value.hostname then cfg.hostname else value.hostname;
+          hostname =
+            if builtins.isNull value.hostname
+            then cfg.hostname
+            else value.hostname;
           subdomain = lib.optionalString (!builtins.isNull (value.subdomain or null)) "${value.subdomain}.";
         in {
           "${subdomain}${hostname}".extraConfig = value.config;

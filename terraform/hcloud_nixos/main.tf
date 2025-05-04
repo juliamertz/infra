@@ -75,7 +75,7 @@ resource "null_resource" "local_rebuild" {
     command = local_file.local_rebuild.content
     environment = {
       FLAKE       = var.flake
-      PROFILE = var.flake_profile
+      PROFILE     = var.flake_profile
       SSH_USER    = var.ssh_user
       SSH_ADDRESS = hcloud_server.server.ipv4_address
     }
