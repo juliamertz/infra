@@ -64,8 +64,14 @@ variable "nixos_channel" {
   default     = "nixos-unstable"
 }
 
-variable "flake" {
-  description = "path to flake the machine should build"
+variable "local_flake_path" {
+  description = "path to flake that should be built by your local machine"
+  type        = string
+  default     = null
+}
+
+variable "remote_flake_path" {
+  description = "path to flake that should be built the vps"
   type        = string
   default     = null
 }

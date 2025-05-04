@@ -74,7 +74,7 @@ resource "null_resource" "local_rebuild" {
   provisioner "local-exec" {
     command = local_file.local_rebuild.content
     environment = {
-      FLAKE       = var.flake
+      FLAKE       = var.local_flake_path
       PROFILE     = var.flake_profile
       SSH_USER    = var.ssh_user
       SSH_ADDRESS = hcloud_server.server.ipv4_address

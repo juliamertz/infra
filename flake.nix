@@ -21,8 +21,8 @@
       inherit (nixpkgs) lib;
     };
 
-    devShells.default =
-      forAllSystems (pkgs:
-        import ./shell.nix {inherit pkgs;});
+    devShells = forAllSystems (pkgs: {
+      default = import ./shell.nix pkgs;
+    });
   };
 }

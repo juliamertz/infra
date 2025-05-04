@@ -1,20 +1,16 @@
 {
   inputs,
   config,
-  system,
   ...
-}: let
-  dotfiles = inputs.dotfiles.packages.${system};
-in {
-  networking.hostName = "main";
+}:{
+  networking = {
+    hostName = "main";
 
-  environment.systemPackages = with dotfiles; [
-    zsh
-    tmux
-    neovim-minimal
-    lazygit
-    git
-  ];
+    interfaces.enp7s0.useDHCP = true;
+    firewall = {
+      trustedInterfaces = ["enp7s0"];
+    };
+  };
 
   sops.age.keyFile = "/etc/sops/age/keys.txt";
 

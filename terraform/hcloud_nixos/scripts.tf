@@ -13,7 +13,7 @@ resource "local_file" "nixos_infect" {
 resource "local_file" "remote_rebuild" {
   filename = "${local.out}/remote-rebuild"
   content = templatefile("${local.scripts}/remote-rebuild", {
-    flake                 = var.flake
+    flake                 = var.remote_flake_path
     experimental_features = var.experimental_features
   })
 }

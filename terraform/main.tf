@@ -23,7 +23,7 @@ resource "hcloud_ssh_key" "julia" {
 
 resource "hcloud_network" "network" {
   name     = "network"
-  ip_range = "10.0.1.0/24"
+  ip_range = "10.0.0.0/16"
 }
 
 resource "hcloud_network_subnet" "internal" {
@@ -47,9 +47,10 @@ module "nixos_gatekeeper" {
   network_id = hcloud_network.network.id
   public_ip  = true
 
-  flake         = local.flake_path
-  flake_profile = "gatekeeper"
   nixos_channel = local.nixos_channel
+  local_flake_path = local.flake_path_local
+  remote_flake_path = local.flake_path_github
+  flake_profile = "gatekeeper"
   local_build   = true
 
   ssh_keys        = local.ssh_keys
@@ -71,9 +72,10 @@ module "nixos_main" {
   network_id = hcloud_network.network.id
   public_ip  = true
 
-  flake         = local.flake_path
-  flake_profile = "main"
   nixos_channel = local.nixos_channel
+  local_flake_path = local.flake_path_local
+  remote_flake_path = local.flake_path_github
+  flake_profile = "main"
   local_build   = true
 
   ssh_keys        = local.ssh_keys

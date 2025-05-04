@@ -1,14 +1,16 @@
 {
   config,
-  system,
-  inputs,
   ...
-}: let
-  dotfiles = inputs.dotfiles.packages.${system};
-in {
+}: {
   networking = {
     hostName = "gatekeeper";
-    firewall.allowedTCPPorts = [80 443];
+
+    interfaces.enp7s0.useDHCP = true;
+
+    firewall = {
+      allowedTCPPorts = [80 443];
+      trustedInterfaces = ["enp7s0"];
+    };
   };
 
   gateway = with config.gateway.lib; {
@@ -41,13 +43,6 @@ in {
       # };
     };
   };
-
-  environment.systemPackages = with dotfiles; [
-    zsh
-    tmux
-    neovim-minimal
-    git
-  ];
 
   imports = [
     ./modules/gateway

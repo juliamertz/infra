@@ -1,8 +1,10 @@
 {
   pkgs,
   lib,
+inputs,
   ...
 }: let
+  dotfiles = inputs.dotfiles.packages.${pkgs.system};
 in {
   users.users.julia = {
     name = "julia";
@@ -14,7 +16,6 @@ in {
   };
 
   nix = {
-    package = pkgs.nix;
     settings = {
       experimental-features = lib.mkDefault [
         "nix-command"
@@ -31,6 +32,17 @@ in {
       ];
     };
   };
+
+  environment.systemPackages = with dotfiles; [
+    zsh
+    tmux
+    neovim-minimal
+    git
+  ];
+
+
+  # programs.zsh.enable = true;
+  users.defaultUserShell = dotfiles.zsh;
 
   system.stateVersion = "25.05";
 }
