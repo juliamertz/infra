@@ -61,11 +61,17 @@ variable "ssh_private_key" {
 variable "nixos_channel" {
   description = "NixOS channel to use"
   type        = string
-  default     = "nixos-24.11"
+  default     = "nixos-unstable"
 }
 
 variable "flake" {
-  description = "link to flake the machine should bould"
+  description = "path to flake the machine should build"
+  type        = string
+  default     = null
+}
+
+variable "flake_profile" {
+  description = "nixos profile to build"
   type        = string
   default     = null
 }

@@ -1,10 +1,3 @@
-```hcl
-# terraform/terraform.tfvars
+# TODO:
+- [ ] fix gatekeeper still asking for confirmation to trust host key on terraform deploy
 
-hcloud_token = "<your token>"
-```
-
-```sh
-cd terraform
-tofu apply -auto-approve
-```

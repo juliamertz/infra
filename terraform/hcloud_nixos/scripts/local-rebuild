@@ -1,0 +1,16 @@
+#!/usr/bin/env sh
+
+export KNOWN_HOSTS="$(mktemp)"
+export NIX_SSHOPTS="-o UserKnownHostsFile=$KNOWN_HOSTS" 
+export RESULT="result-$PROFILE"
+
+exec_remote() { ssh -o UserKnownHostsFile="$KNOWN_HOSTS" "$SSH_USER@$SSH_ADDRESS" "$@"; }
+
+ssh-keyscan -H ::1 >> "$KNOWN_HOSTS"
+ssh-keyscan -H localhost >> "$KNOWN_HOSTS"
+ssh-keyscan -H "$SSH_ADDRESS" >> "$KNOWN_HOSTS"
+
+nix build "$FLAKE#nixosConfigurations.$PROFILE.config.system.build.toplevel" -o "$RESULT"
+nix copy --to "ssh://$SSH_USER@$SSH_ADDRESS" ./result
+exec_remote "nix-store --add-root /nix/var/nix/profiles/system --indirect $(realpath "$RESULT")"
+exec_remote "$(realpath "$RESULT")/bin/switch-to-configuration switch"

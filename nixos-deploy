@@ -4,6 +4,7 @@ name=$1
 
 export SSH_ADDRESS="$(tofu -chdir=terraform output "ip_$name" | xargs)"
 export SSH_USER=root
-export FLAKE=".#$name"
+export FLAKE="."
+export PROFILE="$name"
 
-sh terraform/hcloud_nixos/scripts/local-rebuild.sh 
+./terraform/hcloud_nixos/scripts/local-rebuild

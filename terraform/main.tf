@@ -4,7 +4,7 @@ provider "hcloud" {
 
 locals {
   datacenter    = "nbg1-dc3"
-  nixos_channel = "nixos-24.11"
+  nixos_channel = "nixos-unstable"
 
   flake_path_local  = "/home/julia/infra"
   flake_path_github = "github:juliamertz/infra"
@@ -47,7 +47,8 @@ module "nixos_gatekeeper" {
   network_id = hcloud_network.network.id
   public_ip  = true
 
-  flake         = "${local.flake_path}#gatekeeper"
+  flake         = local.flake_path
+  flake_profile = "gatekeeper"
   nixos_channel = local.nixos_channel
   local_build   = true
 
@@ -70,7 +71,8 @@ module "nixos_main" {
   network_id = hcloud_network.network.id
   public_ip  = true
 
-  flake         = "${local.flake_path}#main"
+  flake         = local.flake_path
+  flake_profile = "main"
   nixos_channel = local.nixos_channel
   local_build   = true
 
