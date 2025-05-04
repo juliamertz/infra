@@ -14,6 +14,7 @@
     .default;
 in {
   options.services.nettenshop = with lib; {
+    enable = mkEnableOption "nettenshop";
     serviceName = mkOption {
       type = types.str;
       default = "lightspeed-dhl-adapter";
@@ -22,6 +23,7 @@ in {
       type = types.package;
       default = lightspeed-dhl-adapter;
     };
+    openFirewall = mkEnableOption "firewall";
     port = mkOption {
       type = types.port;
       default = 5010;
@@ -36,15 +38,17 @@ in {
     };
     user = mkOption {
       type = types.str;
-      default = "valnetten";
+      default = "nettenshop";
     };
     group = mkOption {
       type = types.str;
-      default = "valnetten";
+      default = "nettenshop";
     };
   };
 
-  config = {
+  config = lib.mkIf cfg.enable {
+    networking.firewall.allowedTCPPorts = lib.optionals cfg.openFirewall [cfg.port];
+
     systemd.tmpfiles.rules = ["d ${cfg.stateDir} 0770 ${cfg.user} ${cfg.group}"];
 
     systemd.services.${cfg.serviceName} = {
@@ -93,7 +97,7 @@ in {
         "lightspeed_frontend"
       ] (key: {
         owner = cfg.user;
-        sopsFile = ../../../secrets/valnetten.yaml;
+        sopsFile = ../../../secrets/nettenshop.yaml;
         inherit key;
       });
 

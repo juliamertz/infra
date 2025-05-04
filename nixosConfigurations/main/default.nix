@@ -18,10 +18,14 @@ in {
 
   sops.age.keyFile = "/etc/sops/age/keys.txt";
 
+  services.nettenshop = {
+    enable = true;
+    openFirewall = true;
+  };
   users.users.julia.extraGroups = [config.services.nettenshop.group];
 
   imports = [
-    ./services/valnetten.nix
+    ./services/nettenshop.nix
     inputs.sops.nixosModules.sops
   ];
 }

@@ -24,6 +24,14 @@ in {
         config = redirect "https://github.com/juliamertz";
       };
 
+      nettenshop = {
+        subdomain = "nettenshop-staging";
+        config = reverseProxy {
+          address = "http://10.0.1.2:5010";
+          copyResponseHeaders = true;
+        };
+      };
+
       # jellyfin = {
       #   subdomain = "watch";
       #   config = lib.reverseProxy {
