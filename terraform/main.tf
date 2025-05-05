@@ -88,27 +88,27 @@ output "ip_main" {
   value = module.nixos_main.ipv4_address
 }
 
-module "nixos_cache" {
-  source      = "./hcloud_nixos"
-  name        = "cache"
-  server_type = "cx22"
-
-  datacenter = local.datacenter
-  network_id = hcloud_network.network.id
-  public_ip  = true
-
-  nixos_channel = local.nixos_channel
-  local_flake_path = local.flake_path_local
-  remote_flake_path = local.flake_path_github
-  flake_profile = "cache"
-  local_build   = true
-
-  ssh_keys        = local.ssh_keys
-  ssh_private_key = local.ssh_private_key
-  sops_age_key    = local.sops_age_key
-  hcloud_token    = var.hcloud_token
-}
-
-output "ip_cache" {
-  value = module.nixos_cache.ipv4_address
-}
+# module "nixos_cache" {
+#   source      = "./hcloud_nixos"
+#   name        = "cache"
+#   server_type = "cx22"
+#
+#   datacenter = local.datacenter
+#   network_id = hcloud_network.network.id
+#   public_ip  = true
+#
+#   nixos_channel = local.nixos_channel
+#   local_flake_path = local.flake_path_local
+#   remote_flake_path = local.flake_path_github
+#   flake_profile = "cache"
+#   local_build   = true
+#
+#   ssh_keys        = local.ssh_keys
+#   ssh_private_key = local.ssh_private_key
+#   sops_age_key    = local.sops_age_key
+#   hcloud_token    = var.hcloud_token
+# }
+#
+# output "ip_cache" {
+#   value = module.nixos_cache.ipv4_address
+# }

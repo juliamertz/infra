@@ -10,6 +10,10 @@
           address = "116.202.187.106";
           prefixLength = 32;
         }
+        {
+          address = "91.99.65.167";
+          prefixLength = 32;
+        }
       ];
     };
   };
@@ -17,7 +21,7 @@
   gateway = with config.gateway.lib; let
     auth = basicAuth "$2a$14$5ELp7zhUeAS8PEGotSNUvO94demOSE.pGPuQfEfXwQ8kqp0wx42Q6";
   in {
-    hostname = "juliamertz.dev";
+    hostname = "staging.juliamertz.dev";
 
     services = {
       github = {
@@ -26,8 +30,8 @@
       };
 
       nettenshop = {
-        subdomain = "nettenshop-staging";
-        config = reverseProxy "http://10.0.1.1:5010";
+        subdomain = "nettenshop";
+        config = reverseProxy "http://10.0.1.2:5010";
       };
 
       # home-assistant = {
@@ -38,6 +42,6 @@
   };
 
   imports = [
-    ../modules/gateway
+    ../../modules/gateway
   ];
 }

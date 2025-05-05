@@ -9,6 +9,7 @@
     basicauth {
         username ${password}
     }
+
     ${config}
   '';
 }
