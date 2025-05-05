@@ -17,10 +17,9 @@ in
           ''
             export FLAKE="."
             export PROFILE="$1"
-            export SSH_ADDRESS="$(tofu -chdir=terraform output "ip_$PROFILE" | xargs)"
+            export TERRAFORM_DIR=''${DIRENV_DIR#-}/terraform
+            export SSH_ADDRESS="$(tofu output ip_$PROFILE | xargs)"
             export SSH_USER=root
-
-            TERRAFORM_DIR=''${DIRENV_DIR#-}/terraform
 
             $TERRAFORM_DIR/hcloud_nixos/scripts/local-rebuild
           '';

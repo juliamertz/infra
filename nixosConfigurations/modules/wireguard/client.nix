@@ -13,6 +13,14 @@ in {
       type = types.path;
       default = "/etc/wireguard/keys/private";
     };
+
+    ipRange = mkOption {
+      type = types.str;
+    };
+
+    serverIp = mkOption {
+      type = types.str;
+    };
   };
 
   config = lib.mkIf cfg.enable {
@@ -21,14 +29,14 @@ in {
     networking.wireguard = {
       enable = true;
       interfaces.wg0 = {
-        ips = ["10.100.0.6/24"];
+        ips = [cfg.ipRange];
         listenPort = netCfg.port;
         inherit (cfg) privateKeyFile;
         peers = [
           {
-            publicKey = netCfg.publicKeys.julia;
-            allowedIPs = ["10.100.0.1/24"];
-            endpoint = "116.203.24.1:${builtins.toString netCfg.port}";
+            publicKey = netCfg.server.publicKey;
+            allowedIPs = [netCfg.server.ipRange];
+            endpoint = "${cfg.serverIp}:${builtins.toString netCfg.port}";
             persistentKeepalive = 25;
           }
         ];

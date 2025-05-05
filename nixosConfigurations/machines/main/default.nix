@@ -14,10 +14,10 @@
     extraUsers = ["julia"];
   };
 
-  services.wireguard-server = {
+  services.wireguard-client = {
     enable = true;
-    privateKeyFile = "/etc/wireguard/keys/private";
-    externalInterface = "eth0";
+    ipRange = "10.100.0.2/24";
+    serverIp = "10.0.1.2"; 
   };
 
   imports = [

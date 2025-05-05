@@ -39,8 +39,11 @@
     };
   };
 
-  services.wireguard-client = {
+  services.wireguard-server = {
     enable = true;
+    enableForwarding = true;
+    privateKeyFile = "/etc/wireguard/keys/private";
+    externalInterface = "eth0";
   };
 
   imports = [

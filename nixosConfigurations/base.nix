@@ -19,6 +19,7 @@ in {
     tmux
     neovim-minimal
     git
+    scripts
   ];
 
   users.defaultUserShell = dotfiles.zsh;
