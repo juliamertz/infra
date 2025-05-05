@@ -6,7 +6,7 @@
 }: let
   cfg = config.services.nettenshop;
 
-  revision = "1b12d66579aa536836fd87feef3d29acb80d650d";
+  revision = "0cb1d6792afc18c7a72ccd66a8e2dd048db20731";
   lightspeed-dhl-adapter =
     (builtins.getFlake "github:juliamertz/lightspeed-dhl-adapter/${revision}?dir=nix")
     .packages
@@ -32,9 +32,9 @@ in {
       type = types.path;
       default = "/etc/lightspeed-dhl";
     };
-    configPath = mkOption {
+    sopsFile = mkOption {
       type = types.path;
-      default = config.sops.templates."${cfg.serviceName}-config.toml".path;
+      default = null;
     };
     user = mkOption {
       type = types.str;
@@ -49,7 +49,10 @@ in {
   config = lib.mkIf cfg.enable {
     networking.firewall.allowedTCPPorts = lib.optionals cfg.openFirewall [cfg.port];
 
-    systemd.tmpfiles.rules = ["d ${cfg.stateDir} 0770 ${cfg.user} ${cfg.group}"];
+    systemd.tmpfiles.rules = [
+      "d ${cfg.stateDir} 0750 ${cfg.user} ${cfg.group}"
+      "L ${cfg.stateDir}/config.toml 0750 ${cfg.user} ${cfg.group} - ${config.sops.templates."${cfg.serviceName}-config.toml".path}"
+    ];
 
     systemd.services.${cfg.serviceName} = {
       description = "${cfg.serviceName} service";
@@ -59,7 +62,7 @@ in {
         Group = cfg.group;
 
         WorkingDirectory = cfg.stateDir;
-        ExecStart = "${lib.getExe cfg.package} ${cfg.configPath}";
+        ExecStart = "${lib.getExe cfg.package} ${cfg.stateDir}/config.toml";
 
         KeyringMode = "private";
         LockPersonality = true;
@@ -73,7 +76,7 @@ in {
         ProtectKernelModules = true;
         ProtectKernelTunables = true;
         ProtectSystem = "strict";
-        ReadWritePaths = [cfg.stateDir cfg.configPath];
+        ReadWritePaths = [cfg.stateDir];
         RemoveIPC = true;
         RestrictNamespaces = true;
         SystemCallArchitectures = "native";
@@ -95,9 +98,11 @@ in {
         "lightspeed_key"
         "lightspeed_secret"
         "lightspeed_frontend"
+        "lightspeed_clusterId"
+        "lightspeed_shopId"
       ] (key: {
         owner = cfg.user;
-        sopsFile = ../../../secrets/nettenshop.yaml;
+        sopsFile = cfg.sopsFile;
         inherit key;
       });
 
@@ -113,10 +118,12 @@ in {
           ApiKey    = "${dhl_apiKey}"
 
           [Lightspeed]
-          Frontend = "${lightspeed_frontend}"
-          Cluster  = "${lightspeed_cluster}"
-          Key      = "${lightspeed_key}"
-          Secret   = "${lightspeed_secret}"
+          Frontend  = "${lightspeed_frontend}"
+          Cluster   = "${lightspeed_cluster}"
+          Key       = "${lightspeed_key}"
+          Secret    = "${lightspeed_secret}"
+          ClusterId = "${lightspeed_clusterId}"
+          ShopId    = "${lightspeed_shopId}"
 
           [CompanyInfo]
           Name         = "Nettenshop"
@@ -131,10 +138,10 @@ in {
           PersonalNote = "Uw bestelling bij nettenshop.nl is met DHL onderweg! Via de bijgevoegde link kunt u uw pakket volgen. Mocht u vragen hebben, neem dan contact met ons op via de klantenservice. Met vriendelijke groet, Team Nettenshop.nl"
 
           [Options]
-          DryRun          = false
+          DryRun          = true
           Port            = ${builtins.toString cfg.port}
           Environment     = "production"
-          Debug           = false
+          Debug           = true
           PollingInterval = 15
         '';
     };

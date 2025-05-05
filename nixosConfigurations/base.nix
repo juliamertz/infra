@@ -1,14 +1,32 @@
 {
   pkgs,
   lib,
-inputs,
+  inputs,
   ...
 }: let
   dotfiles = inputs.dotfiles.packages.${pkgs.system};
 in {
+  networking = {
+    interfaces.enp7s0.useDHCP = true;
+    firewall = {
+      allowedTCPPorts = [80 443];
+      trustedInterfaces = ["enp7s0"];
+    };
+  };
+
+  environment.systemPackages = with dotfiles; [
+    zsh
+    tmux
+    neovim-minimal
+    git
+  ];
+
+  users.defaultUserShell = dotfiles.zsh;
+
   users.users.julia = {
     name = "julia";
     isNormalUser = true;
+    useDefaultShell = true;
     extraGroups = ["wheel"];
     openssh.authorizedKeys.keys = [
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJaSMVfNtTgKjZBn0OurWXDpNrV+soaog7W0Svv4vE40"
@@ -32,17 +50,6 @@ in {
       ];
     };
   };
-
-  environment.systemPackages = with dotfiles; [
-    zsh
-    tmux
-    neovim-minimal
-    git
-  ];
-
-
-  # programs.zsh.enable = true;
-  users.defaultUserShell = dotfiles.zsh;
 
   system.stateVersion = "25.05";
 }

@@ -29,5 +29,13 @@ in
           ''
             ${lib.getExe opentofu} -chdir=terraform apply
           '';
+
+        conn =
+          # sh
+          ''
+            ip=$(${lib.getExe opentofu} -chdir=terraform output "ip_$1" | xargs)
+            echo $ip
+            ssh root@$ip
+          '';
       };
   }

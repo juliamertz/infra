@@ -21,4 +21,10 @@ in {
     modules = baseModules ++ [./main];
     specialArgs = {inherit inputs system;};
   };
+
+  cache = lib.nixosSystem rec {
+    system = "x86_64-linux";
+    modules = baseModules ++ [./cache];
+    specialArgs = {inherit inputs system;};
+  };
 }

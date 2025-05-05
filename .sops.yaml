@@ -2,7 +2,7 @@ keys:
   - &julia age1wu0knmpfys4szjf09cgvc7fq8u34h0dyu9uk6sfzvkmqlklcya6skhmhs5                                                       
                                                                                                                                       
 creation_rules:                                                                                                                       
-  - path_regex: secrets/valnetten.yaml                                                                                                 
+  - path_regex: secrets/nettenshop.yaml                                                                                                 
     key_groups:                                                                                                                       
     - age:                                                                                                                            
       - *julia

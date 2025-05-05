@@ -2,26 +2,22 @@
   inputs,
   config,
   ...
-}:{
-  networking = {
-    hostName = "main";
-
-    interfaces.enp7s0.useDHCP = true;
-    firewall = {
-      trustedInterfaces = ["enp7s0"];
-    };
-  };
+}: {
+  networking.hostName = "main";
 
   sops.age.keyFile = "/etc/sops/age/keys.txt";
 
   services.nettenshop = {
     enable = true;
     openFirewall = true;
+    sopsFile = ../../secrets/nettenshop.yaml;
   };
+
   users.users.julia.extraGroups = [config.services.nettenshop.group];
 
   imports = [
     ./services/nettenshop.nix
+    ../modules/wireguard/server.nix
     inputs.sops.nixosModules.sops
   ];
 }

@@ -10,8 +10,8 @@ ssh-keyscan -H ::1 >> "$KNOWN_HOSTS"
 ssh-keyscan -H localhost >> "$KNOWN_HOSTS"
 ssh-keyscan -H "$SSH_ADDRESS" >> "$KNOWN_HOSTS"
 
-nix build "$FLAKE#nixosConfigurations.$PROFILE.config.system.build.toplevel" -o "$RESULT"
-nix copy --to "ssh://$SSH_USER@$SSH_ADDRESS" "$RESULT"
+nix build "$FLAKE#nixosConfigurations.$PROFILE.config.system.build.toplevel" -o "$RESULT" && \
+nix copy --to "ssh://$SSH_USER@$SSH_ADDRESS" "$RESULT" && \
 exec_remote "$(realpath "$RESULT")/bin/switch-to-configuration switch"
 
 # exec_remote "nix-store --add-root /nix/var/nix/profiles/system --indirect $(realpath "$RESULT")"

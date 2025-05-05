@@ -47,7 +47,8 @@ in {
             if builtins.isNull value.hostname
             then cfg.hostname
             else value.hostname;
-          subdomain = lib.optionalString (!builtins.isNull (value.subdomain or null)) "${value.subdomain}.";
+          subdomain = lib.optionalString (value ? subdomain && value.subdomain != null) "${value.subdomain}.";
+          # subdomain = lib.optionalString (!builtins.isNull (value.subdomain or null)) "${value.subdomain}.";
         in {
           "${subdomain}${hostname}".extraConfig = value.config;
         })
