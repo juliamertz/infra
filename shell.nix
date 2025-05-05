@@ -8,7 +8,6 @@ in
   pkgs.mkShell {
     packages = with pkgs;
       [
-        opentofu
         alejandra
         treefmt
       ]
@@ -21,19 +20,22 @@ in
             export SSH_ADDRESS="$(tofu -chdir=terraform output "ip_$PROFILE" | xargs)"
             export SSH_USER=root
 
-            ./terraform/hcloud_nixos/scripts/local-rebuild
+            TERRAFORM_DIR=''${DIRENV_DIR#-}/terraform
+
+            $TERRAFORM_DIR/hcloud_nixos/scripts/local-rebuild
           '';
 
-        setup-infra =
-          # sh
-          ''
-            ${lib.getExe opentofu} -chdir=terraform apply
-          '';
+        tofu = 
+            # sh
+            ''
+              TERRAFORM_DIR=''${DIRENV_DIR#-}/terraform
+              ${lib.getExe opentofu} -chdir=$TERRAFORM_DIR $@
+            '';
 
         conn =
           # sh
           ''
-            ip=$(${lib.getExe opentofu} -chdir=terraform output "ip_$1" | xargs)
+            ip=$(tofu output "ip_$1" | xargs)
             echo $ip
             ssh root@$ip
           '';

@@ -47,16 +47,17 @@ module "nixos_gatekeeper" {
   network_id = hcloud_network.network.id
   public_ip  = true
 
-  nixos_channel = local.nixos_channel
-  local_flake_path = local.flake_path_local
+  nixos_channel     = local.nixos_channel
+  local_flake_path  = local.flake_path_local
   remote_flake_path = local.flake_path_github
-  flake_profile = "gatekeeper"
-  local_build   = true
+  flake_profile     = "gatekeeper"
+  local_build       = true
 
-  ssh_keys        = local.ssh_keys
-  ssh_private_key = local.ssh_private_key
-  sops_age_key    = local.sops_age_key
-  hcloud_token    = var.hcloud_token
+  ssh_keys              = local.ssh_keys
+  ssh_private_key       = local.ssh_private_key
+  sops_age_key          = local.sops_age_key
+  wireguard_private_key = file("/etc/wireguard/servers/gatekeeper/private")
+  hcloud_token          = var.hcloud_token
 }
 
 output "ip_gatekeeper" {
@@ -72,16 +73,17 @@ module "nixos_main" {
   network_id = hcloud_network.network.id
   public_ip  = true
 
-  nixos_channel = local.nixos_channel
-  local_flake_path = local.flake_path_local
+  nixos_channel     = local.nixos_channel
+  local_flake_path  = local.flake_path_local
   remote_flake_path = local.flake_path_github
-  flake_profile = "main"
-  local_build   = true
+  flake_profile     = "main"
+  local_build       = true
 
-  ssh_keys        = local.ssh_keys
-  ssh_private_key = local.ssh_private_key
-  sops_age_key    = local.sops_age_key
-  hcloud_token    = var.hcloud_token
+  ssh_keys              = local.ssh_keys
+  ssh_private_key       = local.ssh_private_key
+  sops_age_key          = local.sops_age_key
+  wireguard_private_key = file("/etc/wireguard/servers/main/private")
+  hcloud_token          = var.hcloud_token
 }
 
 output "ip_main" {

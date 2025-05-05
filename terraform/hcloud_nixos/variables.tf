@@ -47,6 +47,13 @@ variable "sops_age_key" {
   default     = null
 }
 
+variable "wireguard_private_key" {
+  description = "Private key to use for Wireguard connection"
+  type        = string
+  nullable    = true
+  default     = null
+}
+
 variable "ssh_user" {
   description = "Username for SSH connection"
   type        = string

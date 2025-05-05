@@ -18,9 +18,7 @@
     };
   };
 
-  gateway = with config.gateway.lib; let
-    auth = basicAuth "$2a$14$5ELp7zhUeAS8PEGotSNUvO94demOSE.pGPuQfEfXwQ8kqp0wx42Q6";
-  in {
+  services.gateway = with config.services.gateway.lib; {
     hostname = "staging.juliamertz.dev";
 
     services = {
@@ -41,7 +39,12 @@
     };
   };
 
+  services.wireguard-client = {
+    enable = true;
+  };
+
   imports = [
     ../../modules/gateway
+    ../../modules/wireguard
   ];
 }

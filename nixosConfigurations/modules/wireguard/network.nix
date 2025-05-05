@@ -3,10 +3,11 @@ rec {
 
   publicKeys = {
     julia = "VcEu1t2j+mmiPKI8NBusFp1Qgi/VhblZencgsM4qWwo=";
-    server = "VcEu1t2j+mmiPKI8NBusFp1Qgi/VhblZencgsM4qWwo="; # TODO: seperate key for servers
+    server = "YOkwBtwqQrj9XSVuLGfbugYKVSunXGH/+IPHL4XACTE=";
   };
 
   server = {
+    inherit port;
     ipRange = "10.100.0.1/24";
   };
 
@@ -24,4 +25,6 @@ rec {
       allowedIPs = ["10.100.0.6/32"];
     };
   };
+
+  withMask = ip: mask: "${ip}/${builtins.toString mask}";
 }

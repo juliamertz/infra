@@ -3,9 +3,9 @@
   config,
   ...
 }: let
-  cfg = config.gateway;
+  cfg = config.services.gateway;
 in {
-  options.gateway = with lib; {
+  options.services.gateway = with lib; {
     lib = mkOption {
       type = types.attrs;
       default = import ./lib.nix {inherit lib;};

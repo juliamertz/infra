@@ -44,6 +44,13 @@ in {
       type = types.str;
       default = "nettenshop";
     };
+    extraUsers = mkOption {
+      type = types.listOf types.str;
+      default = [];
+      description = mkDoc ''
+        Extra users to add to the default group for this service
+      '';
+    };
   };
 
   config = lib.mkIf cfg.enable {
@@ -84,10 +91,14 @@ in {
     };
 
     users.groups.${cfg.group} = {};
-    users.users.${cfg.user} = {
-      inherit (cfg) group;
-      isSystemUser = true;
-    };
+    users.users =
+      {
+        ${cfg.user} = {
+          inherit (cfg) group;
+          isSystemUser = true;
+        };
+      }
+      // lib.genAttrs cfg.extraUsers (_: {extraGroups = [cfg.group];});
 
     sops.secrets =
       lib.genAttrs [

@@ -11,13 +11,18 @@
     enable = true;
     openFirewall = true;
     sopsFile = ../../../secrets/nettenshop.yaml;
+    extraUsers = ["julia"];
   };
 
-  users.users.julia.extraGroups = [config.services.nettenshop.group];
+  services.wireguard-server = {
+    enable = true;
+    privateKeyFile = "/etc/wireguard/keys/private";
+    externalInterface = "eth0";
+  };
 
   imports = [
-    ../services/nettenshop.nix
-    # ../../modules/wireguard/server.nix
+    ../../modules/nettenshop
+    ../../modules/wireguard
     inputs.sops.nixosModules.sops
   ];
 }
