@@ -1,4 +1,4 @@
-{config, ...}: {
+{pkgs,config, ...}: {
   networking = {
     hostName = "gatekeeper";
 
@@ -17,6 +17,13 @@
       ];
     };
   };
+
+  system.userActivationScripts.addFloatingIp.text =
+    # TODO: find out why this hack is needed
+    # sh
+    ''
+      ${pkgs.iproute2}/bin/ip addr add 116.202.187.106/32 dev eth0
+    '';
 
   services.gateway = with config.services.gateway.lib; {
     hostname = "staging.juliamertz.dev";

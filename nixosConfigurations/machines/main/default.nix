@@ -17,7 +17,7 @@
   services.wireguard-client = {
     enable = true;
     ipRange = "10.100.0.2/24";
-    serverIp = "10.0.1.2"; 
+    serverIp = "10.0.1.1"; 
   };
 
   imports = [

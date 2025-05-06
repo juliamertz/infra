@@ -9,6 +9,8 @@ in
     packages = with pkgs;
       [
         opentofu
+        colmena
+
         alejandra
         treefmt
       ]
