@@ -8,6 +8,7 @@ in
   pkgs.mkShell {
     packages = with pkgs;
       [
+        opentofu
         alejandra
         treefmt
       ]
@@ -23,13 +24,6 @@ in
 
             $TERRAFORM_DIR/hcloud_nixos/scripts/local-rebuild
           '';
-
-        tofu = 
-            # sh
-            ''
-              TERRAFORM_DIR=''${DIRENV_DIR#-}/terraform
-              ${lib.getExe opentofu} -chdir=$TERRAFORM_DIR $@
-            '';
 
         conn =
           # sh

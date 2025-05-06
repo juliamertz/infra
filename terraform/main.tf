@@ -36,6 +36,10 @@ resource "hcloud_network_subnet" "internal" {
 resource "hcloud_floating_ip" "entrypoint" {
   type      = "ipv4"
   server_id = module.nixos_gatekeeper.server_id
+
+  lifecycle {
+    prevent_destroy = true
+  }
 }
 
 module "nixos_gatekeeper" {
