@@ -75,28 +75,14 @@ resource "null_resource" "install_wireguard_key" {
 
 resource "null_resource" "remote_rebuild" {
   count = var.local_build ? 0 : 1
-
-  connection {
-    type        = "ssh"
-    host        = hcloud_server.server.ipv4_address
-    user        = var.ssh_user
-    private_key = var.ssh_private_key
-  }
-
-  provisioner "remote-exec" {
-    script = local_file.remote_rebuild.filename
+  provisioner "local-exec" {
+    command = "colmena apply --on ${var.name} --build-on-target"
   }
 }
 
 resource "null_resource" "local_rebuild" {
   count = var.local_build ? 1 : 0
   provisioner "local-exec" {
-    command = local_file.local_rebuild.content
-    environment = {
-      FLAKE       = var.local_flake_path
-      PROFILE     = var.flake_profile
-      SSH_USER    = var.ssh_user
-      SSH_ADDRESS = hcloud_server.server.ipv4_address
-    }
+    command = "colmena apply --on ${var.name}"
   }
 }
