@@ -12,3 +12,13 @@
 
 - [ ] add solution for easily sharing variables between nix and terraform (maybe include terraform outputs)
     - maybe wrap tofu with vars?
+
+# Prerequisites
+
+- `/etc/hosts`
+    Set up aliases for the internal wireguard network
+    ```
+    10.100.0.1 main
+    10.100.0.2 gatekeeper
+    ```
+
