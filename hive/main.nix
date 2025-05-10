@@ -34,49 +34,58 @@
     serverIp = "10.0.1.1";
   };
 
-  networking.firewall.allowedTCPPorts = [3000 9090];
+  networking.firewall.allowedTCPPorts = [3000];
 
-  # services.grafana = {
-  #   enable = true;
-  #   settings = {
-  #     server = {
-  #       http_addr = "0.0.0.0";
-  #       http_port = 3000;
-  #       # domain = "your.domain";
-  #       # root_url = "https://your.domain/grafana/";
-  #       # serve_from_sub_path = true;
-  #     };
-  #   };
-  # };
-  #
-  # services.prometheus = {
-  #   enable = true;
-  #   port = 9090;
-  #
-  #   scrapeConfigs = [
-  #     {
-  #       job_name = "systemd_exporter";
-  #       static_configs = [
-  #         {
-  #           targets = ["0.0.0.0:${toString config.services.prometheus.exporters.systemd.port}"];
-  #         }
-  #       ];
-  #     }
-  #   ];
-  #
-  #   exporters.systemd = let
-  #     monitoredUnits = map (v: v + ".service") [
-  #       config.services.nettenshop.serviceName
-  #     ];
-  #   in {
-  #     enable = true;
-  #     openFirewall = true;
-  #     extraFlags = [
-  #       "--systemd.collector.enable-restart-count"
-  #       "--systemd.collector.enable-ip-accounting"
-  #       "--systemd.collector.unit-include=${lib.concatStringsSep "|" monitoredUnits}"
-  #       # "--systemd.collector.unit-exclude=.*"
-  #     ];
-  #   };
-  # };
+  services.grafana = {
+    enable = false;
+    settings = {
+      server = {
+        http_port = 3000;
+        http_addr = "0.0.0.0";
+      };
+    };
+  };
+
+  services.prometheus = {
+    enable = false;
+    port = 9090;
+
+    scrapeConfigs = with config.services.prometheus; [
+      {
+        job_name = "systemd_exporter";
+        static_configs = [
+          {targets = ["0.0.0.0:${toString exporters.systemd.port}"];}
+        ];
+      }
+    ];
+
+    exporters = {
+      systemd = let
+        monitoredUnits = with config; [
+          services.nettenshop.serviceName
+        ];
+      in {
+        enable = true;
+        extraFlags = [
+          "--systemd.collector.enable-restart-count"
+          "--systemd.collector.enable-ip-accounting"
+          "--systemd.collector.unit-include=${monitoredUnits |> map (v: v + ".service") |> lib.concatStringsSep "|"}"
+        ];
+      };
+
+      # process = {
+      #   enable = true;
+      #   settings = {
+      #     # process_names = [
+      #     #   "lightspeed-dhl"
+      #     #   "grafana"
+      #     #   {
+      #     #     name = "{{.Matches.Wrapped}} {{ .Matches.Args }}";
+      #     #     cmdline = ["^/nix/store[^ ]*/(?P<Wrapped>[^ /]*) (?P<Args>.*)"];
+      #     #   }
+      #     # ];
+      #   };
+      # };
+    };
+  };
 }

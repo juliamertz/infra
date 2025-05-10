@@ -44,7 +44,7 @@ in {
 
     networking.firewall = {
       allowedUDPPorts = [netCfg.port];
-      trustedInterfaces = [cfg.internalInterface];
+      trustedInterfaces = lib.optionals cfg.enableForwarding [cfg.internalInterface];
     };
 
     boot.kernel.sysctl = {
