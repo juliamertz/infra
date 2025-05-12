@@ -1,3 +1,8 @@
+output "hostname" {
+  description = "Hostname of the server"
+  value       = var.name
+}
+
 output "server_id" {
   description = "ID of the created server"
   value       = hcloud_server.server.id

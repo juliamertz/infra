@@ -54,35 +54,16 @@ resource "null_resource" "install_age_key" {
   }
 }
 
-resource "null_resource" "install_wireguard_key" {
-  count = var.wireguard_private_key != null ? 1 : 0
-
-  connection {
-    type        = "ssh"
-    host        = hcloud_server.server.ipv4_address
-    user        = var.ssh_user
-    private_key = var.ssh_private_key
-  }
-
-  provisioner "remote-exec" {
-    inline = [
-      "mkdir -p /etc/wireguard/keys",
-      "cat > /etc/wireguard/keys/private <<EOF\n${var.wireguard_private_key}\nEOF",
-      "chmod 600 /etc/wireguard/keys/*"
-    ]
-  }
-}
-
-resource "null_resource" "remote_rebuild" {
-  count = var.local_build ? 0 : 1
-  provisioner "local-exec" {
-    command = "colmena apply --on ${var.name} --build-on-target"
-  }
-}
-
-resource "null_resource" "local_rebuild" {
-  count = var.local_build ? 1 : 0
-  provisioner "local-exec" {
-    command = "colmena apply --on ${var.name}"
-  }
-}
+# resource "null_resource" "remote_rebuild" {
+#   count = var.local_build ? 0 : 1
+#   provisioner "local-exec" {
+#     command = "colmena apply --on ${var.name} --build-on-target"
+#   }
+# }
+#
+# resource "null_resource" "local_rebuild" {
+#   count = var.local_build ? 1 : 0
+#   provisioner "local-exec" {
+#     command = "colmena apply --on ${var.name}"
+#   }
+# }

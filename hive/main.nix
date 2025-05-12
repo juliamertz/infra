@@ -12,7 +12,8 @@
   ];
 
   deployment = {
-    targetHost = name;
+    targetHost = "91.99.65.167";
+    # targetHost = name;
     targetUser = "root";
     targetPort = 22;
   };
@@ -28,10 +29,17 @@
     extraUsers = ["julia"];
   };
 
+  sops.secrets.wireguardPrivateKey = {
+    key = name;
+    owner = "julia";
+    sopsFile = ../secrets/wireguard.yaml;
+  };
+
   services.wireguard-client = {
     enable = true;
     ipRange = "10.100.0.2/24";
     serverIp = "10.0.1.1";
+    privateKeyFile = config.sops.secrets.wireguardPrivateKey.path;
   };
 
   networking.firewall.allowedTCPPorts = [3000];

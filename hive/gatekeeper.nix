@@ -10,10 +10,13 @@ in {
   networking.hostName = name;
 
   deployment = {
-    targetHost = name;
+    targetHost = "116.203.24.1";
+    # targetHost = name;
     targetUser = "root";
     targetPort = 22;
   };
+
+  sops.age.keyFile = "/etc/sops/age/keys.txt";
 
   networking.interfaces.eth0 = {
     useDHCP = false;
@@ -58,10 +61,16 @@ in {
     };
   };
 
+  sops.secrets.wireguardPrivateKey = {
+    key = name;
+    owner = "julia";
+    sopsFile = ../secrets/wireguard.yaml;
+  };
+
   services.wireguard-server = {
     enable = true;
     enableForwarding = true;
-    privateKeyFile = "/etc/wireguard/keys/private";
+    privateKeyFile = config.sops.secrets.wireguardPrivateKey.path;
     externalInterface = "eth0";
   };
 

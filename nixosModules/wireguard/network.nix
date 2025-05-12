@@ -2,8 +2,8 @@ rec {
   port = 51820;                                                                                                                                    
 
   publicKeys = {
-    gatekeeper = "1RhicoTx80WUc/1QuyPQupkyMEBq8eQmIgUuzp2dHBM=";
-    main = "YOkwBtwqQrj9XSVuLGfbugYKVSunXGH/+IPHL4XACTE=";
+    gatekeeper = "+UMRNrDpies7uCO4wCgxKdyDuN1/FpmIilO8/NO66Uo=";
+    main = "tVHanBrvOyUFA7Gf6CE3dILyZN511AahfO1trLyBxQ4=";
     macbook = "dU+x5zu/5v3ieeJgsnLDzC28suMl27jfufSrGzz5zQY=";
     workstation = "W6S6BMwUsg/iTOONOgQreAvUbvBBPo3P7zXyFpslp0w=";
   };
