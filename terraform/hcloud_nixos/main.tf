@@ -54,16 +54,30 @@ resource "null_resource" "install_age_key" {
   }
 }
 
-# resource "null_resource" "remote_rebuild" {
-#   count = var.local_build ? 0 : 1
-#   provisioner "local-exec" {
-#     command = "colmena apply --on ${var.name} --build-on-target"
-#   }
-# }
-#
+resource "null_resource" "remote_rebuild" {
+  count = var.local_build ? 0 : 1
+
+  provisioner "local-exec" {
+    command = "colmena apply --on ${var.name} --build-on-target --impure"
+  }
+
+  environment = {
+    "NIXOS_HOST_${upper(var.name)}_IP" = hcloud_server.server.ipv4_address
+    "NIXOS_HOST_${upper(var.name)}_SSH_USER" = var.ssh_user
+    "NIXOS_HOST_${upper(var.name)}_SSH_PORT" = 22
+  }
+}
+
 # resource "null_resource" "local_rebuild" {
 #   count = var.local_build ? 1 : 0
+#
 #   provisioner "local-exec" {
-#     command = "colmena apply --on ${var.name}"
+#     command = "colmena apply --on ${var.name} --impure"
+#   }
+#
+#   environment = {
+#     "NIXOS_HOST_${upper(var.name)}_IP" = hcloud_server.server.ipv4_address
+#     "NIXOS_HOST_${upper(var.name)}_SSH_USER" = var.ssh_user
+#     "NIXOS_HOST_${upper(var.name)}_SSH_PORT" = 22
 #   }
 # }
