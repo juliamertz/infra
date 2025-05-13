@@ -74,6 +74,8 @@ output "nixos_gatekeeper" {
     config   = "${local.config_path}/gatekeeper.nix"
     hostname = module.nixos_gatekeeper.hostname
     ip       = module.nixos_gatekeeper.ipv4_address
+    ssh_user = "julia"
+    ssh_port = 22
   }
 }
 
@@ -105,5 +107,7 @@ output "nixos_main" {
     config   = "${local.config_path}/main.nix"
     hostname = module.nixos_main.hostname
     ip       = module.nixos_main.ipv4_address
+    ssh_user = "julia"
+    ssh_port = 22
   }
 }

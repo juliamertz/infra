@@ -9,13 +9,6 @@
 in {
   networking.hostName = name;
 
-  deployment = {
-    targetHost = "116.203.24.1";
-    # targetHost = name;
-    targetUser = "root";
-    targetPort = 22;
-  };
-
   sops.age.keyFile = "/etc/sops/age/keys.txt";
 
   networking.interfaces.eth0 = {

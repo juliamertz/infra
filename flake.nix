@@ -23,15 +23,40 @@
     rust-overlay,
     ...
   } @ inputs: let
+    inherit (nixpkgs) lib;
+
     forAllSystems = fun:
-      nixpkgs.lib.genAttrs (import systems) (system:
+      lib.genAttrs (import systems) (system:
         fun (nixpkgs.legacyPackages.${system}.extend rust-overlay.overlays.default));
 
-    hiveArgs = {
-      inherit inputs;
+    mkTarget = name: let
+      targetEnv = key: builtins.getEnv "NIXOS_HOST_${lib.toUpper name}_${lib.toUpper key}";
+    in {
+      targetHost = targetEnv "ip";
+      targetUser = targetEnv "ssh_user";
+      targetPort = targetEnv "ssh_port" |> lib.strings.toIntBase10;
     };
   in {
-    colmenaHive = colmena.lib.makeHive (import ./hive hiveArgs);
+    colmenaHive = colmena.lib.makeHive {
+      meta = {
+        nixpkgs = import inputs.nixpkgs {
+          system = "x86_64-linux";
+          overlays = [];
+        };
+      };
+
+      defaults = import ./hive/defaults.nix inputs;
+
+      gatekeeper = {...}: {
+        imports = [./hive/gatekeeper.nix];
+        deployment = mkTarget "gatekeeper";
+      };
+
+      main = {...}: {
+        imports = [./hive/main.nix];
+        deployment = mkTarget "main";
+      };
+    };
 
     devShells = forAllSystems (pkgs: {
       default = pkgs.mkShell {

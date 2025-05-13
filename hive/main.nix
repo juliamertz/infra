@@ -11,13 +11,6 @@
     ../nixosModules/wireguard
   ];
 
-  deployment = {
-    targetHost = "91.99.65.167";
-    # targetHost = name;
-    targetUser = "root";
-    targetPort = 22;
-  };
-
   networking.hostName = name;
 
   sops.age.keyFile = "/etc/sops/age/keys.txt";
