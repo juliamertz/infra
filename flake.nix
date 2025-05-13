@@ -29,7 +29,7 @@
       lib.genAttrs (import systems) (system:
         fun (nixpkgs.legacyPackages.${system}.extend rust-overlay.overlays.default));
 
-    mkTarget = name: let
+    mkTargetFromEnv = name: let
       targetEnv = key: builtins.getEnv "NIXOS_HOST_${lib.toUpper name}_${lib.toUpper key}";
     in {
       targetHost = targetEnv "ip";
@@ -49,12 +49,12 @@
 
       gatekeeper = {...}: {
         imports = [./hive/gatekeeper.nix];
-        deployment = mkTarget "gatekeeper";
+        deployment = mkTargetFromEnv "gatekeeper";
       };
 
       main = {...}: {
         imports = [./hive/main.nix];
-        deployment = mkTarget "main";
+        deployment = mkTargetFromEnv "main";
       };
     };
 

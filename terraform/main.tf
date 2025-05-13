@@ -6,12 +6,7 @@ locals {
   datacenter    = "nbg1-dc3"
   nixos_channel = "nixos-unstable"
 
-  repo_path   = ".."
-  config_path = "${local.repo_path}/hive"
-
-  flake_path_local  = "/home/julia/infra"
-  flake_path_github = "github:juliamertz/infra"
-  flake_path        = local.flake_path_local
+  flake_path = "../"
 
   ssh_private_key = file("~/.ssh/id_ed25519")
   ssh_public_key  = file("~/.ssh/id_ed25519.pub")
@@ -55,11 +50,10 @@ module "nixos_gatekeeper" {
   network_id = hcloud_network.network.id
   public_ip  = true
 
-  nixos_channel     = local.nixos_channel
-  local_flake_path  = local.flake_path_local
-  remote_flake_path = local.flake_path_github
-  flake_profile     = "gatekeeper"
-  local_build       = false
+  nixos_channel = local.nixos_channel
+  flake_path    = local.flake_path
+  flake_profile = "gatekeeper"
+  local_build   = false
 
   ssh_keys        = local.ssh_keys
   ssh_private_key = local.ssh_private_key
@@ -67,16 +61,16 @@ module "nixos_gatekeeper" {
   hcloud_token    = var.hcloud_token
 }
 
-output "nixos_gatekeeper" {
-  value = {
-    _type = "nixos_host"
+output "NIXOS_HOST_GATEKEEPER_IP" {
+  value = module.nixos_gatekeeper.ipv4_address
+}
 
-    config   = "${local.config_path}/gatekeeper.nix"
-    hostname = module.nixos_gatekeeper.hostname
-    ip       = module.nixos_gatekeeper.ipv4_address
-    ssh_user = "julia"
-    ssh_port = 22
-  }
+output "NIXOS_HOST_GATEKEEPER_SSH_USER" {
+  value = "julia"
+}
+
+output "NIXOS_HOST_GATEKEEPER_SSH_PORT" {
+  value = 22
 }
 
 module "nixos_main" {
@@ -88,11 +82,10 @@ module "nixos_main" {
   network_id = hcloud_network.network.id
   public_ip  = true
 
-  nixos_channel     = local.nixos_channel
-  local_flake_path  = local.flake_path_local
-  remote_flake_path = local.flake_path_github
-  flake_profile     = "main"
-  local_build       = false
+  nixos_channel = local.nixos_channel
+  flake_path    = local.flake_path
+  flake_profile = "main"
+  local_build   = false
 
   ssh_keys        = local.ssh_keys
   ssh_private_key = local.ssh_private_key
@@ -100,14 +93,14 @@ module "nixos_main" {
   hcloud_token    = var.hcloud_token
 }
 
-output "nixos_main" {
-  value = {
-    _type = "nixos_host"
+output "NIXOS_HOST_MAIN_IP" {
+  value = module.nixos_main.ipv4_address
+}
 
-    config   = "${local.config_path}/main.nix"
-    hostname = module.nixos_main.hostname
-    ip       = module.nixos_main.ipv4_address
-    ssh_user = "julia"
-    ssh_port = 22
-  }
+output "NIXOS_HOST_MAIN_SSH_USER" {
+  value = "julia"
+}
+
+output "NIXOS_HOST_MAIN_SSH_PORT" {
+  value = 22
 }

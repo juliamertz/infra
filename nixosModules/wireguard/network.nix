@@ -1,5 +1,5 @@
 rec {
-  port = 51820;                                                                                                                                    
+  port = 51820;
 
   publicKeys = {
     gatekeeper = "+UMRNrDpies7uCO4wCgxKdyDuN1/FpmIilO8/NO66Uo=";

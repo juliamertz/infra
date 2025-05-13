@@ -36,6 +36,8 @@ resource "hcloud_server" "server" {
 }
 
 resource "null_resource" "install_age_key" {
+  depends_on = [hcloud_server.server]
+
   count = var.sops_age_key != null ? 1 : 0
 
   connection {
@@ -54,30 +56,24 @@ resource "null_resource" "install_age_key" {
   }
 }
 
-resource "null_resource" "remote_rebuild" {
-  count = var.local_build ? 0 : 1
+resource "null_resource" "deploy_nixos" {
+  depends_on = [null_resource.install_age_key]
+
+  triggers = {
+    flake    = filesha256("${var.flake_path}/flake.nix")
+    profile  = filesha256("${var.flake_path}/hive/${var.name}.nix")
+    defaults = filesha256("${var.flake_path}/hive/defaults.nix")
+  }
 
   provisioner "local-exec" {
-    command = "colmena apply --on ${var.name} --build-on-target --impure"
-  }
+    command = "colmena apply --on ${var.name} ${var.local_build ? "" : "--build-on-target"} --impure"
 
-  environment = {
-    "NIXOS_HOST_${upper(var.name)}_IP" = hcloud_server.server.ipv4_address
-    "NIXOS_HOST_${upper(var.name)}_SSH_USER" = var.ssh_user
-    "NIXOS_HOST_${upper(var.name)}_SSH_PORT" = 22
+    working_dir = var.flake_path
+
+    environment = {
+      "NIXOS_HOST_${upper(var.name)}_IP"       = hcloud_server.server.ipv4_address
+      "NIXOS_HOST_${upper(var.name)}_SSH_USER" = var.ssh_user
+      "NIXOS_HOST_${upper(var.name)}_SSH_PORT" = 22
+    }
   }
 }
-
-# resource "null_resource" "local_rebuild" {
-#   count = var.local_build ? 1 : 0
-#
-#   provisioner "local-exec" {
-#     command = "colmena apply --on ${var.name} --impure"
-#   }
-#
-#   environment = {
-#     "NIXOS_HOST_${upper(var.name)}_IP" = hcloud_server.server.ipv4_address
-#     "NIXOS_HOST_${upper(var.name)}_SSH_USER" = var.ssh_user
-#     "NIXOS_HOST_${upper(var.name)}_SSH_PORT" = 22
-#   }
-# }

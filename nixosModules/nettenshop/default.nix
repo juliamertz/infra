@@ -12,7 +12,6 @@
     .packages
     .${pkgs.system}
     .default;
-
 in {
   options.services.nettenshop = with lib; {
     enable = mkEnableOption "nettenshop";
