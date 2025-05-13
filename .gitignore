@@ -5,6 +5,6 @@
 *.tfvars
 
 *terraform.tfstate*
-terraform/hcloud_nixos/templated
+**/*/templated
 
 result*

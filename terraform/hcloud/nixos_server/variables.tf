@@ -1,4 +1,10 @@
-variable "hcloud_token" {}
+terraform {
+  required_providers {
+    hcloud = {
+      source = "hetznercloud/hcloud"
+    }
+  }
+}
 
 variable "name" {
   description = "Name of the server"
@@ -25,6 +31,12 @@ variable "datacenter" {
 
 variable "network_id" {
   description = "Server location/datacenter"
+  type        = string
+  default     = null
+}
+
+variable "internal_ip" {
+  description = "IP on the internal hetzner subnet"
   type        = string
   default     = null
 }

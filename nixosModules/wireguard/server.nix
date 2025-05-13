@@ -48,7 +48,7 @@ in {
     };
 
     boot.kernel.sysctl = {
-      "net.ipv4.ip_forward" = cfg.enableForwarding;
+      "net.ipv4.ip_forward" = lib.mkDefault cfg.enableForwarding;
     };
 
     networking.wireguard = {

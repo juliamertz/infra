@@ -11,6 +11,8 @@ in {
 
   sops.age.keyFile = "/etc/sops/age/keys.txt";
 
+  networking.firewall.allowedTCPPorts = [22];
+
   networking.interfaces.eth0 = {
     useDHCP = false;
     ipv4.addresses = [
@@ -33,13 +35,31 @@ in {
     wantedBy = ["multi-user.target"];
     serviceConfig = {
       Type = "oneshot";
-      ExecStart = ["${pkgs.iproute2}/bin/ip addr add ${floatingIp}/32 dev eth0"];
+      ExecStart = ["-${pkgs.iproute2}/bin/ip addr add ${floatingIp}/32 dev eth0"];
       RemainAfterExit = true;
     };
   };
 
   services.gateway = with config.services.gateway.lib; {
+    enable = true;
+    openFirewall = true;
     hostname = "staging.juliamertz.dev";
+
+    sopsFile = ../secrets/gateway.yaml;
+
+    extraConfig = ''
+      nettenshop-staging.juliamertz.dev {
+        reverse_proxy http://10.0.1.2:5010
+      }
+
+      grafana.juliamertz.dev {
+        reverse_proxy http://10.0.1.2:3000
+      }
+    '';
+
+    globalConfig = ''
+      persist_config off
+    '';
 
     services = {
       github = {
@@ -50,6 +70,11 @@ in {
       nettenshop = {
         subdomain = "nettenshop";
         config = reverseProxy "http://10.0.1.2:5010";
+      };
+
+      grafana = {
+        subdomain = "grafana";
+        config = reverseProxy "http://10.0.1.2::3000";
       };
     };
   };

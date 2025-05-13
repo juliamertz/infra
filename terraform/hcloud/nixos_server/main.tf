@@ -1,7 +1,3 @@
-provider "hcloud" {
-  token = var.hcloud_token
-}
-
 resource "hcloud_server" "server" {
   name        = var.name
   image       = var.base_image
@@ -11,6 +7,7 @@ resource "hcloud_server" "server" {
 
   network {
     network_id = var.network_id
+    ip         = var.internal_ip
   }
 
   public_net {
@@ -56,13 +53,24 @@ resource "null_resource" "install_age_key" {
   }
 }
 
+data "external" "flake_digest" {
+  program = [
+    "bash",
+    "${path.module}/scripts/hash-paths",
+    "${var.flake_path}/flake.nix",
+    "${var.flake_path}/flake.lock",
+    "${var.flake_path}/secrets",
+    "${var.flake_path}/nixosModules",
+    "${var.flake_path}/hive/defaults.nix",
+    "${var.flake_path}/hive/${var.name}.nix",
+  ]
+}
+
 resource "null_resource" "deploy_nixos" {
   depends_on = [null_resource.install_age_key]
 
   triggers = {
-    flake    = filesha256("${var.flake_path}/flake.nix")
-    profile  = filesha256("${var.flake_path}/hive/${var.name}.nix")
-    defaults = filesha256("${var.flake_path}/hive/defaults.nix")
+    flake_digest = data.external.flake_digest.result.sha256
   }
 
   provisioner "local-exec" {

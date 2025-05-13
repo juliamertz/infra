@@ -38,7 +38,7 @@
   networking.firewall.allowedTCPPorts = [3000];
 
   services.grafana = {
-    enable = false;
+    enable = true;
     settings = {
       server = {
         http_port = 3000;
@@ -48,17 +48,20 @@
   };
 
   services.prometheus = {
-    enable = false;
+    enable = true;
     port = 9090;
 
-    scrapeConfigs = with config.services.prometheus; [
-      {
-        job_name = "systemd_exporter";
-        static_configs = [
-          {targets = ["0.0.0.0:${toString exporters.systemd.port}"];}
-        ];
-      }
-    ];
+    scrapeConfigs = with config.services.prometheus; let
+      mkExporter = name: {
+        job_name = "${name}_exporter";
+        static_configs = [{targets = ["0.0.0.0:${toString exporters.${name}.port}"];}];
+      };
+    in
+      map mkExporter [
+        "systemd"
+        "process"
+        "node"
+      ];
 
     exporters = {
       systemd = let
@@ -74,19 +77,21 @@
         ];
       };
 
-      # process = {
-      #   enable = true;
-      #   settings = {
-      #     # process_names = [
-      #     #   "lightspeed-dhl"
-      #     #   "grafana"
-      #     #   {
-      #     #     name = "{{.Matches.Wrapped}} {{ .Matches.Args }}";
-      #     #     cmdline = ["^/nix/store[^ ]*/(?P<Wrapped>[^ /]*) (?P<Args>.*)"];
-      #     #   }
-      #     # ];
-      #   };
-      # };
+      process = {
+        enable = true;
+        settings.process_names = [
+          # Remove nix store path from process name
+          {
+            name = "{{.Matches.Wrapped}} {{ .Matches.Args }}";
+            cmdline = ["^/nix/store[^ ]*/(?P<Wrapped>[^ /]*) (?P<Args>.*)"];
+          }
+        ];
+      };
+
+      node = {
+        enable = true;
+        enabledCollectors = ["logind" "systemd"];
+      };
     };
   };
 }

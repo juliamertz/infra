@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+set -e
+
+sha256=$(find "$@" -type f -exec sha256sum {} + | sort | sha256sum | awk '{print $1}')
+
+echo "{\"sha256\":\"$sha256\"}"
