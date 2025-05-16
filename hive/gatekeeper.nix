@@ -43,19 +43,13 @@ in {
   services.gateway = with config.services.gateway.lib; {
     enable = true;
     openFirewall = true;
-    hostname = "staging.juliamertz.dev";
+
+    domainNames = [
+      "juliamertz.nl"
+      "juliamertz.dev"
+    ];
 
     sopsFile = ../secrets/gateway.yaml;
-
-    extraConfig = ''
-      nettenshop-staging.juliamertz.dev {
-        reverse_proxy http://10.0.1.2:5010
-      }
-
-      grafana.juliamertz.dev {
-        reverse_proxy http://10.0.1.2:3000
-      }
-    '';
 
     globalConfig = ''
       persist_config off
@@ -74,7 +68,7 @@ in {
 
       grafana = {
         subdomain = "grafana";
-        config = reverseProxy "http://10.0.1.2::3000";
+        config = reverseProxy "http://10.0.1.2:3000";
       };
     };
   };

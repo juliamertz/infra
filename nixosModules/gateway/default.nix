@@ -16,9 +16,9 @@ in {
       default = import ./lib.nix {inherit lib;};
     };
 
-    hostname = mkOption {
-      type = types.nonEmptyStr;
-      default = "";
+    domainNames = mkOption {
+      type = types.listOf types.str;
+      default = [];
     };
 
     user = mkOption {
@@ -56,10 +56,6 @@ in {
     services = mkOption {
       type = types.attrsOf (types.submodule {
         options = {
-          hostname = mkOption {
-            type = types.nullOr types.str;
-            default = null;
-          };
           subdomain = mkOption {
             type = types.nullOr types.str;
             default = null;
@@ -89,26 +85,16 @@ in {
           }
         else pkgs.caddy;
 
-      # FIX: using settings overrides virtualHosts
-      # settings = {
-      #   admin = {
-      #     # disabled = true;
-      #     config.persist = false;
-      #   };
-      # };
-
       virtualHosts = let
         services =
           cfg.services
           |> lib.mapAttrsToList (name: value: let
-            hostname =
-              if builtins.isNull value.hostname
-              then cfg.hostname
-              else value.hostname;
             subdomain = lib.optionalString (value ? subdomain && value.subdomain != null) "${value.subdomain}.";
-          in {
-            "${subdomain}${hostname}".extraConfig = value.config;
-          })
+            mappedDomains = cfg.domainNames |> map (hostname': "${subdomain}${hostname'}");
+          in
+            lib.genAttrs mappedDomains (hostname: {
+              extraConfig = value.config;
+            }))
           |> lib.mergeAttrsList;
       in
         (lib.optionalAttrs cfg.cloudflareTls {
