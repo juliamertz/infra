@@ -46,6 +46,27 @@
         http_addr = "0.0.0.0";
       };
     };
+
+    declarativePlugins = with pkgs.grafanaPlugins; [];
+
+    provision = {
+      enable = true;
+
+      # dashboards.settings.providers = [
+      #   {
+      #     name = "my dashboards";
+      #     options.path = "/etc/grafana-dashboards";
+      #   }
+      # ];
+
+      datasources.settings.datasources = with config.services.prometheus; [
+        {
+          name = "Prometheus";
+          type = "prometheus";
+          url = "http://localhost:${toString port}";
+        }
+      ];
+    };
   };
 
   services.prometheus = {
