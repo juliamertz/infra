@@ -47,9 +47,16 @@ resource "cloudflare_record" "nettenshop" {
   content = var.ip
 }
 
-
 resource "cloudflare_record" "watch" {
   name    = "watch"
+  type    = "A"
+  proxied = false
+  zone_id = var.zone_id
+  content = var.ip
+}
+
+resource "cloudflare_record" "cache" {
+  name    = "cache"
   type    = "A"
   proxied = false
   zone_id = var.zone_id

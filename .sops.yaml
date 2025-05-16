@@ -14,3 +14,7 @@ creation_rules:
     key_groups:                                                                                                                       
     - age:                                                                                                                            
       - *julia
+  - path_regex: secrets/attic.env
+    key_groups:
+    - age:
+      - *julia

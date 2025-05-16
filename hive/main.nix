@@ -9,6 +9,7 @@
   imports = [
     ../nixosModules/nettenshop
     ../nixosModules/wireguard
+    ../nixosModules/cache
   ];
 
   networking.hostName = name;
@@ -93,5 +94,11 @@
         enabledCollectors = ["logind" "systemd"];
       };
     };
+  };
+
+  services.cache = {
+    enable = true;
+    openFirewall = true;
+    sopsFile = ../secrets/attic.env;
   };
 }

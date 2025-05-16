@@ -70,6 +70,11 @@ in {
         subdomain = "grafana";
         config = reverseProxy "http://10.0.1.2:3000";
       };
+
+      cache = {
+        subdomain = "cache";
+        config = reverseProxy "http://10.0.1.2:7678";
+      };
     };
   };
 
