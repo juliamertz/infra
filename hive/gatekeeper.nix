@@ -40,7 +40,7 @@ in {
     };
   };
 
-  services.gateway = with config.services.gateway.lib; {
+  services.gateway = {
     enable = true;
     openFirewall = true;
 
@@ -55,7 +55,7 @@ in {
       persist_config off
     '';
 
-    services = {
+    services = with config.services.gateway.lib; {
       github = {
         subdomain = "gh";
         config = redirect "https://github.com/juliamertz";
