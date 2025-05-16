@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+set -e
+
+output=$(nix build "$1" --dry-run --json)
+sha256=$(echo "$output" | sha256sum | awk '{print $1}')
+
+echo "{\"sha256\":\"$sha256\"}"

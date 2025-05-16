@@ -55,14 +55,8 @@ resource "null_resource" "install_age_key" {
 
 data "external" "flake_digest" {
   program = [
-    "bash",
-    "${path.module}/scripts/hash-paths",
-    "${var.flake_path}/flake.nix",
-    "${var.flake_path}/flake.lock",
-    "${var.flake_path}/secrets",
-    "${var.flake_path}/nixosModules",
-    "${var.flake_path}/hive/defaults.nix",
-    "${var.flake_path}/hive/${var.name}.nix",
+    "${path.module}/scripts/hash-output",
+    "${var.flake_path}#colmenaHive.toplevel.${var.name}",
   ]
 }
 
