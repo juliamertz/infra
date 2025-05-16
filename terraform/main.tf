@@ -17,9 +17,9 @@ module "hetzner_hive" {
 }
 
 module "cloudflare_dns" {
-  source           = "./cloudflare"
+  source        = "./cloudflare"
   ip_gatekeeper = module.hetzner_hive.gatekeeper.ip
-  ip_main        = module.hetzner_hive.main.ip
+  ip_main       = module.hetzner_hive.main.ip
 
   providers = {
     cloudflare = cloudflare
