@@ -59,7 +59,9 @@
           treefmt
           alejandra
 
-          opentofu
+          (writeShellScriptBin "tofu" ''
+            ${lib.getExe opentofu} -chdir="$TFDIR" $@
+          '')
           (writeShellScriptBin "colmena" ''
             ${lib.getExe colmena.packages.${system}.colmena} --experimental-flake-eval $@
           '')
