@@ -47,6 +47,8 @@ in {
     services.atticd = {
       enable = true;
 
+      inherit (cfg) user group;
+
       environmentFile = config.sops.secrets."attic-environment".path;
 
       settings = {
