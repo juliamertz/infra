@@ -1,43 +1,9 @@
 {
-  name,
-  nodes,
   pkgs,
   lib,
   config,
   ...
 }: {
-  imports = [
-    ../nixosModules/nettenshop
-    ../nixosModules/wireguard
-    ../nixosModules/cache
-  ];
-
-  networking.hostName = name;
-
-  sops.age.keyFile = "/etc/sops/age/keys.txt";
-
-  services.nettenshop = {
-    enable = true;
-    openFirewall = true;
-    sopsFile = ../secrets/nettenshop.yaml;
-    extraUsers = ["julia"];
-  };
-
-  sops.secrets.wireguardPrivateKey = {
-    key = name;
-    owner = "julia";
-    sopsFile = ../secrets/wireguard.yaml;
-  };
-
-  services.wireguard-client = {
-    enable = true;
-    ipRange = "10.100.0.2/24";
-    serverIp = "10.0.1.1";
-    privateKeyFile = config.sops.secrets.wireguardPrivateKey.path;
-  };
-
-  networking.firewall.allowedTCPPorts = [3000];
-
   services.grafana = {
     enable = true;
     settings = {
@@ -52,12 +18,14 @@
     provision = {
       enable = true;
 
-      # dashboards.settings.providers = [
-      #   {
-      #     name = "my dashboards";
-      #     options.path = "/etc/grafana-dashboards";
-      #   }
-      # ];
+      dashboards.settings.providers = [
+        {
+          name = "My dashboards";
+          options.path = ./dashboards;
+        }
+      ];
+
+      # datasources.settings.deleteDatasources = [ { name = "Prometheus"; orgId = 1; } ];
 
       datasources.settings.datasources = with config.services.prometheus; [
         {
@@ -73,10 +41,12 @@
     enable = true;
     port = 9090;
 
-    scrapeConfigs = with config.services.prometheus; let
+    scrapeConfigs = let
       mkExporter = name: {
         job_name = "${name}_exporter";
-        static_configs = [{targets = ["0.0.0.0:${toString exporters.${name}.port}"];}];
+        static_configs = [
+          {targets = ["0.0.0.0:${toString config.services.prometheus.exporters.${name}.port}"];}
+        ];
       };
     in
       map mkExporter [
@@ -115,11 +85,5 @@
         enabledCollectors = ["logind" "systemd"];
       };
     };
-  };
-
-  services.cache = {
-    enable = true;
-    openFirewall = true;
-    sopsFile = ../secrets/attic.env;
   };
 }

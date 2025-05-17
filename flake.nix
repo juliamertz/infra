@@ -42,12 +42,12 @@
       defaults = import ./hive/defaults.nix inputs;
 
       gatekeeper = {...}: {
-        imports = [./hive/gatekeeper.nix];
+        imports = [./hive/gatekeeper];
         deployment = mkTargetFromEnv "gatekeeper";
       };
 
       main = {...}: {
-        imports = [./hive/main.nix];
+        imports = [./hive/main];
         deployment = mkTargetFromEnv "main";
       };
     };

@@ -49,7 +49,7 @@ in {
       "juliamertz.dev"
     ];
 
-    sopsFile = ../secrets/gateway.yaml;
+    sopsFile = ../../secrets/gateway.yaml;
 
     globalConfig = ''
       persist_config off
@@ -81,7 +81,7 @@ in {
   sops.secrets.wireguardPrivateKey = {
     key = name;
     owner = "julia";
-    sopsFile = ../secrets/wireguard.yaml;
+    sopsFile = ../../secrets/wireguard.yaml;
   };
 
   services.wireguard-server = {
@@ -92,7 +92,8 @@ in {
   };
 
   imports = [
-    ../nixosModules/gateway
-    ../nixosModules/wireguard
+    ../../nixosModules/gateway
+    ../../nixosModules/wireguard
   ];
 }
+
