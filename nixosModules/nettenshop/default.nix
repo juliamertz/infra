@@ -63,6 +63,7 @@ in {
 
     systemd.services.${cfg.serviceName} = {
       description = "${cfg.serviceName} service";
+      wantedBy = [ "multi-user.target" ];
       serviceConfig = {
         Type = "simple";
         User = cfg.user;
