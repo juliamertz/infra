@@ -6,7 +6,7 @@
 }: let
   cfg = config.services.nettenshop;
 
-  revision = "0cb1d6792afc18c7a72ccd66a8e2dd048db20731";
+  revision = "f7b2e1be8e369d339b8228511d6d0b4f7cd8be0a";
   lightspeed-dhl-adapter =
     (builtins.getFlake "github:juliamertz/lightspeed-dhl-adapter/${revision}?dir=nix")
     .packages
@@ -150,7 +150,7 @@ in {
           PersonalNote = "Uw bestelling bij nettenshop.nl is met DHL onderweg! Via de bijgevoegde link kunt u uw pakket volgen. Mocht u vragen hebben, neem dan contact met ons op via de klantenservice. Met vriendelijke groet, Team Nettenshop.nl"
 
           [Options]
-          DryRun          = true
+          DryRun          = false
           Port            = ${builtins.toString cfg.port}
           Environment     = "production"
           Debug           = true
