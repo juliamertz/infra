@@ -18,13 +18,13 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 1,
+  "id": 2,
   "links": [],
   "panels": [
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "aem3iv23ind34b"
+        "uid": "PBFA97CFB590B2093"
       },
       "fieldConfig": {
         "defaults": {
@@ -104,11 +104,16 @@
       "pluginVersion": "11.6.0+security-01",
       "targets": [
         {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
           "disableTextWrap": false,
           "editorMode": "builder",
           "expr": "node_load1",
           "fullMetaSearch": false,
           "includeNullMetadata": true,
+          "instant": false,
           "legendFormat": "__auto",
           "range": true,
           "refId": "A",
@@ -121,7 +126,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "aem3iv23ind34b"
+        "uid": "PBFA97CFB590B2093"
       },
       "fieldConfig": {
         "defaults": {
@@ -201,11 +206,16 @@
       "pluginVersion": "11.6.0+security-01",
       "targets": [
         {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
           "disableTextWrap": false,
           "editorMode": "builder",
           "expr": "node_memory_Active_bytes",
           "fullMetaSearch": false,
           "includeNullMetadata": true,
+          "instant": false,
           "legendFormat": "__auto",
           "range": true,
           "refId": "A",
@@ -218,7 +228,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "aem3iv23ind34b"
+        "uid": "PBFA97CFB590B2093"
       },
       "fieldConfig": {
         "defaults": {
@@ -332,5 +342,5 @@
   "timezone": "browser",
   "title": "System Main",
   "uid": "aem3i2d36zgg0e",
-  "version": 5
+  "version": 1
 }
