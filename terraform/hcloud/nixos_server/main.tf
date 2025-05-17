@@ -68,7 +68,7 @@ resource "null_resource" "deploy_nixos" {
   }
 
   provisioner "local-exec" {
-    command = "colmena apply --on ${var.name} ${var.local_build ? "" : "--build-on-target"} --impure"
+    command = "colmena apply --on ${var.name} ${var.build_on_target ? "--build-on-target" : ""} --impure"
 
     working_dir = var.flake_path
 

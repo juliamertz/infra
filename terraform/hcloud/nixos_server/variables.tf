@@ -94,8 +94,8 @@ variable "experimental_features" {
   default     = "nix-command flakes pipe-operators"
 }
 
-variable "local_build" {
-  description = "If true, build the NixOS configs on your local machine"
+variable "build_on_target" {
+  description = "Build the NixOS configuration on the target machine"
   type        = bool
   default     = false
 }

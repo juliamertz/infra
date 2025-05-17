@@ -6,10 +6,10 @@ terraform {
   }
 }
 
-variable "local_build" {
+variable "build_on_target" {
+  description = "Build the NixOS configuration on the target machine"
   type        = bool
   default     = false
-  description = "Whether to build the NixOS configurations on your local machine or remotely"
 }
 
 variable "flake_path" {

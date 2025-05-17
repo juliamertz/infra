@@ -38,7 +38,7 @@ module "nixos_gatekeeper" {
   nixos_channel = local.nixos_channel
   flake_path    = var.flake_path
   flake_profile = "gatekeeper"
-  local_build   = var.local_build
+  build_on_target = var.build_on_target
 
   ssh_keys        = local.ssh_keys
   ssh_private_key = local.ssh_private_key
@@ -62,7 +62,7 @@ module "nixos_main" {
   nixos_channel = local.nixos_channel
   flake_path    = var.flake_path
   flake_profile = "main"
-  local_build   = var.local_build
+  build_on_target = var.build_on_target
 
   ssh_keys        = local.ssh_keys
   ssh_private_key = local.ssh_private_key

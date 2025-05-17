@@ -14,3 +14,9 @@ terraform {
 variable "hcloud_token" {}
 
 variable "cloudflare_token" {}
+
+variable "build_on_target" {
+  description = "Build the NixOS configuration on the target machine"
+  type        = bool
+  default     = false
+}
