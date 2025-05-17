@@ -25,15 +25,6 @@ resource "hcloud_network_subnet" "internal" {
   ip_range     = "10.0.1.0/24"
 }
 
-resource "hcloud_floating_ip" "entrypoint" {
-  type      = "ipv4"
-  server_id = module.nixos_gatekeeper.server_id
-
-  lifecycle {
-    prevent_destroy = true
-  }
-}
-
 module "nixos_gatekeeper" {
   source      = "./nixos_server"
   name        = "gatekeeper"
