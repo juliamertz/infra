@@ -6,9 +6,9 @@
 }: let
   cfg = config.services.nettenshop;
 
-  revision = "f7b2e1be8e369d339b8228511d6d0b4f7cd8be0a";
+  revision = "d5542c9588328b1bea36a40b0de4a759d031f5e5";
   lightspeed-dhl-adapter =
-    (builtins.getFlake "github:juliamertz/lightspeed-dhl-adapter/${revision}?dir=nix")
+    (builtins.getFlake "github:juliamertz/lightspeed-dhl-adapter/${revision}")
     .packages
     .${pkgs.system}
     .default;
@@ -63,7 +63,13 @@ in {
 
     systemd.services.${cfg.serviceName} = {
       description = "${cfg.serviceName} service";
-      wantedBy = [ "multi-user.target" ];
+      wantedBy = ["multi-user.target"];
+
+      environment = {
+        GO_LOG = "info";
+        ENVIRONMENT = "production";
+      };
+
       serviceConfig = {
         Type = "simple";
         User = cfg.user;
@@ -152,8 +158,6 @@ in {
           [Options]
           DryRun          = false
           Port            = ${builtins.toString cfg.port}
-          Environment     = "production"
-          Debug           = true
           PollingInterval = 15
         '';
     };

@@ -34,17 +34,24 @@
 
       nettenshop = {
         subdomain = "nettenshop";
-        config = reverseProxy "http://10.0.1.2:5010";
+        config = ''
+          respond /metrics "Unauthorized." 401
+          reverse_proxy http://10.0.1.2:5010
+        '';
       };
 
       grafana = {
         subdomain = "grafana";
-        config = reverseProxy "http://10.0.1.2:3000";
+        config = ''
+          reverse_proxy http://10.0.1.2:3000
+        '';
       };
 
       cache = {
         subdomain = "cache";
-        config = reverseProxy "http://10.0.1.2:7678";
+        config = ''
+          reverse_proxy http://10.0.1.2:7678
+        '';
       };
     };
   };

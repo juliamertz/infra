@@ -49,10 +49,16 @@
         ];
       };
     in
-      map mkExporter [
+      (map mkExporter [
         "systemd"
         "process"
         "node"
+      ])
+      ++ [
+        {
+          job_name = "nettenshop_exporter";
+          static_configs = [{targets = ["0.0.0.0:5010"];}];
+        }
       ];
 
     exporters = {
