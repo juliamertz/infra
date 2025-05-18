@@ -14,6 +14,11 @@ in {
       default = "/etc/wireguard/keys/private";
     };
 
+    internalInterface = mkOption {
+      type = types.str;
+      default = "wg0";
+    };
+
     ipRange = mkOption {
       type = types.str;
     };
@@ -24,11 +29,14 @@ in {
   };
 
   config = lib.mkIf cfg.enable {
-    networking.firewall.allowedUDPPorts = [netCfg.port];
+    networking.firewall = {
+      allowedUDPPorts = [netCfg.port];
+      trustedInterfaces = [cfg.internalInterface];
+    };
 
     networking.wireguard = {
       enable = true;
-      interfaces.wg0 = {
+      interfaces.${cfg.internalInterface} = {
         ips = [cfg.ipRange];
         listenPort = netCfg.port;
         inherit (cfg) privateKeyFile;
