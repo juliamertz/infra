@@ -19,7 +19,7 @@
 resource "cloudflare_dns_record" "www" {
   name    = "www"
   type    = "A"
-  proxied = false
+  proxied = var.proxied
   zone_id = var.zone_id
   content = "188.245.65.183"
   ttl     = var.ttl
@@ -28,7 +28,7 @@ resource "cloudflare_dns_record" "www" {
 resource "cloudflare_dns_record" "grafana" {
   name    = "grafana"
   type    = "A"
-  proxied = false
+  proxied = true
   zone_id = var.zone_id
   content = var.ip
   ttl     = var.ttl
@@ -37,7 +37,7 @@ resource "cloudflare_dns_record" "grafana" {
 resource "cloudflare_dns_record" "gh" {
   name    = "gh"
   type    = "A"
-  proxied = false
+  proxied = var.proxied
   zone_id = var.zone_id
   content = var.ip
   ttl     = var.ttl
@@ -46,7 +46,7 @@ resource "cloudflare_dns_record" "gh" {
 resource "cloudflare_dns_record" "home-assistant" {
   name    = "home-assistant"
   type    = "A"
-  proxied = false
+  proxied = var.proxied
   zone_id = var.zone_id
   content = var.ip
   ttl     = var.ttl
@@ -55,7 +55,7 @@ resource "cloudflare_dns_record" "home-assistant" {
 resource "cloudflare_dns_record" "nettenshop" {
   name    = "nettenshop"
   type    = "A"
-  proxied = false
+  proxied = var.proxied
   zone_id = var.zone_id
   content = var.ip
   ttl     = var.ttl
@@ -64,7 +64,7 @@ resource "cloudflare_dns_record" "nettenshop" {
 resource "cloudflare_dns_record" "watch" {
   name    = "watch"
   type    = "A"
-  proxied = false
+  proxied = var.proxied
   zone_id = var.zone_id
   content = var.ip
   ttl     = var.ttl
@@ -73,7 +73,7 @@ resource "cloudflare_dns_record" "watch" {
 resource "cloudflare_dns_record" "cache" {
   name    = "cache"
   type    = "A"
-  proxied = false
+  proxied = var.proxied
   zone_id = var.zone_id
   content = var.ip
   ttl     = var.ttl

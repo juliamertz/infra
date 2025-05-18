@@ -13,6 +13,7 @@ tofu apply -auto-approve
 
 This will provision the servers with their nixos configs and set up DNS with cloudflare.
 
-# Bugs / Manual deployment steps:
+# TODO
 
+- [ ] Refactor terraform outputs and deserialize as nix structure
 - [ ] key won't match when server is destroyed and created, we have to sed out the lines in `~/.ssh/known_hosts`

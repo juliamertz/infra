@@ -6,7 +6,7 @@
 }: let
   cfg = config.services.nettenshop;
 
-  revision = "d5542c9588328b1bea36a40b0de4a759d031f5e5";
+  revision = "ca7c08550fd4783df2cd96d9a26b50e06f2df014";
   lightspeed-dhl-adapter =
     (builtins.getFlake "github:juliamertz/lightspeed-dhl-adapter/${revision}")
     .packages
