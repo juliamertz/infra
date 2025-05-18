@@ -1,5 +1,5 @@
 module "juliamertz-nl" {
-  source = "./personal_domain"
+  source = "./hive_dns"
   name   = "juliamertz-nl"
   ip     = var.ip_gatekeeper
   ttl    = 300
