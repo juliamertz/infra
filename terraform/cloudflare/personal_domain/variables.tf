@@ -17,3 +17,8 @@ variable "name" {
 variable "ip" {
   type = string
 }
+
+variable "ttl" {
+  type    = number
+  default = 3600
+}

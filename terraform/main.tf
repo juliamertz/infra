@@ -7,9 +7,9 @@ provider "cloudflare" {
 }
 
 module "hetzner_hive" {
-  source      = "./hcloud"
+  source          = "./hcloud"
   build_on_target = false
-  flake_path  = "../"
+  flake_path      = "../"
 
   providers = {
     hcloud = hcloud

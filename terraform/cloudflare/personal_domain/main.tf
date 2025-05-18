@@ -1,20 +1,20 @@
-resource "cloudflare_zone_setting" "ssl_zone_setting" {
-  zone_id = var.zone_id
-  setting_id = "ssl"
-  value = "strict"
-}
-
-resource "cloudflare_zone_setting" "tls_zone_setting" {
-  zone_id = var.zone_id
-  setting_id = "tls_1_3"
-  value = "on"
-}
-
-resource "cloudflare_zone_setting" "https_rewrite_zone_setting" {
-  zone_id = var.zone_id
-  setting_id = "automatic_https_rewrites"
-  value = "on"
-}
+# resource "cloudflare_zone_setting" "ssl_zone_setting" {
+#   zone_id = var.zone_id
+#   setting_id = "ssl"
+#   value = "strict"
+# }
+#
+# resource "cloudflare_zone_setting" "tls_zone_setting" {
+#   zone_id = var.zone_id
+#   setting_id = "tls_1_3"
+#   value = "on"
+# }
+#
+# resource "cloudflare_zone_setting" "https_rewrite_zone_setting" {
+#   zone_id = var.zone_id
+#   setting_id = "automatic_https_rewrites"
+#   value = "on"
+# }
 
 resource "cloudflare_dns_record" "www" {
   name    = "www"
@@ -22,7 +22,7 @@ resource "cloudflare_dns_record" "www" {
   proxied = false
   zone_id = var.zone_id
   content = "188.245.65.183"
-  ttl = 3600
+  ttl     = var.ttl
 }
 
 resource "cloudflare_dns_record" "grafana" {
@@ -31,7 +31,7 @@ resource "cloudflare_dns_record" "grafana" {
   proxied = false
   zone_id = var.zone_id
   content = var.ip
-  ttl = 3600
+  ttl     = var.ttl
 }
 
 resource "cloudflare_dns_record" "gh" {
@@ -40,7 +40,7 @@ resource "cloudflare_dns_record" "gh" {
   proxied = false
   zone_id = var.zone_id
   content = var.ip
-  ttl = 3600
+  ttl     = var.ttl
 }
 
 resource "cloudflare_dns_record" "home-assistant" {
@@ -49,7 +49,7 @@ resource "cloudflare_dns_record" "home-assistant" {
   proxied = false
   zone_id = var.zone_id
   content = var.ip
-  ttl = 3600
+  ttl     = var.ttl
 }
 
 resource "cloudflare_dns_record" "nettenshop" {
@@ -58,7 +58,7 @@ resource "cloudflare_dns_record" "nettenshop" {
   proxied = false
   zone_id = var.zone_id
   content = var.ip
-  ttl = 3600
+  ttl     = var.ttl
 }
 
 resource "cloudflare_dns_record" "watch" {
@@ -67,7 +67,7 @@ resource "cloudflare_dns_record" "watch" {
   proxied = false
   zone_id = var.zone_id
   content = var.ip
-  ttl = 3600
+  ttl     = var.ttl
 }
 
 resource "cloudflare_dns_record" "cache" {
@@ -76,6 +76,6 @@ resource "cloudflare_dns_record" "cache" {
   proxied = false
   zone_id = var.zone_id
   content = var.ip
-  ttl = 3600
+  ttl     = var.ttl
 }
 

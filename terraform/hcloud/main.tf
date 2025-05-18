@@ -35,9 +35,9 @@ module "nixos_gatekeeper" {
   internal_ip = "10.0.1.1"
   public_ip   = true
 
-  nixos_channel = local.nixos_channel
-  flake_path    = var.flake_path
-  flake_profile = "gatekeeper"
+  nixos_channel   = local.nixos_channel
+  flake_path      = var.flake_path
+  flake_profile   = "gatekeeper"
   build_on_target = var.build_on_target
 
   ssh_keys        = local.ssh_keys
@@ -59,9 +59,9 @@ module "nixos_main" {
   internal_ip = "10.0.1.2"
   public_ip   = true
 
-  nixos_channel = local.nixos_channel
-  flake_path    = var.flake_path
-  flake_profile = "main"
+  nixos_channel   = local.nixos_channel
+  flake_path      = var.flake_path
+  flake_profile   = "main"
   build_on_target = var.build_on_target
 
   ssh_keys        = local.ssh_keys

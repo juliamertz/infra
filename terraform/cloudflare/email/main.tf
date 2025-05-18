@@ -3,8 +3,8 @@ resource "cloudflare_dns_record" "domain_key_1" {
   type    = "CNAME"
   proxied = true
   zone_id = var.zone_id
-  content  = "protonmail.domainkey.${var.domain_key}.domains.proton.ch"
-  ttl = 3600
+  content = "protonmail.domainkey.${var.domain_key}.domains.proton.ch"
+  ttl     = 1
 }
 
 resource "cloudflare_dns_record" "domain_key_2" {
@@ -12,8 +12,8 @@ resource "cloudflare_dns_record" "domain_key_2" {
   type    = "CNAME"
   proxied = true
   zone_id = var.zone_id
-  content  = "protonmail2.domainkey.${var.domain_key}.domains.proton.ch"
-  ttl = 3600
+  content = "protonmail2.domainkey.${var.domain_key}.domains.proton.ch"
+  ttl     = 1
 }
 
 resource "cloudflare_dns_record" "domain_key_3" {
@@ -21,6 +21,6 @@ resource "cloudflare_dns_record" "domain_key_3" {
   type    = "CNAME"
   proxied = true
   zone_id = var.zone_id
-  content  = "protonmail3.domainkey.${var.domain_key}.domains.proton.ch"
-  ttl = 3600
+  content = "protonmail3.domainkey.${var.domain_key}.domains.proton.ch"
+  ttl     = 1
 }
