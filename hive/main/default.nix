@@ -7,7 +7,7 @@
   ...
 }: {
   imports = [
-    ./grafana
+    ./monitoring
 
     ../../nixosModules/nettenshop
     ../../nixosModules/wireguard

@@ -4,6 +4,11 @@
   config,
   ...
 }: {
+  imports = [
+    ./loki.nix
+    ./alloy.nix
+  ];
+
   services.grafana = {
     enable = true;
     settings = {
