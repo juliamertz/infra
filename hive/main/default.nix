@@ -20,7 +20,6 @@
 
   services.nettenshop = {
     enable = true;
-    openFirewall = true;
     sopsFile = ../../secrets/nettenshop.yaml;
     extraUsers = ["julia"];
   };
@@ -38,12 +37,8 @@
     privateKeyFile = config.sops.secrets.wireguardPrivateKey.path;
   };
 
-  networking.firewall.allowedTCPPorts = [3000];
-
-
   services.cache = {
     enable = true;
-    openFirewall = true;
     sopsFile = ../../secrets/attic.env;
   };
 }
