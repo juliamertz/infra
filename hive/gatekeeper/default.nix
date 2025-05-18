@@ -35,7 +35,10 @@
       nettenshop = {
         subdomain = "nettenshop";
         config = ''
+          respond /pprof/* "Unauthorized." 401
+          respond /debug/* "Unauthorized." 401
           respond /metrics "Unauthorized." 401
+
           reverse_proxy http://10.0.1.2:5010
         '';
       };
