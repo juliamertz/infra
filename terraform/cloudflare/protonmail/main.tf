@@ -26,23 +26,23 @@ resource "cloudflare_dns_record" "domain_key_3" {
 }
 
 resource "cloudflare_dns_record" "mailsec" {
-  name    = var.domain
-  type    = "MX"
+  name     = var.domain
+  type     = "MX"
   priority = 20
-  proxied = false
-  zone_id = var.zone_id
-  content = "mailsec.protonmail.ch"
-  ttl     = 3600
+  proxied  = false
+  zone_id  = var.zone_id
+  content  = "mailsec.protonmail.ch"
+  ttl      = 3600
 }
 
 resource "cloudflare_dns_record" "mail" {
-  name    = var.domain
-  type    = "MX"
+  name     = var.domain
+  type     = "MX"
   priority = 10
-  proxied = false
-  zone_id = var.zone_id
-  content = "mail.protonmail.ch"
-  ttl     = 3600
+  proxied  = false
+  zone_id  = var.zone_id
+  content  = "mail.protonmail.ch"
+  ttl      = 3600
 }
 
 resource "cloudflare_dns_record" "dmarc" {

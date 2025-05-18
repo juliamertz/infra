@@ -42,4 +42,3 @@
     sopsFile = ../../secrets/attic.env;
   };
 }
-

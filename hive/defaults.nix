@@ -13,7 +13,7 @@ in {
 
     # enable networking for the internal hetzner network
     interfaces.enp7s0.useDHCP = true;
-    firewall. trustedInterfaces = ["enp7s0"];
+    firewall.trustedInterfaces = ["enp7s0"];
   };
 
   environment.systemPackages = with dotfiles; [
