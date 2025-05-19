@@ -2,10 +2,13 @@ locals {
   datacenter    = "nbg1-dc3"
   nixos_channel = "nixos-unstable"
 
+  // TODO: these should be configurable
+  // also rename them something like deployment_private_key, ...
   ssh_private_key = file("~/.ssh/id_ed25519")
   ssh_public_key  = file("~/.ssh/id_ed25519.pub")
-  ssh_keys        = [hcloud_ssh_key.julia.id]
   sops_age_key    = file("~/.config/sops/age/keys.txt")
+
+  ssh_keys        = [hcloud_ssh_key.julia.id]
 }
 
 resource "hcloud_ssh_key" "julia" {

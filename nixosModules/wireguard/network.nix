@@ -6,6 +6,7 @@ rec {
     main = "tVHanBrvOyUFA7Gf6CE3dILyZN511AahfO1trLyBxQ4=";
     macbook = "dU+x5zu/5v3ieeJgsnLDzC28suMl27jfufSrGzz5zQY=";
     workstation = "W6S6BMwUsg/iTOONOgQreAvUbvBBPo3P7zXyFpslp0w=";
+    homelab = "VcEu1t2j+mmiPKI8NBusFp1Qgi/VhblZencgsM4qWwo=";
   };
 
   server = {
@@ -30,6 +31,10 @@ rec {
     workstation = {
       publicKey = publicKeys.workstation;
       allowedIPs = ["10.100.0.5/32"];
+    };
+    homelab = {
+      publicKey = publicKeys.homelab;
+      allowedIPs = ["10.100.0.4/32"];
     };
   };
 
