@@ -18,7 +18,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 7,
+  "id": 9,
   "links": [],
   "panels": [
     {
@@ -244,7 +244,7 @@
             "barWidthFactor": 0.6,
             "drawStyle": "line",
             "fillOpacity": 0,
-            "gradientMode": "none",
+            "gradientMode": "hue",
             "hideFrom": {
               "legend": false,
               "tooltip": false,
@@ -323,8 +323,8 @@
             "uid": "PBFA97CFB590B2093"
           },
           "disableTextWrap": false,
-          "editorMode": "builder",
-          "expr": "nettenshop_polling_duration_sum",
+          "editorMode": "code",
+          "expr": "nettenshop_polling_duration_sum / nettenshop_polling_duration_count\n",
           "fullMetaSearch": false,
           "includeNullMetadata": true,
           "legendFormat": "__auto",
@@ -474,7 +474,7 @@
           },
           "direction": "backward",
           "editorMode": "builder",
-          "expr": "{unit=\"lightspeed-dhl-adapter.service\"} |= ``",
+          "expr": "{unit=\"lightspeed-dhl-adapter.service\"} |= `` | json level=\"level\" | level = `info`",
           "queryType": "range",
           "refId": "A"
         }
