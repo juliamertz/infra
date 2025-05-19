@@ -6,9 +6,20 @@ provider "cloudflare" {
   api_token = var.cloudflare_token
 }
 
+data "external" "host" {
+  program = [
+    "nix",
+    "eval",
+    "--impure",
+    "--raw",
+    "--expr",
+    "builtins.toJSON { system = builtins.currentSystem; }",
+  ]
+}
+
 module "hetzner_hive" {
   source          = "./hcloud"
-  build_on_target = false
+  build_on_target = data.external.host.result.system != "x86_64-linux"
   flake_path      = "../"
 
   providers = {
