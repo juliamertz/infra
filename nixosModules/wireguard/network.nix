@@ -1,42 +1,32 @@
 rec {
   port = 51820;
 
-  publicKeys = {
-    gatekeeper = "+UMRNrDpies7uCO4wCgxKdyDuN1/FpmIilO8/NO66Uo=";
-    main = "tVHanBrvOyUFA7Gf6CE3dILyZN511AahfO1trLyBxQ4=";
-    macbook = "dU+x5zu/5v3ieeJgsnLDzC28suMl27jfufSrGzz5zQY=";
-    workstation = "W6S6BMwUsg/iTOONOgQreAvUbvBBPo3P7zXyFpslp0w=";
-    homelab = "VcEu1t2j+mmiPKI8NBusFp1Qgi/VhblZencgsM4qWwo=";
-  };
-
   server = {
-    publicKey = peers.gatekeeper.publicKey;
     inherit port;
     ipRange = "10.100.0.0/24";
+    publicKey = peers.gatekeeper.publicKey;
   };
 
   peers = {
     gatekeeper = {
-      publicKey = publicKeys.gatekeeper;
-      allowedIPs = ["10.100.0.1/32"];
+      publicKey = "+UMRNrDpies7uCO4wCgxKdyDuN1/FpmIilO8/NO66Uo=";
+      subnetIp = "10.100.0.1";
     };
     main = {
-      publicKey = publicKeys.main;
-      allowedIPs = ["10.100.0.2/32"];
+      publicKey = "tVHanBrvOyUFA7Gf6CE3dILyZN511AahfO1trLyBxQ4=";
+      subnetIp = "10.100.0.2";
     };
     macbook = {
-      publicKey = publicKeys.macbook;
-      allowedIPs = ["10.100.0.6/32"];
+      publicKey = "dU+x5zu/5v3ieeJgsnLDzC28suMl27jfufSrGzz5zQY=";
+      subnetIp = "10.100.0.6";
     };
     workstation = {
-      publicKey = publicKeys.workstation;
-      allowedIPs = ["10.100.0.5/32"];
+      publicKey = "W6S6BMwUsg/iTOONOgQreAvUbvBBPo3P7zXyFpslp0w=";
+      subnetIp = "10.100.0.5";
     };
     homelab = {
-      publicKey = publicKeys.homelab;
-      allowedIPs = ["10.100.0.4/32"];
+      publicKey = "VcEu1t2j+mmiPKI8NBusFp1Qgi/VhblZencgsM4qWwo=";
+      subnetIp = "10.100.0.4";
     };
   };
-
-  withMask = ip: mask: "${ip}/${builtins.toString mask}";
 }

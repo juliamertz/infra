@@ -57,7 +57,12 @@ in {
         ips = [cfg.ipRange];
         listenPort = netCfg.port;
         privateKeyFile = cfg.privateKeyFile;
-        peers = lib.mapAttrsToList (k: v: v) netCfg.peers;
+        peers =
+          lib.mapAttrsToList (_: value: {
+            inherit (value) publicKey;
+            allowedIPs = ["${value.subnetIp}/32"];
+          })
+          netCfg.peers;
       };
     };
   };
