@@ -28,7 +28,7 @@ resource "cloudflare_dns_record" "www" {
 resource "cloudflare_dns_record" "grafana" {
   name    = "grafana"
   type    = "A"
-  proxied = true
+  proxied = var.proxied
   zone_id = var.zone_id
   content = var.ip
   ttl     = var.ttl

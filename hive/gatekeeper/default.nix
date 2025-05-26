@@ -26,35 +26,52 @@
       persist_config off
     '';
 
-    services = with config.services.gateway.lib; {
-      github = {
-        subdomain = "gh";
-        config = redirect "https://github.com/juliamertz";
-      };
+    services = let
+      inherit (config.services.wireguard-server) net;
+    in
+      with config.services.gateway.lib; {
+        github = {
+          subdomain = "gh";
+          config = redirect "https://github.com/juliamertz";
+        };
 
-      nettenshop = {
-        subdomain = "nettenshop";
-        config = ''
-          respond /metrics "Unauthorized." 401
+        nettenshop = {
+          subdomain = "nettenshop";
+          config = ''
+            respond /metrics "Unauthorized." 401
 
-          reverse_proxy http://10.0.1.2:5010
-        '';
-      };
+            reverse_proxy http://${net.peers.main.subnetIp}:5010
+          '';
+        };
 
-      grafana = {
-        subdomain = "grafana";
-        config = ''
-          reverse_proxy http://10.0.1.2:3000
-        '';
-      };
+        grafana = {
+          subdomain = "grafana";
+          config = ''
+            reverse_proxy http://${net.peers.main.subnetIp}:3000
+          '';
+        };
 
-      cache = {
-        subdomain = "cache";
-        config = ''
-          reverse_proxy http://10.0.1.2:7678
-        '';
+        cache = {
+          subdomain = "cache";
+          config = ''
+            reverse_proxy http://${net.peers.main.subnetIp}:7678
+          '';
+        };
+
+        jellyfin = {
+          subdomain = "watch";
+          config = ''
+            reverse_proxy http://${net.peers.homelab.subnetIp}:8096
+          '';
+        };
+
+        home-assistant = {
+          subdomain = "home-assistant";
+          config = ''
+            reverse_proxy http://${net.peers.homelab.subnetIp}:8123
+          '';
+        };
       };
-    };
   };
 
   sops.secrets.wireguardPrivateKey = {

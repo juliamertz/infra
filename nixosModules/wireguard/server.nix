@@ -4,7 +4,6 @@
   ...
 }: let
   cfg = config.services.wireguard-server;
-  netCfg = import ./network.nix;
 in {
   options.services.wireguard-server = with lib; {
     enable = mkEnableOption "Wireguard server";
@@ -33,6 +32,11 @@ in {
       Enable ipv4 forwarding,
       this makes the server act as a router between peers
     '';
+
+    net = mkOption {
+      type = types.attrs;
+      default = import ./network.nix;
+    };
   };
 
   config = lib.mkIf cfg.enable {
@@ -43,7 +47,7 @@ in {
     };
 
     networking.firewall = {
-      allowedUDPPorts = [netCfg.port];
+      allowedUDPPorts = [cfg.net.port];
       trustedInterfaces = lib.optionals cfg.enableForwarding [cfg.internalInterface];
     };
 
@@ -55,14 +59,14 @@ in {
       enable = true;
       interfaces.${cfg.internalInterface} = {
         ips = [cfg.ipRange];
-        listenPort = netCfg.port;
+        listenPort = cfg.net.port;
         privateKeyFile = cfg.privateKeyFile;
         peers =
           lib.mapAttrsToList (_: value: {
             inherit (value) publicKey;
             allowedIPs = ["${value.subnetIp}/32"];
           })
-          netCfg.peers;
+          cfg.net.peers;
       };
     };
   };

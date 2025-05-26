@@ -3,7 +3,6 @@
   config,
   ...
 }: let
-  netCfg = import ./network.nix;
   cfg = config.services.wireguard-client;
 in {
   options.services.wireguard-client = with lib; {
@@ -26,11 +25,16 @@ in {
     serverIp = mkOption {
       type = types.str;
     };
+
+    net = mkOption {
+      type = types.attrs;
+      default = import ./network.nix;
+    };
   };
 
   config = lib.mkIf cfg.enable {
     networking.firewall = {
-      allowedUDPPorts = [netCfg.port];
+      allowedUDPPorts = [cfg.net.port];
       trustedInterfaces = [cfg.internalInterface];
     };
 
@@ -38,13 +42,13 @@ in {
       enable = true;
       interfaces.${cfg.internalInterface} = {
         ips = [cfg.ipRange];
-        listenPort = netCfg.port;
+        listenPort = cfg.net.port;
         inherit (cfg) privateKeyFile;
         peers = [
           {
-            publicKey = netCfg.server.publicKey;
-            allowedIPs = [netCfg.server.ipRange];
-            endpoint = "${cfg.serverIp}:${builtins.toString netCfg.port}";
+            publicKey = cfg.net.server.publicKey;
+            allowedIPs = [cfg.net.server.ipRange];
+            endpoint = "${cfg.serverIp}:${builtins.toString cfg.net.port}";
             persistentKeepalive = 25;
           }
         ];

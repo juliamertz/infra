@@ -24,9 +24,9 @@ module "juliamertz-nl-email" {
 }
 
 module "juliamertz-dev" {
-  source  = "./old_config"
+  source  = "./hive_dns"
   name    = "juliamertz-dev"
-  ip      = "188.245.65.183"
+  ip      = var.ip_gatekeeper
   ttl     = 300
   proxied = false
 

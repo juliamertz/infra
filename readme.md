@@ -3,9 +3,16 @@
 This repo uses [direnv]() extensively to make things work, make sure you have it installed
 Deployment secrets are handled with [sops]() make sure this is set up
 
+
 # Deployment
 
-Make sure you're set up to decrypt the secrets then apply with tofu
+Make sure you're set up to decrypt the secrets then init with tofu
+
+```sh
+tofu init
+```
+
+Now you can apply
 
 ```sh
 tofu apply -auto-approve
