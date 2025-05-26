@@ -16,6 +16,8 @@ in {
     firewall.trustedInterfaces = ["enp7s0"];
   };
 
+  services.fail2ban.enable = true;
+
   environment.systemPackages = with dotfiles; [
     zsh
     tmux
