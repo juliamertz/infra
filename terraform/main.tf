@@ -77,7 +77,7 @@ module "juliamertz-dev-dns" {
 }
 
 module "juliamertz-nl-email" {
-  source       = "./modules/cloudflare/protonmail_records"
+  source       = "./modules/cloudflare/protonmail"
   domain       = "juliamertz.nl"
   domain_key   = "dhrcj3l7ljct2xxjwqsdgg5s2ntzdyh2nmuqinz6mgddj2godaa2a"
   verification = "6d592d6c4efb07524737a4674938e729df1a629b"
@@ -89,7 +89,7 @@ module "juliamertz-nl-email" {
 }
 
 module "juliamertz-dev-email" {
-  source       = "./modules/cloudflare/protonmail_records"
+  source       = "./modules/cloudflare/protonmail"
   domain       = "juliamertz.dev"
   domain_key   = "dhrcj3l7ljct2xxjwqsdgg5s2ntzdyh2nmuqinz6mgddj2godaa2a"
   verification = "9814917e48e94c4bf2e1a70e25a21b68d4d1e5f5"
