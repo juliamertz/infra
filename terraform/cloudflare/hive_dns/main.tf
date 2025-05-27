@@ -16,66 +16,47 @@
 #   value = "on"
 # }
 
-resource "cloudflare_dns_record" "www" {
-  name    = "www"
-  type    = "A"
-  proxied = var.proxied
-  zone_id = var.zone_id
-  content = "188.245.65.183"
-  ttl     = var.ttl
-}
+module "subdomains" {
+  source = "../../modules/cloudflare/subdomain_records"
 
-resource "cloudflare_dns_record" "grafana" {
-  name    = "grafana"
-  type    = "A"
   proxied = var.proxied
-  zone_id = var.zone_id
-  content = var.ip
   ttl     = var.ttl
-}
-
-resource "cloudflare_dns_record" "gh" {
-  name    = "gh"
-  type    = "A"
-  proxied = var.proxied
   zone_id = var.zone_id
-  content = var.ip
-  ttl     = var.ttl
-}
+  domain  = var.domain
+  default_content = var.ip
 
-resource "cloudflare_dns_record" "home-assistant" {
-  name    = "home-assistant"
-  type    = "A"
-  proxied = var.proxied
-  zone_id = var.zone_id
-  content = var.ip
-  ttl     = var.ttl
-}
+  records = {
+    www = {
+      name    = "www"
+      type    = "A"
+    }
+    grafana = {
+      name    = "grafana"
+      type    = "A"
+    }
+    gh = {
+      name    = "gh"
+      type    = "A"
+    }
+    home-assistant = {
+      name    = "home-assistant"
+      type    = "A"
+    }
+    nettenshop = {
+      name    = "nettenshop"
+      type    = "A"
+    }
+    watch = {
+      name    = "watch"
+      type    = "A"
+    }
+    cache = {
+      name    = "cache"
+      type    = "A"
+    }
+  }
 
-resource "cloudflare_dns_record" "nettenshop" {
-  name    = "nettenshop"
-  type    = "A"
-  proxied = var.proxied
-  zone_id = var.zone_id
-  content = var.ip
-  ttl     = var.ttl
+  providers = {
+    cloudflare = cloudflare
+  }
 }
-
-resource "cloudflare_dns_record" "watch" {
-  name    = "watch"
-  type    = "A"
-  proxied = var.proxied
-  zone_id = var.zone_id
-  content = var.ip
-  ttl     = var.ttl
-}
-
-resource "cloudflare_dns_record" "cache" {
-  name    = "cache"
-  type    = "A"
-  proxied = var.proxied
-  zone_id = var.zone_id
-  content = var.ip
-  ttl     = var.ttl
-}
-

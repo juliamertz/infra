@@ -18,6 +18,10 @@ variable "ip" {
   type = string
 }
 
+variable "domain" {
+  type = string
+}
+
 variable "ttl" {
   type    = number
   default = 3600

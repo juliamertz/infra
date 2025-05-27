@@ -1,6 +1,7 @@
 module "juliamertz-nl" {
   source  = "./hive_dns"
   name    = "juliamertz-nl"
+  domain  = "juliamertz.nl"
   ip      = var.ip_gatekeeper
   ttl     = 300
   proxied = false
@@ -26,6 +27,7 @@ module "juliamertz-nl-email" {
 module "juliamertz-dev" {
   source  = "./hive_dns"
   name    = "juliamertz-dev"
+  domain  = "juliamertz.dev"
   ip      = var.ip_gatekeeper
   ttl     = 300
   proxied = false

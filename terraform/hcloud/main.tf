@@ -8,7 +8,7 @@ locals {
   ssh_public_key  = file("~/.ssh/id_ed25519.pub")
   sops_age_key    = file("~/.config/sops/age/keys.txt")
 
-  ssh_keys        = [hcloud_ssh_key.julia.id]
+  ssh_keys = [hcloud_ssh_key.julia.id]
 }
 
 resource "hcloud_ssh_key" "julia" {

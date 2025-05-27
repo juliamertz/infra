@@ -1,46 +1,4 @@
-# module "records" {
-#   source = "../../modules/cloudflare/subdomain_records"
-#
-#   proxied = true
-#   ttl     = 1
-#   zone_id = var.zone_id
-#   domain  = var.domain
-#
-#   records = {
-#     www = {
-#       name    = "www"
-#       type    = "A"
-#     }
-#     grafana = {
-#       name    = "grafana"
-#       type    = "A"
-#     }
-#     gh = {
-#       name    = "gh"
-#       type    = "A"
-#     }
-#     home-assistant = {
-#       name    = "home-assistant"
-#       type    = "A"
-#     }
-#     nettenshop = {
-#       name    = "nettenshop"
-#       type    = "A"
-#     }
-#     watch = {
-#       name    = "watch"
-#       type    = "A"
-#     }
-#     cache = {
-#       name    = "cache"
-#       type    = "A"
-#     }
-#   }
-#
-#   providers = {
-#     cloudflare = cloudflare
-#   }
-# }
+// TODO: remove these lifecycle hacks
 
 resource "cloudflare_dns_record" "domain_key_1" {
   name    = "protonmail._domainkey"
@@ -49,6 +7,20 @@ resource "cloudflare_dns_record" "domain_key_1" {
   zone_id = var.zone_id
   content = "protonmail.domainkey.${var.domain_key}.domains.proton.ch"
   ttl     = 1
+
+  lifecycle {
+    ignore_changes = [
+      created_on,
+      modified_on,
+      meta,
+      proxiable,
+      settings,
+      tags,
+      comment,
+      comment_modified_on,
+      tags_modified_on
+    ]
+  }
 }
 
 resource "cloudflare_dns_record" "domain_key_2" {
@@ -58,6 +30,20 @@ resource "cloudflare_dns_record" "domain_key_2" {
   zone_id = var.zone_id
   content = "protonmail2.domainkey.${var.domain_key}.domains.proton.ch"
   ttl     = 1
+
+  lifecycle {
+    ignore_changes = [
+      created_on,
+      modified_on,
+      meta,
+      proxiable,
+      settings,
+      tags,
+      comment,
+      comment_modified_on,
+      tags_modified_on
+    ]
+  }
 }
 
 resource "cloudflare_dns_record" "domain_key_3" {
@@ -67,6 +53,20 @@ resource "cloudflare_dns_record" "domain_key_3" {
   zone_id = var.zone_id
   content = "protonmail3.domainkey.${var.domain_key}.domains.proton.ch"
   ttl     = 1
+
+  lifecycle {
+    ignore_changes = [
+      created_on,
+      modified_on,
+      meta,
+      proxiable,
+      settings,
+      tags,
+      comment,
+      comment_modified_on,
+      tags_modified_on
+    ]
+  }
 }
 
 resource "cloudflare_dns_record" "mailsec" {
@@ -77,6 +77,20 @@ resource "cloudflare_dns_record" "mailsec" {
   zone_id  = var.zone_id
   content  = "mailsec.protonmail.ch"
   ttl      = 3600
+
+  lifecycle {
+    ignore_changes = [
+      created_on,
+      modified_on,
+      meta,
+      proxiable,
+      settings,
+      tags,
+      comment,
+      comment_modified_on,
+      tags_modified_on
+    ]
+  }
 }
 
 resource "cloudflare_dns_record" "mail" {
@@ -87,6 +101,20 @@ resource "cloudflare_dns_record" "mail" {
   zone_id  = var.zone_id
   content  = "mail.protonmail.ch"
   ttl      = 3600
+
+  lifecycle {
+    ignore_changes = [
+      created_on,
+      modified_on,
+      meta,
+      proxiable,
+      settings,
+      tags,
+      comment,
+      comment_modified_on,
+      tags_modified_on
+    ]
+  }
 }
 
 resource "cloudflare_dns_record" "dmarc" {
@@ -96,6 +124,20 @@ resource "cloudflare_dns_record" "dmarc" {
   zone_id = var.zone_id
   content = "v=DMARC1; p=quarantine"
   ttl     = 3600
+
+  lifecycle {
+    ignore_changes = [
+      created_on,
+      modified_on,
+      meta,
+      proxiable,
+      settings,
+      tags,
+      comment,
+      comment_modified_on,
+      tags_modified_on
+    ]
+  }
 }
 
 resource "cloudflare_dns_record" "spf" {
@@ -105,6 +147,20 @@ resource "cloudflare_dns_record" "spf" {
   zone_id = var.zone_id
   content = "v=spf1 include:_spf.protonmail.ch ~all"
   ttl     = 3600
+
+  lifecycle {
+    ignore_changes = [
+      created_on,
+      modified_on,
+      meta,
+      proxiable,
+      settings,
+      tags,
+      comment,
+      comment_modified_on,
+      tags_modified_on
+    ]
+  }
 }
 
 resource "cloudflare_dns_record" "verification" {
@@ -114,4 +170,19 @@ resource "cloudflare_dns_record" "verification" {
   zone_id = var.zone_id
   content = "protonmail-verification=${var.verification}"
   ttl     = 3600
+
+  lifecycle {
+    ignore_changes = [
+      created_on,
+      modified_on,
+      meta,
+      proxiable,
+      settings,
+      tags,
+      comment,
+      comment_modified_on,
+      tags_modified_on
+    ]
+  }
 }
+
