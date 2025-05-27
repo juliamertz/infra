@@ -23,7 +23,7 @@ variable "zone_id" {
 }
 
 variable "default_content" {
-  type = string
+  type    = string
   default = null
 }
 

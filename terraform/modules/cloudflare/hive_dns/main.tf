@@ -17,43 +17,22 @@
 # }
 
 module "subdomains" {
-  source = "../subdomain_records"
+  source = "../records"
 
-  proxied = var.proxied
-  ttl     = var.ttl
-  zone_id = var.zone_id
-  domain  = var.domain
+  proxied         = var.proxied
+  ttl             = var.ttl
+  zone_id         = var.zone_id
+  domain          = var.domain
   default_content = var.ip
 
   records = {
-    www = {
-      name    = "www"
-      type    = "A"
-    }
-    grafana = {
-      name    = "grafana"
-      type    = "A"
-    }
-    gh = {
-      name    = "gh"
-      type    = "A"
-    }
-    home-assistant = {
-      name    = "home-assistant"
-      type    = "A"
-    }
-    nettenshop = {
-      name    = "nettenshop"
-      type    = "A"
-    }
-    watch = {
-      name    = "watch"
-      type    = "A"
-    }
-    cache = {
-      name    = "cache"
-      type    = "A"
-    }
+    www            = { type = "A", name = "www" }
+    grafana        = { type = "A", name = "grafana" }
+    gh             = { type = "A", name = "gh" }
+    home-assistant = { type = "A", name = "home-assistant" }
+    nettenshop     = { type = "A", name = "nettenshop" }
+    watch          = { type = "A", name = "watch" }
+    cache          = { type = "A", name = "cache" }
   }
 
   providers = {

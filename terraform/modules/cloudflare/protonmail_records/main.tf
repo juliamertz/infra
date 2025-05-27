@@ -1,188 +1,60 @@
-// TODO: remove these lifecycle hacks
+module "records" {
+  source = "../records"
 
-resource "cloudflare_dns_record" "domain_key_1" {
-  name    = "protonmail._domainkey"
-  type    = "CNAME"
-  proxied = true
-  zone_id = var.zone_id
-  content = "protonmail.domainkey.${var.domain_key}.domains.proton.ch"
-  ttl     = 1
+  zone_id         = var.zone_id
+  domain          = var.domain
 
-  lifecycle {
-    ignore_changes = [
-      created_on,
-      modified_on,
-      meta,
-      proxiable,
-      settings,
-      tags,
-      comment,
-      comment_modified_on,
-      tags_modified_on
-    ]
+  records = {
+    domain_key_1 = {
+      type    = "CNAME"
+      name    = "protonmail._domainkey"
+      content = "protonmail.domainkey.${var.domain_key}.domains.proton.ch"
+    }
+    domain_key_2 = {
+      type    = "CNAME"
+      name    = "protonmail2._domainkey"
+      content = "protonmail2.domainkey.${var.domain_key}.domains.proton.ch"
+    }
+    domain_key_3 = {
+      type    = "CNAME"
+      name    = "protonmail3._domainkey"
+      content = "protonmail3.domainkey.${var.domain_key}.domains.proton.ch"
+    }
+    mailsec = {
+      type    = "MX"
+      name    = var.domain
+      content  = "mailsec.protonmail.ch"
+      priority = 20
+      ttl = 3600
+    }
+    mail = {
+      type    = "MX"
+      name    = var.domain
+      content  = "mail.protonmail.ch"
+      priority = 10
+      ttl = 3600
+    }
+    dmarc = {
+      type    = "TXT"
+      name    = "_dmarc"
+      content = "v=DMARC1; p=quarantine"
+      ttl = 3600
+    }
+    spf = {
+      type    = "TXT"
+      name    = var.domain
+      content = "v=spf1 include:_spf.protonmail.ch ~all"
+      ttl = 3600
+    }
+    verification = {
+      type    = "TXT"
+      name    = var.domain
+      content = "protonmail-verification=${var.verification}"
+      ttl = 3600
+    }
+  }
+
+  providers = {
+    cloudflare = cloudflare
   }
 }
-
-resource "cloudflare_dns_record" "domain_key_2" {
-  name    = "protonmail2._domainkey"
-  type    = "CNAME"
-  proxied = true
-  zone_id = var.zone_id
-  content = "protonmail2.domainkey.${var.domain_key}.domains.proton.ch"
-  ttl     = 1
-
-  lifecycle {
-    ignore_changes = [
-      created_on,
-      modified_on,
-      meta,
-      proxiable,
-      settings,
-      tags,
-      comment,
-      comment_modified_on,
-      tags_modified_on
-    ]
-  }
-}
-
-resource "cloudflare_dns_record" "domain_key_3" {
-  name    = "protonmail3._domainkey"
-  type    = "CNAME"
-  proxied = true
-  zone_id = var.zone_id
-  content = "protonmail3.domainkey.${var.domain_key}.domains.proton.ch"
-  ttl     = 1
-
-  lifecycle {
-    ignore_changes = [
-      created_on,
-      modified_on,
-      meta,
-      proxiable,
-      settings,
-      tags,
-      comment,
-      comment_modified_on,
-      tags_modified_on
-    ]
-  }
-}
-
-resource "cloudflare_dns_record" "mailsec" {
-  name     = var.domain
-  type     = "MX"
-  priority = 20
-  proxied  = false
-  zone_id  = var.zone_id
-  content  = "mailsec.protonmail.ch"
-  ttl      = 3600
-
-  lifecycle {
-    ignore_changes = [
-      created_on,
-      modified_on,
-      meta,
-      proxiable,
-      settings,
-      tags,
-      comment,
-      comment_modified_on,
-      tags_modified_on
-    ]
-  }
-}
-
-resource "cloudflare_dns_record" "mail" {
-  name     = var.domain
-  type     = "MX"
-  priority = 10
-  proxied  = false
-  zone_id  = var.zone_id
-  content  = "mail.protonmail.ch"
-  ttl      = 3600
-
-  lifecycle {
-    ignore_changes = [
-      created_on,
-      modified_on,
-      meta,
-      proxiable,
-      settings,
-      tags,
-      comment,
-      comment_modified_on,
-      tags_modified_on
-    ]
-  }
-}
-
-resource "cloudflare_dns_record" "dmarc" {
-  name    = "_dmarc"
-  type    = "TXT"
-  proxied = false
-  zone_id = var.zone_id
-  content = "v=DMARC1; p=quarantine"
-  ttl     = 3600
-
-  lifecycle {
-    ignore_changes = [
-      created_on,
-      modified_on,
-      meta,
-      proxiable,
-      settings,
-      tags,
-      comment,
-      comment_modified_on,
-      tags_modified_on
-    ]
-  }
-}
-
-resource "cloudflare_dns_record" "spf" {
-  name    = var.domain
-  type    = "TXT"
-  proxied = false
-  zone_id = var.zone_id
-  content = "v=spf1 include:_spf.protonmail.ch ~all"
-  ttl     = 3600
-
-  lifecycle {
-    ignore_changes = [
-      created_on,
-      modified_on,
-      meta,
-      proxiable,
-      settings,
-      tags,
-      comment,
-      comment_modified_on,
-      tags_modified_on
-    ]
-  }
-}
-
-resource "cloudflare_dns_record" "verification" {
-  name    = var.domain
-  type    = "TXT"
-  proxied = false
-  zone_id = var.zone_id
-  content = "protonmail-verification=${var.verification}"
-  ttl     = 3600
-
-  lifecycle {
-    ignore_changes = [
-      created_on,
-      modified_on,
-      meta,
-      proxiable,
-      settings,
-      tags,
-      comment,
-      comment_modified_on,
-      tags_modified_on
-    ]
-  }
-}
-
