@@ -11,10 +11,8 @@ terraform {
   }
 }
 
-variable "build_on_target" {
-  description = "Build the NixOS configuration on the target machine"
-  type        = bool
-  default     = false
+variable "flake_path" {
+  type = string
 }
 
 variable "hcloud_token" {}
