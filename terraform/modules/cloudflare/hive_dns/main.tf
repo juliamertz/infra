@@ -17,7 +17,7 @@
 # }
 
 module "subdomains" {
-  source = "../../modules/cloudflare/subdomain_records"
+  source = "../subdomain_records"
 
   proxied = var.proxied
   ttl     = var.ttl

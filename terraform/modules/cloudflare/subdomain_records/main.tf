@@ -13,7 +13,6 @@ resource "cloudflare_dns_record" "a_records" {
 
   lifecycle {
     ignore_changes = [
-      modified_on,
       meta,
       proxiable,
       settings,
