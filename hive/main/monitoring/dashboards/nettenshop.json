@@ -18,7 +18,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 1,
+  "id": 3,
   "links": [],
   "panels": [
     {
@@ -448,7 +448,7 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 11,
+        "h": 9,
         "w": 24,
         "x": 0,
         "y": 16
@@ -480,6 +480,45 @@
         }
       ],
       "title": "Logs",
+      "type": "logs"
+    },
+    {
+      "datasource": {
+        "uid": "aen9dzq2f318gf"
+      },
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 24,
+        "x": 0,
+        "y": 25
+      },
+      "id": 6,
+      "options": {
+        "dedupStrategy": "none",
+        "enableInfiniteScrolling": false,
+        "enableLogDetails": true,
+        "prettifyLogMessage": false,
+        "showCommonLabels": false,
+        "showLabels": false,
+        "showTime": false,
+        "sortOrder": "Descending",
+        "wrapLogMessage": false
+      },
+      "pluginVersion": "11.6.0+security-01",
+      "targets": [
+        {
+          "direction": "backward",
+          "editorMode": "builder",
+          "expr": "{unit=\"lightspeed-dhl-adapter.service\"} |= `` | json | level = `error` | label_format level=detected_level",
+          "queryType": "range",
+          "refId": "A"
+        }
+      ],
+      "title": "Errors",
       "type": "logs"
     }
   ],
