@@ -59,9 +59,17 @@
           treefmt
           alejandra
 
-          (writeShellScriptBin "tofu" ''
-            ${lib.getExe opentofu} -chdir="$TFDIR" $@
-          '')
+          (pkgs.stdenvNoCC.mkDerivation {
+            inherit (pkgs.opentofu) meta pname version;
+            src = pkgs.opentofu;
+            nativeBuildInputs = [pkgs.makeWrapper];
+            buildPhase = ''
+              ln -sf $src/bin/tofu $out/bin/tofu-unwrapped
+              makeWrapper $src/bin/tofu $out/bin/tofu \
+                  --add-flags '-chdir="$TFDIR"'
+            '';
+          })
+
           (writeShellScriptBin "colmena" ''
             ${lib.getExe colmena.packages.${system}.colmena} --experimental-flake-eval $@
           '')

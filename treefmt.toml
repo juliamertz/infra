@@ -3,6 +3,6 @@ command = "alejandra"
 includes = ["*.nix"]                                                                                                  
 
 [formatter.hcl]
-command = "tofu"
+command = "tofu-unwrapped"
 options = ["fmt"]
 includes = ["*.tf", "*.tfvars"]                                                                                                  
