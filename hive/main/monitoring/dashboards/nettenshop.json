@@ -18,7 +18,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 9,
+  "id": 1,
   "links": [],
   "panels": [
     {
@@ -441,7 +441,7 @@
     {
       "datasource": {
         "type": "loki",
-        "uid": "cema82sf0u800d"
+        "uid": "aen9dzq2f318gf"
       },
       "fieldConfig": {
         "defaults": {},
@@ -470,11 +470,11 @@
         {
           "datasource": {
             "type": "loki",
-            "uid": "cema82sf0u800d"
+            "uid": "aen9dzq2f318gf"
           },
           "direction": "backward",
           "editorMode": "builder",
-          "expr": "{unit=\"lightspeed-dhl-adapter.service\"} |= `` | json level=\"level\" | level = `info`",
+          "expr": "{unit=\"lightspeed-dhl-adapter.service\"} |= `` | label_format level=detected_level",
           "queryType": "range",
           "refId": "A"
         }
