@@ -32,11 +32,16 @@
 
       # datasources.settings.deleteDatasources = [ { name = "Prometheus"; orgId = 1; } ];
 
-      datasources.settings.datasources = with config.services.prometheus; [
+      datasources.settings.datasources = [
         {
           name = "Prometheus";
           type = "prometheus";
-          url = "http://localhost:${toString port}";
+          url = "http://localhost:${toString config.services.prometheus.port}";
+        }
+        {
+          name = "Loki";
+          type = "loki";
+          url = "http://localhost:${toString config.services.loki.configuration.server.http_listen_port}";
         }
       ];
     };
