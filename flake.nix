@@ -64,9 +64,9 @@
             src = pkgs.opentofu;
             nativeBuildInputs = [pkgs.makeWrapper];
             buildPhase = ''
-              ln -sf $src/bin/tofu $out/bin/tofu-unwrapped
               makeWrapper $src/bin/tofu $out/bin/tofu \
                   --add-flags '-chdir="$TFDIR"'
+              ln -sf $src/bin/tofu $out/bin/tofu-unwrapped
             '';
           })
 
