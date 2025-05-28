@@ -1,7 +1,7 @@
 resource "cloudflare_dns_record" "a_records" {
   for_each = var.records
 
-  name    = "${each.value.name}.${var.domain}"
+  name    = each.value.name
   content = each.value.content != null ? each.value.content : var.default_content
   ttl     = each.value.ttl != null ? each.value.ttl : 300
   proxied = each.value.proxied != null ? each.value.proxied : false

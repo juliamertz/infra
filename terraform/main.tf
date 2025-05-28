@@ -18,8 +18,8 @@ data "external" "host" {
 }
 
 locals {
-  datacenter    = "nbg1-dc3"
-  nixos_channel = "nixos-unstable"
+  datacenter      = "nbg1-dc3"
+  nixos_channel   = "nixos-unstable"
   build_on_target = data.external.host.result.system != "x86_64-linux"
 
   ssh_private_key = file("~/.ssh/id_ed25519")
@@ -145,7 +145,7 @@ module "juliamertz-dev-dns" {
 module "juliamertz-nl-email" {
   source       = "./modules/cloudflare/protonmail"
   domain       = "juliamertz.nl"
-  domain_key   = "dhrcj3l7ljct2xxjwqsdgg5s2ntzdyh2nmuqinz6mgddj2godaa2a"
+  domain_key   = "d3u5rtsm5vj2kjzwcua5sns57x4p62m3wlapug7zjtnpps2x4ayoa"
   verification = "6d592d6c4efb07524737a4674938e729df1a629b"
 
   zone_id = var.juliamertz_nl_zone_id

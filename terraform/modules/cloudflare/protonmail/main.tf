@@ -1,8 +1,8 @@
 module "records" {
   source = "../records"
 
-  zone_id         = var.zone_id
-  domain          = var.domain
+  zone_id = var.zone_id
+  domain  = var.domain
 
   records = {
     domain_key_1 = {
@@ -21,36 +21,37 @@ module "records" {
       content = "protonmail3.domainkey.${var.domain_key}.domains.proton.ch"
     }
     mailsec = {
-      type    = "MX"
-      name    = var.domain
+      type     = "MX"
+      name     = var.domain
       content  = "mailsec.protonmail.ch"
       priority = 20
-      ttl = 3600
+      ttl      = 300
     }
     mail = {
-      type    = "MX"
-      name    = var.domain
+      type     = "MX"
+      name     = var.domain
       content  = "mail.protonmail.ch"
       priority = 10
-      ttl = 3600
+      ttl      = 300
     }
+    // TODO: auto qoute TXT records
     dmarc = {
       type    = "TXT"
       name    = "_dmarc"
-      content = "v=DMARC1; p=quarantine"
-      ttl = 3600
+      content = "\"v=DMARC1; p=quarantine\""
+      ttl     = 300
     }
     spf = {
       type    = "TXT"
       name    = var.domain
-      content = "v=spf1 include:_spf.protonmail.ch ~all"
-      ttl = 3600
+      content = "\"v=spf1 include:_spf.protonmail.ch ~all\""
+      ttl     = 300
     }
     verification = {
       type    = "TXT"
       name    = var.domain
-      content = "protonmail-verification=${var.verification}"
-      ttl = 3600
+      content = "\"protonmail-verification=${var.verification}\""
+      ttl     = 300
     }
   }
 
