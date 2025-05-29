@@ -70,6 +70,30 @@ module "nixos_gatekeeper" {
   }
 }
 
+module "nixos_topdog" {
+  source      = "./modules/hcloud/nixos_server"
+  name        = "topdog"
+  server_type = "cx32"
+
+  datacenter  = local.datacenter
+  network_id  = hcloud_network.network.id
+  internal_ip = "10.0.1.3"
+  public_ip   = true
+
+  nixos_channel   = local.nixos_channel
+  flake_path      = var.flake_path
+  flake_profile   = "topdog"
+  build_on_target = local.build_on_target
+
+  ssh_keys        = local.ssh_keys
+  ssh_private_key = local.ssh_private_key
+  sops_age_key    = local.sops_age_key
+
+  providers = {
+    hcloud = hcloud
+  }
+}
+
 module "nixos_main" {
   source      = "./modules/hcloud/nixos_server"
   name        = "main"
@@ -104,7 +128,7 @@ module "juliamertz-nl-dns" {
   default_content = module.nixos_gatekeeper.ipv4_address
 
   records = {
-    www            = { type = "A", name = "www" }
+    root            = { type = "A", name = "www" }
     grafana        = { type = "A", name = "grafana" }
     gh             = { type = "A", name = "gh" }
     home-assistant = { type = "A", name = "home-assistant" }
@@ -128,7 +152,7 @@ module "juliamertz-dev-dns" {
   default_content = module.nixos_gatekeeper.ipv4_address
 
   records = {
-    www            = { type = "A", name = "www" }
+    root            = { type = "A", name = "www" }
     grafana        = { type = "A", name = "grafana" }
     gh             = { type = "A", name = "gh" }
     home-assistant = { type = "A", name = "home-assistant" }
