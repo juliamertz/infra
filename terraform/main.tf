@@ -103,8 +103,8 @@ module "juliamertz-dev-dns" {
     gh             = { type = "A", name = "gh" }
     wg             = { type = "A", name = "wg" }
     nettenshop     = { type = "A", name = "nettenshop" }
-    watch          = { type = "A", name = "watch", proxied = false, ttl = 300 }
-    home-assistant = { type = "A", name = "home-assistant", proxied = false, ttl = 300 }
+    watch          = { type = "A", name = "watch" }
+    home-assistant = { type = "A", name = "home-assistant" }
     cache          = { type = "A", name = "cache" }
   }
 
