@@ -40,21 +40,21 @@
           config = ''
             respond /metrics "Unauthorized." 401
 
-            reverse_proxy http://${net.peers.main.subnetIp}:5010
+            reverse_proxy http://${net.peers.topdog.subnetIp}:5010
           '';
         };
 
         grafana = {
           subdomain = "grafana";
           config = ''
-            reverse_proxy http://${net.peers.main.subnetIp}:3000
+            reverse_proxy http://${net.peers.topdog.subnetIp}:3000
           '';
         };
 
         cache = {
           subdomain = "cache";
           config = ''
-            reverse_proxy http://${net.peers.main.subnetIp}:7678
+            reverse_proxy http://${net.peers.topdog.subnetIp}:7678
           '';
         };
 

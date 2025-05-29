@@ -46,11 +46,6 @@
         deployment = mkTargetFromEnv "gatekeeper";
       };
 
-      main = {...}: {
-        imports = [./hive/main];
-        deployment = mkTargetFromEnv "main";
-      };
-
       topdog = {...}: {
         imports = [./hive/topdog];
         deployment = mkTargetFromEnv "topdog";
