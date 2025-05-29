@@ -18,9 +18,16 @@
 
   sops.age.keyFile = "/etc/sops/age/keys.txt";
 
+  fileSystems. "/data" = {
+    device = "/dev/sdb";
+    fsType = "ext4";
+    options = ["data=journal"];
+  };
+
   services.nettenshop = {
     enable = true;
     sopsFile = ../../secrets/nettenshop.yaml;
+    stateDir = "/data/lightspeed-dhl";
     extraUsers = ["julia"];
   };
 

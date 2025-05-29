@@ -18,6 +18,7 @@ data "external" "host" {
 }
 
 locals {
+  location        = "nbg1"
   datacenter      = "nbg1-dc3"
   nixos_channel   = "nixos-unstable"
   build_on_target = data.external.host.result.system != "x86_64-linux"
@@ -44,6 +45,17 @@ resource "hcloud_network_subnet" "internal" {
   type         = "cloud"
   network_zone = "eu-central"
   ip_range     = "10.0.1.0/24"
+}
+
+resource "hcloud_volume" "persisted" {
+  name     = "persisted"
+  size     = 10
+  format   = "ext4"
+  location = local.location
+
+  lifecycle {
+    prevent_destroy = true
+  }
 }
 
 module "nixos_gatekeeper" {
@@ -92,6 +104,12 @@ module "nixos_topdog" {
   providers = {
     hcloud = hcloud
   }
+}
+
+resource "hcloud_volume_attachment" "topdog_persisted" {
+  volume_id = hcloud_volume.persisted.id
+  server_id = module.nixos_topdog.server_id
+  automount = false
 }
 
 module "juliamertz-nl-dns" {
