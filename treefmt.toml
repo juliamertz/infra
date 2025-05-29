@@ -5,4 +5,4 @@ includes = ["*.nix"]
 [formatter.hcl]
 command = "tofu-unwrapped"
 options = ["fmt"]
-includes = ["*.tf", "*.tfvars"]                                                                                                  
+includes = ["*.tf", "*.tfvars"]

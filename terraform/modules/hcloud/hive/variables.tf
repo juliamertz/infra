@@ -1,7 +1,3 @@
-variable "token" {
-  type = string
-}
-
 variable "location" {
   type    = string
   default = "nbg1"

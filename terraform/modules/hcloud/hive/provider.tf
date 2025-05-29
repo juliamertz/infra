@@ -1,12 +1,7 @@
 terraform {
   required_providers {
     hcloud = {
-      source  = "hetznercloud/hcloud"
-      version = ">= 0.13"
+      source = "hetznercloud/hcloud"
     }
   }
-}
-
-provider "hcloud" {
-  token = var.token
 }

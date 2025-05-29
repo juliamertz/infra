@@ -1,5 +1,11 @@
 provider "hcloud" {
-  token = var.hcloud_token
+  alias = "development"
+  token = var.development_hcloud_token
+}
+
+provider "hcloud" {
+  alias = "production"
+  token = var.production_hcloud_token
 }
 
 provider "cloudflare" {
@@ -31,13 +37,30 @@ locals {
 
 module "development" {
   source = "./modules/hcloud/hive"
-  token  = var.development_hcloud_token
 
   build_on_target        = local.build_on_target
   sops_age_key           = local.sops_age_key
   deployment_private_key = "~/.ssh/id_ed25519"
   deployment_public_key  = "~/.ssh/id_ed25519.pub"
   flake_path             = var.flake_path
+
+  providers = {
+    hcloud = hcloud.development
+  }
+}
+
+module "production" {
+  source = "./modules/hcloud/hive"
+
+  build_on_target        = local.build_on_target
+  sops_age_key           = local.sops_age_key
+  deployment_private_key = "~/.ssh/id_ed25519"
+  deployment_public_key  = "~/.ssh/id_ed25519.pub"
+  flake_path             = var.flake_path
+
+  providers = {
+    hcloud = hcloud.production
+  }
 }
 
 module "juliamertz-nl-dns" {
