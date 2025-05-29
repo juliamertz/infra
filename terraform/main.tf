@@ -1,12 +1,12 @@
 provider "hcloud" {
-  alias = "development"
-  token = var.development_hcloud_token
-}
-
-provider "hcloud" {
   alias = "production"
   token = var.production_hcloud_token
 }
+
+# provider "hcloud" {
+#   alias = "development"
+#   token = var.development_hcloud_token
+# }
 
 provider "cloudflare" {
   api_token = var.cloudflare_token
@@ -35,20 +35,6 @@ locals {
 }
 
 
-module "development" {
-  source = "./modules/hcloud/hive"
-
-  build_on_target        = local.build_on_target
-  sops_age_key           = local.sops_age_key
-  deployment_private_key = "~/.ssh/id_ed25519"
-  deployment_public_key  = "~/.ssh/id_ed25519.pub"
-  flake_path             = var.flake_path
-
-  providers = {
-    hcloud = hcloud.development
-  }
-}
-
 module "production" {
   source = "./modules/hcloud/hive"
 
@@ -63,6 +49,20 @@ module "production" {
   }
 }
 
+# module "development" {
+#   source = "./modules/hcloud/hive"
+#
+#   build_on_target        = local.build_on_target
+#   sops_age_key           = local.sops_age_key
+#   deployment_private_key = "~/.ssh/id_ed25519"
+#   deployment_public_key  = "~/.ssh/id_ed25519.pub"
+#   flake_path             = var.flake_path
+#
+#   providers = {
+#     hcloud = hcloud.development
+#   }
+# }
+
 module "juliamertz-nl-dns" {
   source = "./modules/cloudflare/records"
 
@@ -70,7 +70,7 @@ module "juliamertz-nl-dns" {
   ttl             = 300
   zone_id         = var.juliamertz_nl_zone_id
   domain          = "juliamertz.nl"
-  default_content = module.development.gatekeeper.ip
+  default_content = module.production.gatekeeper.ip
 
   records = {
     root           = { type = "A", name = "www" }
@@ -95,7 +95,7 @@ module "juliamertz-dev-dns" {
   ttl             = 1
   zone_id         = var.juliamertz_dev_zone_id
   domain          = "juliamertz.dev"
-  default_content = module.development.gatekeeper.ip
+  default_content = module.production.gatekeeper.ip
 
   records = {
     root           = { type = "A", name = "www" }
