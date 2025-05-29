@@ -32,6 +32,18 @@ locals {
   ssh_private_key = "~/.ssh/id_ed25519"
   ssh_public_key  = "~/.ssh/id_ed25519.pub"
   sops_age_key    = "~/.config/sops/age/keys.txt"
+
+  records = {
+    root            = { type = "A", name = "www" }
+    grafana         = { type = "A", name = "grafana" }
+    gh              = { type = "A", name = "gh" }
+    wg              = { type = "A", name = "wg" }
+    home-assistant  = { type = "A", name = "home-assistant" }
+    nettenshop      = { type = "A", name = "nettenshop" }
+    watch           = { type = "A", name = "watch" }
+    cache           = { type = "A", name = "cache" }
+    # nettenshop_prod = { type = "A", name = "nettenshop.prod" }
+  }
 }
 
 
@@ -72,16 +84,7 @@ module "juliamertz-nl-dns" {
   domain          = "juliamertz.nl"
   default_content = module.production.gatekeeper.ip
 
-  records = {
-    root           = { type = "A", name = "www" }
-    grafana        = { type = "A", name = "grafana" }
-    gh             = { type = "A", name = "gh" }
-    wg             = { type = "A", name = "wg" }
-    home-assistant = { type = "A", name = "home-assistant" }
-    nettenshop     = { type = "A", name = "nettenshop" }
-    watch          = { type = "A", name = "watch" }
-    cache          = { type = "A", name = "cache" }
-  }
+  records = local.records
 
   providers = {
     cloudflare = cloudflare
@@ -97,16 +100,7 @@ module "juliamertz-dev-dns" {
   domain          = "juliamertz.dev"
   default_content = module.production.gatekeeper.ip
 
-  records = {
-    root           = { type = "A", name = "www" }
-    grafana        = { type = "A", name = "grafana" }
-    gh             = { type = "A", name = "gh" }
-    wg             = { type = "A", name = "wg" }
-    nettenshop     = { type = "A", name = "nettenshop" }
-    watch          = { type = "A", name = "watch" }
-    home-assistant = { type = "A", name = "home-assistant" }
-    cache          = { type = "A", name = "cache" }
-  }
+  records = local.records
 
   providers = {
     cloudflare = cloudflare
