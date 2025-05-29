@@ -3,7 +3,7 @@ rec {
 
   server = {
     inherit port;
-    ipRange = "10.100.0.0/24";
+    ipRange = "10.100.0.0/23";
     publicKey = peers.gatekeeper.publicKey;
   };
 
@@ -21,17 +21,17 @@ rec {
       subnetIp = "10.100.0.3";
     };
 
-    macbook = {
-      publicKey = "dU+x5zu/5v3ieeJgsnLDzC28suMl27jfufSrGzz5zQY=";
-      subnetIp = "10.100.0.6";
+    homelab = {
+      publicKey = "VcEu1t2j+mmiPKI8NBusFp1Qgi/VhblZencgsM4qWwo=";
+      subnetIp = "10.100.1.1";
     };
     workstation = {
       publicKey = "W6S6BMwUsg/iTOONOgQreAvUbvBBPo3P7zXyFpslp0w=";
-      subnetIp = "10.100.0.5";
+      subnetIp = "10.100.1.2";
     };
-    homelab = {
-      publicKey = "VcEu1t2j+mmiPKI8NBusFp1Qgi/VhblZencgsM4qWwo=";
-      subnetIp = "10.100.0.4";
+    macbook = {
+      publicKey = "dU+x5zu/5v3ieeJgsnLDzC28suMl27jfufSrGzz5zQY=";
+      subnetIp = "10.100.1.3";
     };
   };
 }

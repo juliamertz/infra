@@ -25,7 +25,7 @@ in {
 
     ipRange = mkOption {
       type = types.str;
-      default = "10.100.0.1/24";
+      default = "10.100.0.1/23";
     };
 
     enableForwarding = mkEnableOption ''
