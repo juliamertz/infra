@@ -16,6 +16,11 @@ rec {
       publicKey = "tVHanBrvOyUFA7Gf6CE3dILyZN511AahfO1trLyBxQ4=";
       subnetIp = "10.100.0.2";
     };
+    topdog = {
+      publicKey = "MnYfEkLWYp+a+XdU0O8VRfmZQVR6+IswMGaPGyjNMGg=";
+      subnetIp = "10.100.0.3";
+    };
+
     macbook = {
       publicKey = "dU+x5zu/5v3ieeJgsnLDzC28suMl27jfufSrGzz5zQY=";
       subnetIp = "10.100.0.6";

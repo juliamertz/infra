@@ -30,9 +30,11 @@
     sopsFile = ../../secrets/wireguard.yaml;
   };
 
-  services.wireguard-client = {
+  services.wireguard-client = let
+    inherit (config.services.wireguard-client) net;
+  in {
     enable = true;
-    ipRange = "10.100.0.2/24";
+    ipRange = "${net.peers.${name}.subnetIp}/24";
     serverIp = "10.0.1.1";
     privateKeyFile = config.sops.secrets.wireguardPrivateKey.path;
   };
