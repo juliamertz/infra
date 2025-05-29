@@ -18,7 +18,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 3,
+  "id": 1,
   "links": [],
   "panels": [
     {
@@ -441,7 +441,7 @@
     {
       "datasource": {
         "type": "loki",
-        "uid": "aen9dzq2f318gf"
+        "uid": "P8E80F9AEF21F6940"
       },
       "fieldConfig": {
         "defaults": {},
@@ -470,11 +470,11 @@
         {
           "datasource": {
             "type": "loki",
-            "uid": "aen9dzq2f318gf"
+            "uid": "P8E80F9AEF21F6940"
           },
           "direction": "backward",
           "editorMode": "builder",
-          "expr": "{unit=\"lightspeed-dhl-adapter.service\"} |= `` | label_format level=detected_level",
+          "expr": "{unit=\"lightspeed-dhl-adapter.service\"}",
           "queryType": "range",
           "refId": "A"
         }
@@ -484,7 +484,8 @@
     },
     {
       "datasource": {
-        "uid": "aen9dzq2f318gf"
+        "type": "loki",
+        "uid": "P8E80F9AEF21F6940"
       },
       "fieldConfig": {
         "defaults": {},
@@ -511,9 +512,13 @@
       "pluginVersion": "11.6.0+security-01",
       "targets": [
         {
+          "datasource": {
+            "type": "loki",
+            "uid": "P8E80F9AEF21F6940"
+          },
           "direction": "backward",
           "editorMode": "builder",
-          "expr": "{unit=\"lightspeed-dhl-adapter.service\"} |= `` | json | level = `error` | label_format level=detected_level",
+          "expr": "{unit=\"lightspeed-dhl-adapter.service\"} | json | level = `error`",
           "queryType": "range",
           "refId": "A"
         }
