@@ -15,7 +15,8 @@ variable "flake_path" {
   type = string
 }
 
-variable "hcloud_token" {}
+variable "development_hcloud_token" {}
+variable "production_hcloud_token" {}
 
 variable "cloudflare_token" {}
 

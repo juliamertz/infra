@@ -28,14 +28,20 @@ in {
 
   users.defaultUserShell = dotfiles.zsh;
 
-  users.users.julia = {
-    name = "julia";
-    isNormalUser = true;
-    useDefaultShell = true;
-    extraGroups = ["wheel"];
-    openssh.authorizedKeys.keys = [
-      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJaSMVfNtTgKjZBn0OurWXDpNrV+soaog7W0Svv4vE40"
+  users.users = let
+    authorizedKeys = [
+      # "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJaSMVfNtTgKjZBn0OurWXDpNrV+soaog7W0Svv4vE40" # old
+      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBfVB8IMsb81U7ySvg82PTlBhnKlQ7Lqs50p4XU1nAv3"
     ];
+  in {
+    root.openssh.authorizedKeys.keys = authorizedKeys;
+    julia = {
+      name = "julia";
+      isNormalUser = true;
+      useDefaultShell = true;
+      extraGroups = ["wheel"];
+      openssh.authorizedKeys.keys = authorizedKeys;
+    };
   };
 
   nix = {
