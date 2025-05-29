@@ -1,4 +1,5 @@
 {
+  lib,
   name,
   nodes,
   pkgs,
@@ -27,7 +28,7 @@
     '';
 
     services = let
-      inherit (config.services.wireguard-server) net;
+      inherit (config.services.wireguard-server.net) peers;
     in
       with config.services.gateway.lib; {
         github = {
@@ -37,39 +38,43 @@
 
         nettenshop = {
           subdomain = "nettenshop";
-          config = ''
-            respond /metrics "Unauthorized." 401
-
-            reverse_proxy http://${net.peers.topdog.subnetIp}:5010
-          '';
+          config = reverseProxy {
+            host = peers.topdog.subnetIp;
+            port = nodes.topdog.config.services.nettenshop.port;
+            blockedRoutes = ["/metrics"];
+          };
         };
 
         grafana = {
           subdomain = "grafana";
-          config = ''
-            reverse_proxy http://${net.peers.topdog.subnetIp}:3000
-          '';
+          config = reverseProxy {
+            host = peers.topdog.subnetIp;
+            port = nodes.topdog.config.services.grafana.settings.server.http_port;
+          };
         };
 
         cache = {
           subdomain = "cache";
-          config = ''
-            reverse_proxy http://${net.peers.topdog.subnetIp}:7678
-          '';
+          config = reverseProxy {
+            host = peers.topdog.subnetIp;
+            port = 7678;
+          };
         };
 
         jellyfin = {
           subdomain = "watch";
-          config = ''
-            reverse_proxy http://${net.peers.homelab.subnetIp}:8096
-          '';
+          config = reverseProxy {
+            host = peers.homelab.subnetIp;
+            port = 8096;
+          };
         };
 
         home-assistant = {
           subdomain = "home-assistant";
-          config = ''
-            reverse_proxy http://${net.peers.homelab.subnetIp}:8123
-          '';
+          config = reverseProxy {
+            host = peers.homelab.subnetIp;
+            port = 8123;
+          };
         };
       };
   };

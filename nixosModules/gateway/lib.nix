@@ -1,6 +1,12 @@
-{...}: {
-  reverseProxy = address: ''
-    reverse_proxy ${address}
+{lib, ...}: {
+  reverseProxy = {
+    host,
+    port ? null,
+    protocol ? "http",
+    blockedRoutes ? [],
+  }: ''
+    ${map (route: ''respond ${route} "Unauthorized" 401'') blockedRoutes |> lib.concatStringsSep "\n"}
+    reverse_proxy ${protocol}://${host}${lib.optionalString (port != null) ":${toString port}"}
   '';
 
   redirect = address: "redir ${address}";

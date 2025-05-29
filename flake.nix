@@ -59,6 +59,7 @@
           treefmt
           alejandra
 
+          colmena.packages.${system}.colmena
           (pkgs.stdenvNoCC.mkDerivation {
             inherit (pkgs.opentofu) meta pname version;
             src = pkgs.opentofu;
@@ -69,10 +70,6 @@
               ln -sf $src/bin/tofu $out/bin/tofu-unwrapped
             '';
           })
-
-          (writeShellScriptBin "colmena" ''
-            ${lib.getExe colmena.packages.${system}.colmena} --experimental-flake-eval $@
-          '')
         ];
       };
     });
