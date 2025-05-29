@@ -12,6 +12,8 @@ variable "records" {
     name     = string
     type     = string
     content  = optional(string)
+    # suffix the 'name' field with the domain to avoid cloudflare record updates on each apply
+    domain_suffix = optional(bool, true)
     ttl      = optional(number)
     proxied  = optional(bool)
     priority = optional(number)

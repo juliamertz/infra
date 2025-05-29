@@ -23,6 +23,7 @@ module "records" {
     mailsec = {
       type     = "MX"
       name     = var.domain
+      domain_suffix  = false
       content  = "mailsec.protonmail.ch"
       priority = 20
       ttl      = 300
@@ -30,6 +31,7 @@ module "records" {
     mail = {
       type     = "MX"
       name     = var.domain
+      domain_suffix  = false
       content  = "mail.protonmail.ch"
       priority = 10
       ttl      = 300
@@ -44,12 +46,14 @@ module "records" {
     spf = {
       type    = "TXT"
       name    = var.domain
+      domain_suffix  = false
       content = "\"v=spf1 include:_spf.protonmail.ch ~all\""
       ttl     = 300
     }
     verification = {
       type    = "TXT"
       name    = var.domain
+      domain_suffix  = false
       content = "\"protonmail-verification=${var.verification}\""
       ttl     = 300
     }
