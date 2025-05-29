@@ -104,7 +104,7 @@ module "juliamertz-nl-dns" {
   default_content = module.nixos_gatekeeper.ipv4_address
 
   records = {
-    root            = { type = "A", name = "www" }
+    root           = { type = "A", name = "www" }
     grafana        = { type = "A", name = "grafana" }
     gh             = { type = "A", name = "gh" }
     home-assistant = { type = "A", name = "home-assistant" }
@@ -128,7 +128,7 @@ module "juliamertz-dev-dns" {
   default_content = module.nixos_gatekeeper.ipv4_address
 
   records = {
-    root            = { type = "A", name = "www" }
+    root           = { type = "A", name = "www" }
     grafana        = { type = "A", name = "grafana" }
     gh             = { type = "A", name = "gh" }
     home-assistant = { type = "A", name = "home-assistant" }

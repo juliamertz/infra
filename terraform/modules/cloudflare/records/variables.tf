@@ -9,14 +9,14 @@ terraform {
 variable "records" {
   description = "Map of DNS records"
   type = map(object({
-    name     = string
-    type     = string
-    content  = optional(string)
+    name    = string
+    type    = string
+    content = optional(string)
     # suffix the 'name' field with the domain to avoid cloudflare record updates on each apply
     domain_suffix = optional(bool, true)
-    ttl      = optional(number)
-    proxied  = optional(bool)
-    priority = optional(number)
+    ttl           = optional(number)
+    proxied       = optional(bool)
+    priority      = optional(number)
   }))
 }
 

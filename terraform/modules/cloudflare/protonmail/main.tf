@@ -21,20 +21,20 @@ module "records" {
       content = "protonmail3.domainkey.${var.domain_key}.domains.proton.ch"
     }
     mailsec = {
-      type     = "MX"
-      name     = var.domain
-      domain_suffix  = false
-      content  = "mailsec.protonmail.ch"
-      priority = 20
-      ttl      = 300
+      type          = "MX"
+      name          = var.domain
+      domain_suffix = false
+      content       = "mailsec.protonmail.ch"
+      priority      = 20
+      ttl           = 300
     }
     mail = {
-      type     = "MX"
-      name     = var.domain
-      domain_suffix  = false
-      content  = "mail.protonmail.ch"
-      priority = 10
-      ttl      = 300
+      type          = "MX"
+      name          = var.domain
+      domain_suffix = false
+      content       = "mail.protonmail.ch"
+      priority      = 10
+      ttl           = 300
     }
     // TODO: auto qoute TXT records
     dmarc = {
@@ -44,18 +44,18 @@ module "records" {
       ttl     = 300
     }
     spf = {
-      type    = "TXT"
-      name    = var.domain
-      domain_suffix  = false
-      content = "\"v=spf1 include:_spf.protonmail.ch ~all\""
-      ttl     = 300
+      type          = "TXT"
+      name          = var.domain
+      domain_suffix = false
+      content       = "\"v=spf1 include:_spf.protonmail.ch ~all\""
+      ttl           = 300
     }
     verification = {
-      type    = "TXT"
-      name    = var.domain
-      domain_suffix  = false
-      content = "\"protonmail-verification=${var.verification}\""
-      ttl     = 300
+      type          = "TXT"
+      name          = var.domain
+      domain_suffix = false
+      content       = "\"protonmail-verification=${var.verification}\""
+      ttl           = 300
     }
   }
 
