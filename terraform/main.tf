@@ -66,8 +66,8 @@ module "production" {
 module "juliamertz-nl-dns" {
   source = "./modules/cloudflare/records"
 
-  proxied         = false
-  ttl             = 300
+  proxied         = true
+  ttl             = 1
   zone_id         = var.juliamertz_nl_zone_id
   domain          = "juliamertz.nl"
   default_content = module.production.gatekeeper.ip
