@@ -6,6 +6,7 @@
     colmena.url = "github:zhaofengli/colmena";
     srvos.url = "github:nix-community/srvos";
     sops.url = "github:Mic92/sops-nix";
+    lightspeed-dhl-adapter.url = "github:juliamertz/lightspeed-dhl-adapter";
 
     dotfiles.url = "github:juliamertz/dotfiles";
   };
