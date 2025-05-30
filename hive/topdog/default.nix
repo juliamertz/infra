@@ -1,4 +1,5 @@
 {
+  inputs,
   name,
   nodes,
   pkgs,
@@ -26,6 +27,7 @@
 
   services.nettenshop = {
     enable = true;
+    package = inputs.lightspeed-dhl-adapter.packages.${pkgs.system}.default;
     sopsFile = ../../secrets/nettenshop.yaml;
     stateDir = "/data/lightspeed-dhl";
     extraUsers = ["julia"];

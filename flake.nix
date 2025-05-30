@@ -38,6 +38,9 @@
           system = "x86_64-linux";
           overlays = [];
         };
+        specialArgs = {
+          inherit inputs;
+        };
       };
 
       defaults = import ./hive/defaults.nix inputs;

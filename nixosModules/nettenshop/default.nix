@@ -1,17 +1,9 @@
 {
-  pkgs,
   lib,
   config,
   ...
 }: let
   cfg = config.services.nettenshop;
-
-  revision = "5a0432bec7d21ef5bd0e136d5a7131ae4281904b";
-  lightspeed-dhl-adapter =
-    (builtins.getFlake "github:juliamertz/lightspeed-dhl-adapter/${revision}")
-    .packages
-    .${pkgs.system}
-    .default;
 in {
   options.services.nettenshop = with lib; {
     enable = mkEnableOption "nettenshop";
@@ -21,7 +13,7 @@ in {
     };
     package = mkOption {
       type = types.package;
-      default = lightspeed-dhl-adapter;
+      default = null;
     };
     openFirewall = mkEnableOption "firewall";
     port = mkOption {
@@ -54,6 +46,13 @@ in {
   };
 
   config = lib.mkIf cfg.enable {
+    assertions = [
+      {
+        assertion = cfg.package != null;
+        message = "package must be set";
+      }
+    ];
+
     networking.firewall.allowedTCPPorts = lib.optionals cfg.openFirewall [cfg.port];
 
     systemd.tmpfiles.rules = [
