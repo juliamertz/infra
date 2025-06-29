@@ -97,11 +97,11 @@
         "systems": "systems_3"
       },
       "locked": {
-        "lastModified": 1748507757,
-        "narHash": "sha256-LUyfE+tjLxtlnyXlp61aTaPiLlhfdxy+wp4Sn2mNX8M=",
+        "lastModified": 1751157867,
+        "narHash": "sha256-MjplWjupZBAJVbZJ1FL1iKhjsgYzpeKW3ysMBRH6VLQ=",
         "owner": "juliamertz",
         "repo": "lightspeed-dhl-adapter",
-        "rev": "12b64eea9e26c62df7f2485912aa0565de0d91a8",
+        "rev": "577c0d17149f8f149ca295347596269ce0b1dc59",
         "type": "github"
       },
       "original": {
