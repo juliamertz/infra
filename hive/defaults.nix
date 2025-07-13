@@ -1,4 +1,8 @@
-inputs: {pkgs, ...}: let
+inputs: {
+  pkgs,
+  name,
+  ...
+}: let
   dotfiles = inputs.dotfiles.packages.${pkgs.system};
 in {
   imports = [
@@ -7,6 +11,11 @@ in {
     inputs.srvos.nixosModules.mixins-terminfo
     inputs.sops.nixosModules.sops
   ];
+
+  networking.hostName = name;
+
+  # age key is placed here as part of terraform init
+  sops.age.keyFile = "/etc/sops/age/keys.txt";
 
   networking = {
     useHostResolvConf = false;
@@ -30,7 +39,6 @@ in {
 
   users.users = let
     authorizedKeys = [
-      # "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJaSMVfNtTgKjZBn0OurWXDpNrV+soaog7W0Svv4vE40" # old
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBfVB8IMsb81U7ySvg82PTlBhnKlQ7Lqs50p4XU1nAv3"
     ];
   in {
