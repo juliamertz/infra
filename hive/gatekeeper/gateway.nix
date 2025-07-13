@@ -3,6 +3,8 @@
   config,
   ...
 }: {
+  imports = [../../nixosModules/gateway];
+
   services.gateway = {
     enable = true;
     openFirewall = true;
@@ -69,8 +71,4 @@
         };
       };
   };
-
-  imports = [
-    ../../nixosModules/gateway
-  ];
 }

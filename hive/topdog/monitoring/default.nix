@@ -1,4 +1,5 @@
 {
+  nodes,
   pkgs,
   lib,
   config,
@@ -69,6 +70,14 @@
           job_name = "nettenshop_exporter";
           static_configs = [{targets = ["0.0.0.0:5010"];}];
         }
+        {
+          job_name = "wireguard_exporter";
+          static_configs = [
+            {
+              targets = ["10.0.1.1:${toString nodes.topdog.config.services.prometheus.exporters.wireguard.port}"];
+            }
+          ];
+        }
       ];
 
     exporters = {
@@ -99,6 +108,9 @@
       node = {
         enable = true;
         enabledCollectors = ["logind" "systemd"];
+      };
+
+      wireguard = {
       };
     };
   };

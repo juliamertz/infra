@@ -3,6 +3,8 @@
   config,
   ...
 }: {
+  imports = [../../nixosModules/wireguard];
+
   sops.secrets.wireguardPrivateKey = {
     key = name;
     owner = "julia";
@@ -16,7 +18,7 @@
     externalInterface = "eth0";
   };
 
-  imports = [
-    ../../nixosModules/wireguard
-  ];
+  services.prometheus.exporters.wireguard = {
+    enable = true;
+  };
 }
