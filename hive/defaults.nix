@@ -1,6 +1,7 @@
 inputs: {
   pkgs,
   name,
+  lib,
   ...
 }: let
   dotfiles = inputs.dotfiles.packages.${pkgs.system};
@@ -14,16 +15,14 @@ in {
 
   networking.hostName = name;
 
-  # age key is placed here as part of terraform init
-  sops.age.keyFile = "/etc/sops/age/keys.txt";
-
   networking = {
     useHostResolvConf = false;
-
-    # enable networking for the internal hetzner network
     interfaces.enp7s0.useDHCP = true;
     firewall.trustedInterfaces = ["enp7s0"];
   };
+
+  # age key is placed here as part of terraform init
+  sops.age.keyFile = lib.mkDefault "/etc/sops/age/keys.txt";
 
   services.fail2ban.enable = true;
 
@@ -69,6 +68,10 @@ in {
       ];
     };
   };
+
+  # environment.sessionVariables = {
+  #   NIX_PATH = "nixpkgs=https://github.com/NixOS/nixpkgs/archive/nixos-unstable.tar.gz";
+  # };
 
   system.stateVersion = "25.05";
   # time.timeZone = nodes.host-b.config.time.timeZone;

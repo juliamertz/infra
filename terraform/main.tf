@@ -37,12 +37,26 @@ locals {
     root            = { type = "A", name = "www" }
     grafana         = { type = "A", name = "grafana" }
     gh              = { type = "A", name = "gh" }
-    wg              = { type = "A", name = "wg" }
+    wg              = { type = "A", name = "wg", proxied = false }
     home-assistant  = { type = "A", name = "home-assistant" }
     nettenshop      = { type = "A", name = "nettenshop" }
     watch           = { type = "A", name = "watch" }
     cache           = { type = "A", name = "cache" }
+    mc              = { type = "A", name = "mc", content = "91.99.138.181" }
     # nettenshop_prod = { type = "A", name = "nettenshop.prod" }
+  }
+}
+
+resource "cloudflare_dns_record" "mc_srv" {
+  zone_id  = var.juliamertz_nl_zone_id
+  type     = "SRV"
+  name     = "_minecraft._tcp"
+  ttl = 1
+  data = {
+    port = 25565
+    target = "mc.juliamertz.nl" 
+    weight = 5
+    priority = 0
   }
 }
 

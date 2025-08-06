@@ -7,6 +7,7 @@
     srvos.url = "github:nix-community/srvos";
     sops.url = "github:Mic92/sops-nix";
     lightspeed-dhl-adapter.url = "github:juliamertz/lightspeed-dhl-adapter";
+    nix-minecraft.url = "github:Infinidoge/nix-minecraft";
 
     dotfiles.url = "github:juliamertz/dotfiles";
   };
@@ -20,9 +21,13 @@
   } @ inputs: let
     inherit (nixpkgs) lib;
 
+    overlays = [inputs.nix-minecraft.overlay];
     forAllSystems = fun:
       lib.genAttrs (import systems) (system:
-        fun nixpkgs.legacyPackages.${system});
+        fun (import nixpkgs {
+          inherit system;
+          inherit overlays;
+        }));
 
     mkTargetFromEnv = name: let
       targetEnv = key: builtins.getEnv "NIXOS_HOST_${lib.toUpper name}_${lib.toUpper key}";
@@ -32,6 +37,13 @@
       targetPort = targetEnv "ssh_port" |> lib.strings.toIntBase10;
     };
   in {
+    packages = forAllSystems (pkgs: {
+      modpack = pkgs.fetchPackwizModpack {
+        url = "https://github.com/juliamertz/pack/raw/0.0.1/pack.toml";
+        packHash = "sha256-wXDqYZaiE8jazoq+c3jEcX7P1OUq8S2KB+5+77z09GM=";
+      };
+    });
+
     colmenaHive = colmena.lib.makeHive {
       meta = {
         nixpkgs = import inputs.nixpkgs {
@@ -53,6 +65,12 @@
       topdog = {...}: {
         imports = [./hive/topdog];
         deployment = mkTargetFromEnv "topdog";
+      };
+
+      cube = {...}: {
+        imports = [./hive/cube];
+        deployment = mkTargetFromEnv "cube";
+        nixpkgs.system = "aarch64-linux";
       };
     };
 

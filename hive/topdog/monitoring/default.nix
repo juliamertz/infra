@@ -53,31 +53,34 @@
     port = 9090;
 
     scrapeConfigs = let
-      mkExporter = name: {
+      mkExporter = hosts: name: {
         job_name = "${name}_exporter";
         static_configs = [
-          {targets = ["0.0.0.0:${toString config.services.prometheus.exporters.${name}.port}"];}
+          {
+            targets =
+              map (host: "${host}:${toString config.services.prometheus.exporters.${name}.port}") hosts;
+          }
         ];
       };
     in
-      (map mkExporter [
-        "systemd"
-        "process"
-        "node"
-      ])
-      ++ [
+      [
         {
           job_name = "nettenshop_exporter";
           static_configs = [{targets = ["0.0.0.0:5010"];}];
         }
         {
           job_name = "wireguard_exporter";
-          static_configs = [
-            {
-              targets = ["10.0.1.1:${toString nodes.topdog.config.services.prometheus.exporters.wireguard.port}"];
-            }
-          ];
+          static_configs = [{targets = ["10.0.1.1:${toString nodes.topdog.config.services.prometheus.exporters.wireguard.port}"];}];
         }
+        {
+          job_name = "fabric_exporter";
+          static_configs = [{targets = ["10.0.1.4:25585"];}];
+        }
+      ]
+      ++ map (mkExporter ["0.0.0.0" "10.0.1.4"]) [
+        "systemd"
+        "process"
+        "node"
       ];
 
     exporters = {

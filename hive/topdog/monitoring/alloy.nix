@@ -7,12 +7,8 @@
 in {
   services.alloy = {
     enable = true;
-    configPath = "/etc/alloy/client.alloy";
-  };
-
-  environment.etc."alloy/client.alloy" = {
-    mode = "0644";
-    text =
+    configPath =
+      pkgs.writeText "config.alloy"
       # hcl
       ''
         loki.relabel "journal" {
@@ -38,3 +34,9 @@ in {
       '';
   };
 }
+# rule {
+#   source_labels = ["__journal__systemd_unit"]
+#   regex         = "(nginx|docker|ssh)\.service"
+#   action        = "keep"
+# }
+

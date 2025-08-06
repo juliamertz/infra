@@ -16,6 +16,14 @@
     ../../nixosModules/cache
   ];
 
+  networking.hostName = name;
+
+  fileSystems. "/data" = {
+    device = "/dev/sdb";
+    fsType = "ext4";
+    options = ["data=journal"];
+  };
+
   services.nettenshop = {
     enable = true;
     package = inputs.lightspeed-dhl-adapter.packages.${pkgs.system}.default;
