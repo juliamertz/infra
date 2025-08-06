@@ -1122,7 +1122,7 @@
       "fieldConfig": {
         "defaults": {
           "color": {
-            "mode": "palette-classic"
+            "mode": "continuous-BlPu"
           },
           "custom": {
             "axisBorderShow": false,
@@ -1134,14 +1134,17 @@
             "barWidthFactor": 0.6,
             "drawStyle": "line",
             "fillOpacity": 0,
-            "gradientMode": "none",
+            "gradientMode": "hue",
             "hideFrom": {
               "legend": false,
               "tooltip": false,
               "viz": false
             },
             "insertNulls": false,
-            "lineInterpolation": "linear",
+            "lineInterpolation": "smooth",
+            "lineStyle": {
+              "fill": "solid"
+            },
             "lineWidth": 1,
             "pointSize": 5,
             "scaleDistribution": {
@@ -1162,7 +1165,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "purple"
               },
               {
                 "color": "red",
@@ -1771,12 +1774,12 @@
     ]
   },
   "time": {
-    "from": "2025-08-06T23:00:07.820Z",
-    "to": "2025-08-06T23:07:50.978Z"
+    "from": "now-30m",
+    "to": "now"
   },
   "timepicker": {},
   "timezone": "",
   "title": "Minecraft Fabric",
   "uid": "6UU5TBqGz2",
-  "version": 7
+  "version": 8
 }
