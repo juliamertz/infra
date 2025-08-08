@@ -37,12 +37,7 @@
       targetPort = targetEnv "ssh_port" |> lib.strings.toIntBase10;
     };
   in {
-    packages = forAllSystems (pkgs: {
-      modpack = pkgs.fetchPackwizModpack {
-        url = "https://github.com/juliamertz/pack/raw/0.0.1/pack.toml";
-        packHash = "sha256-wXDqYZaiE8jazoq+c3jEcX7P1OUq8S2KB+5+77z09GM=";
-      };
-    });
+    packages = forAllSystems (pkgs: {});
 
     colmenaHive = colmena.lib.makeHive {
       meta = {

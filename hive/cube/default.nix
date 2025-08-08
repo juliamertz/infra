@@ -28,15 +28,43 @@
     servers.fabric = {
       enable = true;
       jvmOpts = "-Xmx14G -Xms14G";
-      package = pkgs.fabricServers.fabric-1_20_1.override {loaderVersion = "0.16.10";};
+      package = pkgs.fabricServers.fabric-1_20_1.override {loaderVersion = "0.17.0";};
 
       symlinks = {
         mods = let
+          serverMods = pkgs.linkFarmFromDrvs "mods" (
+            builtins.attrValues {
+              fabric-api = pkgs.fetchurl {
+                url = "https://cdn.modrinth.com/data/P7dR8mSH/versions/UapVHwiP/fabric-api-0.92.6%2B1.20.1.jar";
+                sha256 = "sha256-Ds5QR22jaSERqwS3WUXFRY5w2YzQae78BEqz5Xl33us=";
+              };
+              fabric-exporter = pkgs.fetchurl {
+                url = "https://cdn.modrinth.com/data/dbVXHSlv/versions/5sFtYOmu/fabricexporter-1.0.14.jar";
+                sha256 = "sha256-7Uor+Fq3qDBX+G4Q5PZY4Y2PlKeLu1fWTtvottrj6ac=";
+              };
+              spark = pkgs.fetchurl {
+                url = "https://cdn.modrinth.com/data/l6YH9Als/versions/XGW2fviP/spark-1.10.53-fabric.jar";
+                sha256 = "sha256-AMA05oT6RHG0FTncKajTnMbyLrKbL6QjiV78l4o5HS0=";
+              };
+              dynmap = pkgs.fetchurl {
+                url = "https://cdn.modrinth.com/data/fRQREgAc/versions/vqx7tUUt/Dynmap-3.6-fabric-1.20.jar";
+                sha256 = "sha256-uWH7wRkjY2hVRwc0/xgyywo/BDvTo026Ys/OfOeI0uQ=";
+              };
+            }
+          );
+
           modpack = pkgs.fetchPackwizModpack {
-            url = "http://github.com/juliamertz/pack/raw/0.0.12/pack.toml";
-            packHash = "sha256-hiruONtkWskexQL3q2qeJiuP8mDr6cI0eRLgRZHCCRs=";
+            url = "http://github.com/juliamertz/pack/raw/0.1.1/pack.toml";
+            packHash = "sha256-saWuw9chhKXTtnoypoHMEuW09SKOtbbmupHm1JJ55hY=";
           };
-        in "${modpack}/mods";
+        in
+          pkgs.symlinkJoin {
+            name = "mods";
+            paths = [
+              serverMods
+              "${modpack}/mods"
+            ];
+          };
       };
 
       serverProperties = {
@@ -64,6 +92,10 @@
 
     units = ["minecraft-server-fabric"];
   };
+
+  networking.firewall.allowedTCPPorts = [
+    8123 # dynmap
+  ];
 
   # fileSystems. "/data" = {
   #   device = "/dev/sdb";

@@ -43,6 +43,7 @@ locals {
     watch           = { type = "A", name = "watch" }
     cache           = { type = "A", name = "cache" }
     mc              = { type = "A", name = "mc", content = "91.99.138.181" }
+    dynmap              = { type = "A", name = "dynmap" }
     # nettenshop_prod = { type = "A", name = "nettenshop.prod" }
   }
 }

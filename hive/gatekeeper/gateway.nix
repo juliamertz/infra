@@ -69,6 +69,14 @@
             port = 8123;
           };
         };
+
+        dynmap = {
+          subdomain = "dynmap";
+          config = reverseProxy {
+            host = "10.0.1.4";
+            port = 8123;
+          };
+        };
       };
   };
 }
