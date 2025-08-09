@@ -75,6 +75,11 @@
           config = reverseProxy {
             host = "10.0.1.4";
             port = 8123;
+            extraConfig = ''
+              header_up Host {host}
+              header_up X-Real-IP {remote}
+              header_up X-Forwarded-For {remote}
+            '';
           };
         };
       };
