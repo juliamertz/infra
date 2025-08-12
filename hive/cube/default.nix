@@ -54,8 +54,8 @@
           );
 
           modpack = pkgs.fetchPackwizModpack {
-            url = "http://github.com/juliamertz/pack/raw/0.1.1/pack.toml";
-            packHash = "sha256-saWuw9chhKXTtnoypoHMEuW09SKOtbbmupHm1JJ55hY=";
+            url = "http://github.com/juliamertz/pack/raw/0.2.0/pack.toml";
+            packHash = "sha256-t1coRr4FePSkyw3+Vo6QgFQalSSLRhMUyqacxlah6zI=";
           };
         in
           pkgs.symlinkJoin {
