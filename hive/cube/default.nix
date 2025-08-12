@@ -50,6 +50,10 @@
                 url = "https://cdn.modrinth.com/data/fRQREgAc/versions/vqx7tUUt/Dynmap-3.6-fabric-1.20.jar";
                 sha256 = "sha256-uWH7wRkjY2hVRwc0/xgyywo/BDvTo026Ys/OfOeI0uQ=";
               };
+              multiworld = pkgs.fetchurl {
+                url = "https://cdn.modrinth.com/data/fgvoNDL1/versions/vsVkTQvL/Multiworld-Fabric-bundle.jar";
+                sha256 = "sha256-abBXgL3sRN3RdKNlnDQs8k9TgAlA9KU8bcEDYB57Z20=";
+              };
             }
           );
 
