@@ -70,20 +70,20 @@
           };
         };
 
-        dynmap = {
-          subdomain = "dynmap";
-          # config = reverseProxy {
-          #   host = "10.0.1.4";
-          #   port = 8123;
-          # };
-          config = ''
-            reverse_proxy 10.0.1.4:8123 {
-              header_up Host {host}
-              header_up X-Real-IP {remote}
-              header_up X-Forwarded-For {remote}
-            }
-          '';
-        };
+        # dynmap = {
+        #   subdomain = "dynmap";
+        #   # config = reverseProxy {
+        #   #   host = "10.0.1.4";
+        #   #   port = 8123;
+        #   # };
+        #   config = ''
+        #     reverse_proxy 10.0.1.4:8123 {
+        #       header_up Host {host}
+        #       header_up X-Real-IP {remote}
+        #       header_up X-Forwarded-For {remote}
+        #     }
+        #   '';
+        # };
       };
   };
 }

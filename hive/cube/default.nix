@@ -21,13 +21,17 @@
     '')
   ];
 
-  services.minecraft-servers = {
+  services.minecraft-servers = let
+    servers = import "${inputs.nix-minecraft}/pkgs/all-packages.nix" pkgs;
+  in {
     enable = true;
     openFirewall = true;
 
     servers.fabric = {
       enable = true;
       jvmOpts = "-Xmx14G -Xms14G";
+
+      # package = servers.neoforgeServers.neoforge-21_1_193;
       package = pkgs.fabricServers.fabric-1_20_1.override {loaderVersion = "0.17.0";};
 
       symlinks = {
@@ -46,10 +50,6 @@
                 url = "https://cdn.modrinth.com/data/l6YH9Als/versions/XGW2fviP/spark-1.10.53-fabric.jar";
                 sha256 = "sha256-AMA05oT6RHG0FTncKajTnMbyLrKbL6QjiV78l4o5HS0=";
               };
-              dynmap = pkgs.fetchurl {
-                url = "https://cdn.modrinth.com/data/fRQREgAc/versions/vqx7tUUt/Dynmap-3.6-fabric-1.20.jar";
-                sha256 = "sha256-uWH7wRkjY2hVRwc0/xgyywo/BDvTo026Ys/OfOeI0uQ=";
-              };
               multiworld = pkgs.fetchurl {
                 url = "https://cdn.modrinth.com/data/fgvoNDL1/versions/vsVkTQvL/Multiworld-Fabric-bundle.jar";
                 sha256 = "sha256-abBXgL3sRN3RdKNlnDQs8k9TgAlA9KU8bcEDYB57Z20=";
@@ -58,8 +58,11 @@
           );
 
           modpack = pkgs.fetchPackwizModpack {
-            url = "http://github.com/juliamertz/pack/raw/0.2.0/pack.toml";
-            packHash = "sha256-t1coRr4FePSkyw3+Vo6QgFQalSSLRhMUyqacxlah6zI=";
+            url = "http://github.com/juliamertz/pack/raw/0.3.0/pack.toml";
+            packHash = "sha256-i/qJ5+7iebpTL2UiFachYUdloOpTHBPhsqdgvlCaKZw=";
+
+            # url = "http://github.com/juliamertz/pack/raw/neoforge-beta-0.0.1/pack.toml";
+            # packHash = "sha256-bcFH0zOcVqAZggZNJHdsUwtl9Fvj69mlm1uINuTiETY=";
           };
         in
           pkgs.symlinkJoin {
@@ -76,7 +79,7 @@
         difficulty = 2;
         max-players = 10;
         white-list = true;
-        motd = "NixOS Minecraft server!";
+        motd = "NixOS Fabric server!";
       };
     };
   };

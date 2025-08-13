@@ -69,9 +69,12 @@ in {
     };
   };
 
-  # environment.sessionVariables = {
-  #   NIX_PATH = "nixpkgs=https://github.com/NixOS/nixpkgs/archive/nixos-unstable.tar.gz";
-  # };
+  nixpkgs.config.allowUnfree = true;
+
+  environment.sessionVariables = {
+    # NIX_PATH = "nixpkgs=https://github.com/NixOS/nixpkgs/archive/nixos-unstable.tar.gz";
+    TERM = "xterm-256color";
+  };
 
   system.stateVersion = "25.05";
   # time.timeZone = nodes.host-b.config.time.timeZone;
