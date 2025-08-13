@@ -7,8 +7,8 @@
     srvos.url = "github:nix-community/srvos";
     sops.url = "github:Mic92/sops-nix";
     lightspeed-dhl-adapter.url = "github:juliamertz/lightspeed-dhl-adapter";
-    nix-minecraft.url = "github:Infinidoge/nix-minecraft";
-    # nix-minecraft.url = "github:nathanregner/nix-minecraft/4c27ffe58bc42627f86bbc19779024db1a49a7f3";
+    # nix-minecraft.url = "github:Infinidoge/nix-minecraft";
+    nix-minecraft.url = "github:nathanregner/nix-minecraft/4c27ffe58bc42627f86bbc19779024db1a49a7f3";
 
     dotfiles.url = "github:juliamertz/dotfiles";
   };

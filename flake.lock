@@ -172,16 +172,17 @@
         "nixpkgs": "nixpkgs_6"
       },
       "locked": {
-        "lastModified": 1755050894,
-        "narHash": "sha256-agtmDv3pMgLinBN/SxWZ3PdbtY6BeTTTDTGGka+0HNA=",
-        "owner": "Infinidoge",
+        "lastModified": 1753241285,
+        "narHash": "sha256-+w41bybG2C54HvRmH4yWGbH/M+cLfnbBmrLOvilvBsg=",
+        "owner": "nathanregner",
         "repo": "nix-minecraft",
-        "rev": "d89606471e2ea2ccf4e3c8a19dea4071bfe7885c",
+        "rev": "4c27ffe58bc42627f86bbc19779024db1a49a7f3",
         "type": "github"
       },
       "original": {
-        "owner": "Infinidoge",
+        "owner": "nathanregner",
         "repo": "nix-minecraft",
+        "rev": "4c27ffe58bc42627f86bbc19779024db1a49a7f3",
         "type": "github"
       }
     },
