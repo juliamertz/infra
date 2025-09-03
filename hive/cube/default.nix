@@ -21,9 +21,7 @@
     '')
   ];
 
-  services.minecraft-servers = let
-    servers = import "${inputs.nix-minecraft}/pkgs/all-packages.nix" pkgs;
-  in {
+  services.minecraft-servers = {
     enable = true;
     openFirewall = true;
 
@@ -31,22 +29,17 @@
       enable = true;
       jvmOpts = "-Xmx14G -Xms14G";
 
-      package = servers.neoforgeServers.neoforge-21_1_193;
+      package = pkgs.neoforgeServers.neoforge-21_1_200;
 
       symlinks = {
         mods = let
           serverMods = pkgs.linkFarmFromDrvs "mods" (
-            builtins.attrValues {
-              kubejs = pkgs.fetchurl {
-                url = "https://cdn.modrinth.com/data/umyGl7zF/versions/3w2ufpfQ/kubejs-neoforge-2101.7.1-build.181.jar";
-                sha256 = "sha256-fh4RaGODxfHZuGn/SKSFhzUG5PLXgz3nPSNroLVyuu0=";
-              };
-            }
+            builtins.attrValues { }
           );
 
           modpack = pkgs.fetchPackwizModpack {
-            url = "http://github.com/juliamertz/pack/raw/neoforge-beta-0.0.1/pack.toml";
-            packHash = "sha256-bcFH0zOcVqAZggZNJHdsUwtl9Fvj69mlm1uINuTiETY=";
+            url = "http://github.com/juliamertz/pack/raw/0.5.1/pack.toml";
+            packHash = "sha256-iSlDClRiOcYBW5fG84ccMcG46ZuZ2HxvZIt2gXk2JX0=";
           };
         in
           pkgs.symlinkJoin {
@@ -63,6 +56,7 @@
         difficulty = 2;
         max-players = 10;
         white-list = true;
+        allow-flight = true;
         motd = "NixOS NeoForge server!";
       };
     };
