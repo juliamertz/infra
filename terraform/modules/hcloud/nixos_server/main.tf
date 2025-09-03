@@ -56,7 +56,7 @@ resource "null_resource" "install_age_key" {
 data "external" "flake_digest" {
   program = [
     "${path.module}/scripts/hash-output",
-    "${var.flake_path}#colmenaHive.toplevel.${var.name}",
+    "${var.flake_path}#colmenaHive.toplevel.${var.flake_profile}",
   ]
 }
 
