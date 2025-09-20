@@ -11,9 +11,9 @@ output "topdog" {
   }
 }
 
-output "cube" {
-  value = {
-    ip = module.nixos_cube.ipv4_address
-  }
-}
+# output "cube" {
+#   value = {
+#     ip = module.nixos_cube.ipv4_address
+#   }
+# }
 

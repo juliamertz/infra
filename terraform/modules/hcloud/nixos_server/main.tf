@@ -63,9 +63,9 @@ data "external" "flake_digest" {
 resource "null_resource" "deploy_nixos" {
   depends_on = [null_resource.install_age_key]
 
-  # triggers = {
-  #   flake_digest = data.external.flake_digest.result.sha256
-  # }
+  triggers = {
+    flake_digest = data.external.flake_digest.result.sha256
+  }
 
   provisioner "local-exec" {
     command = "colmena apply --on ${var.name} ${var.build_on_target ? "--build-on-target" : ""} --impure"

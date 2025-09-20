@@ -25,6 +25,7 @@
         fun (import nixpkgs {
           inherit system;
           inherit overlays;
+          config.allowUnfree = true;
         }));
 
     mkTargetFromEnv = name: let
@@ -35,8 +36,9 @@
       targetPort = targetEnv "ssh_port" |> lib.strings.toIntBase10;
     };
   in {
-    packages = forAllSystems (pkgs:  {
-    });
+    packages =
+      forAllSystems (pkgs: {
+      });
 
     colmenaHive = colmena.lib.makeHive {
       meta = {
@@ -61,20 +63,23 @@
         deployment = mkTargetFromEnv "topdog";
       };
 
-      cube = {...}: {
-        imports = [./hive/cube];
-        deployment = mkTargetFromEnv "cube";
-        nixpkgs.system = "aarch64-linux";
-      };
+      # cube = {...}: {
+      #   imports = [./hive/cube];
+      #   deployment = mkTargetFromEnv "cube";
+      #   nixpkgs.system = "aarch64-linux";
+      # };
     };
 
     devShells = forAllSystems (pkgs: {
       default = pkgs.mkShell {
         buildInputs = [];
         packages = with pkgs; [
+          jq
           treefmt
           alejandra
-
+          packer
+          hcloud
+          talosctl
           colmena.packages.${system}.colmena
           (pkgs.stdenvNoCC.mkDerivation {
             inherit (pkgs.opentofu) meta pname version;
@@ -86,6 +91,19 @@
               ln -sf $src/bin/tofu $out/bin/tofu-unwrapped
             '';
           })
+          (let
+            hcloud-talos = pkgs.fetchFromGitHub {
+              owner = "hcloud-talos";
+              repo = "terraform-hcloud-talos";
+              rev = "377cd6802a392db8132084d25192e7e296fe363e";
+              sha256 = "sha256-Ko7dbSzfC9CDDytbBS/M0UZcvD3L0UxCVNmRmdwZfls=";
+            };
+          in
+            pkgs.writeShellScriptBin "build-images" ''
+              PATH="${pkgs.packer}/bin:$PATH"
+              cd ${hcloud-talos}
+              ./_packer/create.sh
+            '')
         ];
       };
     });

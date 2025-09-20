@@ -3,10 +3,10 @@ provider "hcloud" {
   token = var.production_hcloud_token
 }
 
-# provider "hcloud" {
-#   alias = "development"
-#   token = var.development_hcloud_token
-# }
+provider "hcloud" {
+  alias = "development"
+  token = var.development_hcloud_token
+}
 
 provider "cloudflare" {
   api_token = var.cloudflare_token
@@ -34,33 +34,20 @@ locals {
   sops_age_key    = "~/.config/sops/age/keys.txt"
 
   records = {
-    root            = { type = "A", name = "www" }
-    grafana         = { type = "A", name = "grafana" }
-    gh              = { type = "A", name = "gh" }
-    wg              = { type = "A", name = "wg", proxied = false }
-    home-assistant  = { type = "A", name = "home-assistant" }
-    nettenshop      = { type = "A", name = "nettenshop" }
-    watch           = { type = "A", name = "watch" }
-    cache           = { type = "A", name = "cache" }
-    mc              = { type = "A", name = "mc", content = "91.99.138.181" }
-    dynmap              = { type = "A", name = "dynmap" }
-    # nettenshop_prod = { type = "A", name = "nettenshop.prod" }
+    root    = { type = "A", name = "@" }
+    www     = { type = "A", name = "www" }
+    grafana = { type = "A", name = "grafana" }
+    gh      = { type = "A", name = "gh" }
+    wg      = { type = "A", name = "wg", proxied = false }
+    # home-assistant  = { type = "A", name = "home-assistant" }
+    hass       = { type = "A", name = "hass" }
+    nettenshop = { type = "A", name = "nettenshop" }
+    watch      = { type = "A", name = "watch" }
+    cache      = { type = "A", name = "cache" }
+    # mc              = { type = "A", name = "mc", content = "91.99.138.181" }
+    # dynmap              = { type = "A", name = "dynmap" }
   }
 }
-
-resource "cloudflare_dns_record" "mc_srv" {
-  zone_id  = var.juliamertz_nl_zone_id
-  type     = "SRV"
-  name     = "_minecraft._tcp"
-  ttl = 1
-  data = {
-    port = 25565
-    target = "mc.juliamertz.nl" 
-    weight = 5
-    priority = 0
-  }
-}
-
 
 module "production" {
   source = "./modules/hcloud/hive"
@@ -76,19 +63,44 @@ module "production" {
   }
 }
 
-# module "development" {
-#   source = "./modules/hcloud/hive"
-#
-#   build_on_target        = local.build_on_target
-#   sops_age_key           = local.sops_age_key
-#   deployment_private_key = "~/.ssh/id_ed25519"
-#   deployment_public_key  = "~/.ssh/id_ed25519.pub"
-#   flake_path             = var.flake_path
-#
-#   providers = {
-#     hcloud = hcloud.development
-#   }
-# }
+module "production_k8s" {
+  source  = "./modules/hcloud/talos_cluster"
+
+  talos_version      = "1.11.0"
+  kubernetes_version = "1.30.3"
+  cilium_version     = "1.16.2"
+
+  hcloud_token = var.production_hcloud_token
+
+  cluster_name     = "juliamertz.dev"
+  cluster_api_host = "kube.juliamertz.dev"
+
+  firewall_enable = false
+  datacenter_name = local.datacenter
+
+  control_plane_count       = 1
+  control_plane_server_type = "cax11"
+  control_plane_allow_schedule = false
+
+  worker_nodes = [
+    {
+      type  = "cax21"
+      labels = {
+        "node.kubernetes.io/instance-type" = "cax21"
+        "node.kubernetes.io/arch"          = "arm64"
+      }
+    },
+  ]
+
+  network_ipv4_cidr = "10.0.0.0/16"
+  node_ipv4_cidr    = "10.0.1.0/24"
+  pod_ipv4_cidr     = "10.0.16.0/20"
+  service_ipv4_cidr = "10.0.8.0/21"
+
+  providers = {
+    hcloud = hcloud.production
+  }
+}
 
 module "juliamertz-nl-dns" {
   source = "./modules/cloudflare/records"
