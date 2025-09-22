@@ -32,7 +32,7 @@ spec:
         mode: Terminate
         certificateRefs:
         - kind: Secret
-          name: gateway-tls-cert
+          name: tls-cert-gateway
       allowedRoutes:
         namespaces:
           from: All

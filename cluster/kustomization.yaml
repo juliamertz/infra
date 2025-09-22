@@ -3,4 +3,6 @@ kind: Kustomization
 resources:
   - cloudnative-pg
   - envoy-gateway
+  - cert-manager
+  - external-dns
   - gateway.yaml
