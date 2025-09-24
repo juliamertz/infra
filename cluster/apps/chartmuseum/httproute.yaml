@@ -7,8 +7,22 @@ spec:
   - name: shared
     namespace: default
   hostnames:
-  - "charts.juliamertz.dev"
+  - charts.juliamertz.dev
   rules:
   - backendRefs:
-    - name: chartmusuem
+    - name: chartmuseum
       port: 8080
+
+---
+apiVersion: cert-vandal.io/v1
+kind: SANInjection
+metadata:
+  name: chartmuseum
+spec:
+  targetCertificate:
+    name: gateway-tls
+    namespace: default
+  hostnames:
+    - charts.juliamertz.dev
+
+
