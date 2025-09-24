@@ -66,9 +66,9 @@ module "production" {
 module "production_k8s" {
   source  = "./modules/hcloud/talos_cluster"
 
-  talos_version      = "1.11.0"
-  kubernetes_version = "1.30.3"
-  cilium_version     = "1.16.2"
+  talos_version      = "1.11.1"
+  kubernetes_version = "1.34.1"
+  cilium_version     = "1.17.8"
 
   hcloud_token = var.production_hcloud_token
 
