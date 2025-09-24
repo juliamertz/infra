@@ -33,6 +33,7 @@ spec:
       interval: 1m
   values:
     mode: standalone
+    defaultBuckets: "helm-charts"
     tls:
       enabled: false
     persistence:
