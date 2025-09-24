@@ -23,9 +23,17 @@ spec:
         namespace: external-dns
       interval: 1m
   values:
+    extraArgs:
+      - --exclude-target-net=10.0.0.0/16
     domainFilters:
       - juliamertz.dev
       - juliamertz.nl
+    sources:
+      - gateway-httproute
+      - gateway-grpcroute
+      - gateway-tcproute
+      - gateway-tlsroute
+      - gateway-udproute
     provider:
       name: cloudflare
     env:
@@ -34,10 +42,3 @@ spec:
           secretKeyRef:
             name: cloudflare-api-key
             key: apiKey
-    sources:
-      - service
-      - gateway-httproute
-      - gateway-grpcroute
-      - gateway-tcproute
-      - gateway-tlsroute
-      - gateway-udproute

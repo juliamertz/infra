@@ -4,5 +4,5 @@ namespace: envoy-gateway-system
 resources:
   - namespace.yaml
   - release.yaml
-  - proxy.yaml
+  - proxy-config.yaml
   - gatewayclass.yaml
