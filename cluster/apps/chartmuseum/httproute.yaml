@@ -1,0 +1,14 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: chartmusuem
+spec:
+  parentRefs:
+  - name: shared
+    namespace: default
+  hostnames:
+  - "charts.juliamertz.dev"
+  rules:
+  - backendRefs:
+    - name: chartmusuem
+      port: 8080
