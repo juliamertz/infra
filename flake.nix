@@ -75,6 +75,7 @@
         buildInputs = [];
         packages = with pkgs; [
           jq
+          yq
           treefmt
           alejandra
           packer

@@ -13,6 +13,7 @@ terraform {
 
 variable "flake_path" {
   type = string
+  default = "../"
 }
 
 variable "development_hcloud_token" {}
