@@ -22,4 +22,12 @@ spec:
         name: grafana
         namespace: grafana
       interval: 1m
-  values: {}
+  values: 
+    replicas: 2
+    resources:
+      requests:
+        cpu: 50m
+        memory: 128Mi
+      limits:
+        cpu: 250m
+        memory: 256Mi
