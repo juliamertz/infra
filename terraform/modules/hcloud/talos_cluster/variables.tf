@@ -63,11 +63,6 @@ variable "output_mode_config_cluster_endpoint" {
 }
 
 # Firewall
-variable "firewall_enable" {
-  type        = bool
-  default     = true
-}
-
 variable "firewall_use_current_ip" {
   type        = bool
   default     = false
@@ -81,26 +76,6 @@ variable "extra_firewall_rules" {
   type        = list(any)
   default     = []
   description = "Additional firewall rules to apply to the cluster."
-}
-
-variable "firewall_kube_api_source" {
-  type        = list(string)
-  default     = null
-  description = <<EOF
-    Source networks that have Kube API access to the servers.
-    If null (default), the all traffic is blocked.
-    If set, this overrides the firewall_use_current_ip setting.
-  EOF
-}
-
-variable "firewall_talos_api_source" {
-  type        = list(string)
-  default     = null
-  description = <<EOF
-    Source networks that have Talos API access to the servers.
-    If null (default), the all traffic is blocked.
-    If set, this overrides the firewall_use_current_ip setting.
-  EOF
 }
 
 # Network

@@ -110,7 +110,7 @@ resource "hcloud_server" "control_planes" {
     "role"    = "control-plane"
   }
 
-  firewall_ids = var.firewall_enable ? [ hcloud_firewall.this.id ] : []
+  # firewall_ids = var.firewall_enable ? [ hcloud_firewall.this.id ] : []
 
   public_net {
     ipv4_enabled = true
@@ -154,7 +154,7 @@ resource "hcloud_server" "workers" {
     "server_type" = each.value.server_type
   }, each.value.labels)
 
-  firewall_ids = var.firewall_enable ? [ hcloud_firewall.this.id ] : []
+  # firewall_ids = var.firewall_enable ? [ hcloud_firewall.this.id ] : []
 
   public_net {
     ipv4_enabled = true
@@ -182,8 +182,6 @@ resource "hcloud_server" "workers" {
   }
 }
 
-
-
 resource "hcloud_server" "workers_new" {
   for_each           = { for worker in local.new_workers : worker.name => worker }
   datacenter         = data.hcloud_datacenter.this.name
@@ -200,7 +198,7 @@ resource "hcloud_server" "workers_new" {
     "server_type" = each.value.server_type
   }, each.value.labels)
 
-  firewall_ids = var.firewall_enable ? [ hcloud_firewall.this.id ] : []
+  # firewall_ids = var.firewall_enable ? [ hcloud_firewall.this.id ] : []
 
   public_net {
     ipv4_enabled = true

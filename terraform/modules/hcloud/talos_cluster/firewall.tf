@@ -1,37 +1,27 @@
-# Retrieve the public IP address of the current machine if the firewall should be opened for the current IP
-data "http" "personal_ipv4" {
-  count = var.firewall_use_current_ip ? 1 : 0
-  url   = "https://ipv4.icanhazip.com"
-}
-
-data "http" "personal_ipv6" {
-  count = var.firewall_use_current_ip ? 1 : 0
-  url   = "https://ipv6.icanhazip.com"
-}
-
 locals {
-  current_ips = var.firewall_use_current_ip ? [
-    "${chomp(data.http.personal_ipv4[0].response_body)}/32",
-    "${chomp(data.http.personal_ipv6[0].response_body)}/128",
-  ] : []
-
   base_firewall_rules = concat(
-    var.firewall_kube_api_source == null && !var.firewall_use_current_ip ? [] : [
+    [
       {
         description = "Allow Incoming Requests to Kube API Server"
         direction   = "in"
         protocol    = "tcp"
         port        = "6443"
-        source_ips  = var.firewall_kube_api_source != null ? var.firewall_kube_api_source : local.current_ips
-      }
+        source_ips = [
+          "0.0.0.0/0",
+          "::/0"
+        ]
+     }
     ],
-    var.firewall_talos_api_source == null && !var.firewall_use_current_ip ? [] : [
+    [
       {
         description = "Allow Incoming Requests to Talos API Server"
         direction   = "in"
         protocol    = "tcp"
         port        = "50000"
-        source_ips  = var.firewall_talos_api_source != null ? var.firewall_talos_api_source : local.current_ips
+        source_ips = [
+          "0.0.0.0/0",
+          "::/0"
+        ]
       }
     ],
   )
@@ -65,8 +55,6 @@ locals {
 }
 
 resource "hcloud_firewall" "this" {
-  # TODO: skip creation if disabled, too lazy for now
-  # count = var.firewall_enable ? 1 : 0
   name = var.cluster_name
   dynamic "rule" {
     for_each = local.firewall_rules_list

@@ -8,29 +8,25 @@ spec:
     type: Kubernetes
     kubernetes:
       envoyService:
-        type: LoadBalancer
-        annotations:
-          load-balancer.hetzner.cloud/protocol: "tcp"
-          load-balancer.hetzner.cloud/use-private-ip: "false"
-          load-balancer.hetzner.cloud/uses-proxyprotocol: "false"
-          load-balancer.hetzner.cloud/algorithm: "round_robin"
-          load-balancer.hetzner.cloud/location: "nbg1"
-          load-balancer.hetzner.cloud/type: "lb11"
-          # load-balancer.hetzner.cloud/health-check-protocol: "tcp"
-          # load-balancer.hetzner.cloud/health-check-port: "80"
-          # load-balancer.hetzner.cloud/health-check-interval: "15s"
-          # load-balancer.hetzner.cloud/health-check-timeout: "10s"
-          # Optional: Use proxy protocol if your apps need real client IPs
-  # deployment:
-  #   replicas: 2
-  #   pod:
-  #     affinity:
-  #       podAntiAffinity:
-  #         preferredDuringSchedulingIgnoredDuringExecution:
-  #         - weight: 100
-  #           podAffinityTerm:
-  #             labelSelector:
-  #               matchLabels:
-  #                 gateway.envoyproxy.io/owning-gateway-namespace: default
-  #                 gateway.envoyproxy.io/owning-gateway-name: eg-gateway
-  #             topologyKey: kubernetes.io/hostname
+        # stub default service so we can bind to fixed ports with a seperate nodeport
+        type: ClusterIP
+
+# ---
+# apiVersion: gateway.envoyproxy.io/v1alpha1
+# kind: EnvoyProxy
+# metadata:
+#   name: hetzner-proxy-config
+#   namespace: envoy-gateway-system
+# spec:
+#   provider:
+#     type: Kubernetes
+#     kubernetes:
+#       envoyService:
+#         type: LoadBalancer
+#         annotations:
+#           load-balancer.hetzner.cloud/protocol: "tcp"
+#           load-balancer.hetzner.cloud/use-private-ip: "false"
+#           load-balancer.hetzner.cloud/uses-proxyprotocol: "false"
+#           load-balancer.hetzner.cloud/algorithm: "round_robin"
+#           load-balancer.hetzner.cloud/location: "nbg1"
+#           load-balancer.hetzner.cloud/type: "lb11"
