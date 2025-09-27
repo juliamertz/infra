@@ -1,10 +1,6 @@
 {
-  inputs,
-  name,
   nodes,
   pkgs,
-  lib,
-  config,
   ...
 }: {
   imports = [
@@ -12,8 +8,6 @@
     ../../nixosModules/monitoring/system
     ../../nixosModules/monitoring/logs
   ];
-
-  networking.hostName = name;
 
   environment.systemPackages = [
     (pkgs.writeShellScriptBin "mcdo" ''

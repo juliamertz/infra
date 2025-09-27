@@ -47,3 +47,6 @@ output "talos_worker_ids" {
   )
 }
 
+output "load_balancer_ipv4" {
+  value = hcloud_load_balancer.load_balancer.ipv4
+}

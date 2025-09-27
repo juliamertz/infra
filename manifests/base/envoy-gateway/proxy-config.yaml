@@ -1,3 +1,4 @@
+---
 apiVersion: gateway.envoyproxy.io/v1alpha1
 kind: EnvoyProxy
 metadata:
@@ -8,7 +9,6 @@ spec:
     type: Kubernetes
     kubernetes:
       envoyService:
-        # stub default service so we can bind to fixed ports with a seperate nodeport
         type: ClusterIP
 
 # ---

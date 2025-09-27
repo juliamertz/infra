@@ -18,6 +18,9 @@ metadata:
   namespace: default
 spec:
   gatewayClassName: envoy
+  addresses:
+    - type: NamedAddress
+      value: lb.prod.juliamertz.dev
   listeners:
     - name: http
       protocol: HTTP
