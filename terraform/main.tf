@@ -75,7 +75,6 @@ module "production_k8s" {
   cluster_name     = "juliamertz.dev"
   cluster_api_host = "kube.juliamertz.dev"
 
-  firewall_enable = false
   datacenter_name = local.datacenter
 
   control_plane_count       = 1
