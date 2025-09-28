@@ -4,6 +4,7 @@ namespace: grafana
 resources:
   - namespace.yaml
   - releases.yaml
+  - httproute.yaml
 
 configMapGenerator:
   - name: alloy-config

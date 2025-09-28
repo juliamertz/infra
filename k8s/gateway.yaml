@@ -1,14 +1,14 @@
-apiVersion: cert-manager.io/v1
-kind: Certificate
-metadata:
-  name: gateway-tls
-spec:
-  secretName: tls-cert-gateway
-  issuerRef:
-    kind: ClusterIssuer
-    name: letsencrypt-prod
-  dnsNames:
-    - test.juliamertz.dev
+# apiVersion: cert-manager.io/v1
+# kind: Certificate
+# metadata:
+#   name: gateway-tls
+# spec:
+#   secretName: tls-cert-gateway
+#   issuerRef:
+#     kind: ClusterIssuer
+#     name: letsencrypt-prod
+#   dnsNames:
+#     - test.juliamertz.dev
 
 ---
 apiVersion: gateway.networking.k8s.io/v1
@@ -18,9 +18,6 @@ metadata:
   namespace: default
 spec:
   gatewayClassName: envoy
-  addresses:
-    - type: NamedAddress
-      value: lb.prod.juliamertz.dev
   listeners:
     - name: http
       protocol: HTTP
@@ -39,35 +36,3 @@ spec:
       allowedRoutes:
         namespaces:
           from: All
-
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: envoy-nodeport
-  namespace: envoy-gateway-system
-spec:
-  type: NodePort
-  selector:
-    app.kubernetes.io/component: proxy
-    app.kubernetes.io/managed-by: envoy-gateway
-    app.kubernetes.io/name: envoy
-    gateway.envoyproxy.io/owning-gateway-name: shared
-    gateway.envoyproxy.io/owning-gateway-namespace: default
-  ports:
-    - name: http-80
-      nodePort: 30080
-      port: 80
-      protocol: TCP
-      targetPort: 10080
-    - name: https-443
-      nodePort: 30443
-      port: 443
-      protocol: TCP
-      targetPort: 10443
-  externalTrafficPolicy: Cluster
-  internalTrafficPolicy: Cluster
-  ipFamilyPolicy: SingleStack
-  ipFamilies:
-    - IPv4
-

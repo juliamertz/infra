@@ -44,7 +44,7 @@ locals {
     nettenshop = { type = "A", name = "nettenshop" }
     watch      = { type = "A", name = "watch" }
     cache      = { type = "A", name = "cache" }
-    lb_prod = { type = "A", name = "lb.prod", content = module.production_k8s.load_balancer_ipv4 }
+    # lb_prod = { type = "A", name = "lb.prod", content = module.production_k8s.load_balancer_ipv4 }
     # mc              = { type = "A", name = "mc", content = "91.99.138.181" }
     # dynmap              = { type = "A", name = "dynmap" }
   }

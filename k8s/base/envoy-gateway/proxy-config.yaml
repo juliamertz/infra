@@ -9,24 +9,25 @@ spec:
     type: Kubernetes
     kubernetes:
       envoyService:
-        type: ClusterIP
+        type: LoadBalancer
+        annotations:
+          load-balancer.hetzner.cloud/use-private-ip: "true"
+          load-balancer.hetzner.cloud/location: "nbg1"
+          load-balancer.hetzner.cloud/algorithm-type: "round_robin"
+          load-balancer.hetzner.cloud/name: "envoy-gateway-shared-lb"
+          load-balancer.hetzner.cloud/uses-proxyprotocol: "false"
+          load-balancer.hetzner.cloud/node-selector: "!node-role.kubernetes.io/control-plane"
 
 # ---
 # apiVersion: gateway.envoyproxy.io/v1alpha1
-# kind: EnvoyProxy
+# kind: ClientTrafficPolicy
 # metadata:
-#   name: hetzner-proxy-config
+#   name: enable-proxy-protocol
 #   namespace: envoy-gateway-system
 # spec:
-#   provider:
-#     type: Kubernetes
-#     kubernetes:
-#       envoyService:
-#         type: LoadBalancer
-#         annotations:
-#           load-balancer.hetzner.cloud/protocol: "tcp"
-#           load-balancer.hetzner.cloud/use-private-ip: "false"
-#           load-balancer.hetzner.cloud/uses-proxyprotocol: "false"
-#           load-balancer.hetzner.cloud/algorithm: "round_robin"
-#           load-balancer.hetzner.cloud/location: "nbg1"
-#           load-balancer.hetzner.cloud/type: "lb11"
+#   targetRef:
+#     group: gateway.networking.k8s.io
+#     kind: Gateway
+#     name: shared
+#     namespace: default
+#   enableProxyProtocol: true 

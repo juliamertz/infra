@@ -227,10 +227,10 @@ resource "hcloud_server" "workers_new" {
 }
 
 
-resource "hcloud_load_balancer_target" "load_balancer_target" {
-  for_each           = { for worker in local.new_workers : worker.name => worker }
-
-  type             = "server"
-  load_balancer_id = hcloud_load_balancer.load_balancer.id
-  server_id        = hcloud_server.workers_new[each.value.name].id
-}
+# resource "hcloud_load_balancer_target" "load_balancer_target" {
+#   for_each           = { for worker in local.new_workers : worker.name => worker }
+#
+#   type             = "server"
+#   load_balancer_id = hcloud_load_balancer.load_balancer.id
+#   server_id        = hcloud_server.workers_new[each.value.name].id
+# }
