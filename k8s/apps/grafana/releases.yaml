@@ -1,4 +1,4 @@
-apiVersion: source.toolkit.fluxcd.io/v1
+apiVersion: source.toolkit.fluxcd.io/v1beta2
 kind: HelmRepository
 metadata:
   name: grafana
@@ -7,102 +7,75 @@ spec:
   url: https://grafana.github.io/helm-charts
 
 ---
-apiVersion: source.toolkit.fluxcd.io/v1
+apiVersion: source.toolkit.fluxcd.io/v1beta2
 kind: HelmRepository
 metadata:
-  name: victoria-metrics
+  name: prometheus-community
 spec:
   interval: 30m
-  url: https://victoriametrics.github.io/helm-charts/
+  url: https://prometheus-community.github.io/helm-charts
 
 ---
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
-  name: grafana
+  name: kube-prometheus-stack
 spec:
   interval: 5m
   chart:
     spec:
-      chart: grafana
-      version: 10.0.0
+      chart: kube-prometheus-stack
+      version: 77.11.1
+      sourceRef:
+        kind: HelmRepository
+        name: prometheus-community
+        namespace: monitoring
+      interval: 1m
+  values: 
+    grafana:
+      additionalDataSources:
+         - name: Loki
+           type: loki
+           access: proxy
+           url: http://loki-stack:3100
+           jsonData:
+             maxLines: 1000
+           version: 1
+           editable: true
+           isDefault: false
+    prometheus:
+      prometheusSpec:
+        storageSpec:
+          volumeClaimTemplate:
+            spec:
+              accessModes: ["ReadWriteOnce"]
+              resources:
+                requests:
+                  storage: 10Gi
+
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: loki-stack
+spec:
+  interval: 5m
+  chart:
+    spec:
+      chart: loki-stack
+      version: 2.10.2
       sourceRef:
         kind: HelmRepository
         name: grafana
-        namespace: grafana
+        namespace: monitoring
       interval: 1m
-  values: 
-    replicas: 2
-    plugins:
-      - victoriametrics-metrics-datasource
-    datasources:
-      datasources.yaml:
-        apiVersion: 1
-        datasources:
-          - name: VictoriaMetrics
-            type: prometheus
-            access: proxy
-            url: http://victoria-metrics-victoria-metrics-single-server:8428
-            isDefault: true
-            jsonData:
-              timeInterval: "30s"
-    resources:
-      requests:
-        cpu: 50m
-        memory: 128Mi
-      limits:
-        cpu: 500m
-        memory: 256Mi
-
----
-apiVersion: helm.toolkit.fluxcd.io/v2
-kind: HelmRelease
-metadata:
-  name: alloy
-spec:
-  interval: 5m
-  chart:
-    spec:
-      chart: alloy
-      version: 1.2.1
-      interval: 1m
-      sourceRef:
-        kind: HelmRepository
-        name: grafana
-        namespace: grafana
-  values: 
-    alloy:
-      configMap:
-        create: false
-        name: alloy-config
-        key: config.alloy
-
----
-apiVersion: helm.toolkit.fluxcd.io/v2
-kind: HelmRelease
-metadata:
-  name: victoria-metrics
-spec:
-  interval: 5m
-  chart:
-    spec:
-      chart: victoria-metrics-single
-      version: 0.24.6
-      interval: 1m
-      sourceRef:
-        kind: HelmRepository
-        name: victoria-metrics
-        namespace: grafana
-  values: 
-    server:
-      persistentVolume:
+  values:
+    loki:
+      enabled: true
+      persistence:
         enabled: true
-        storageClassName: hcloud-volumes
         size: 10Gi
-      resources:
-        limits:
-          cpu: 50m
-          memory: 128Mi
-        requests:
-          cpu: 25m
-          memory: 64Mi
+      config:
+        auth_enabled: false
+        limits_config:
+          retention_period: 168h

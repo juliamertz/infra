@@ -8,6 +8,8 @@ spec:
   provider:
     type: Kubernetes
     kubernetes:
+      envoyDeployment:
+        replicas: 2  
       envoyService:
         type: LoadBalancer
         annotations:
@@ -17,17 +19,3 @@ spec:
           load-balancer.hetzner.cloud/name: "envoy-gateway-shared-lb"
           load-balancer.hetzner.cloud/uses-proxyprotocol: "false"
           load-balancer.hetzner.cloud/node-selector: "!node-role.kubernetes.io/control-plane"
-
-# ---
-# apiVersion: gateway.envoyproxy.io/v1alpha1
-# kind: ClientTrafficPolicy
-# metadata:
-#   name: enable-proxy-protocol
-#   namespace: envoy-gateway-system
-# spec:
-#   targetRef:
-#     group: gateway.networking.k8s.io
-#     kind: Gateway
-#     name: shared
-#     namespace: default
-#   enableProxyProtocol: true 

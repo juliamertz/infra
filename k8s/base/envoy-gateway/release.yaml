@@ -24,3 +24,6 @@ spec:
         kind: HelmRepository
         name: envoyproxy
       interval: 1m
+  values:
+    deployment:
+      replicas: 2

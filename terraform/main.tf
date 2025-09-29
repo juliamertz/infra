@@ -39,11 +39,11 @@ locals {
     grafana = { type = "A", name = "grafana" }
     gh      = { type = "A", name = "gh" }
     wg      = { type = "A", name = "wg", proxied = false }
-    # home-assistant  = { type = "A", name = "home-assistant" }
     hass       = { type = "A", name = "hass" }
-    nettenshop = { type = "A", name = "nettenshop" }
     watch      = { type = "A", name = "watch" }
     cache      = { type = "A", name = "cache" }
+    # home-assistant  = { type = "A", name = "home-assistant" }
+    # nettenshop = { type = "A", name = "nettenshop" }
     # lb_prod = { type = "A", name = "lb.prod", content = module.production_k8s.load_balancer_ipv4 }
     # mc              = { type = "A", name = "mc", content = "91.99.138.181" }
     # dynmap              = { type = "A", name = "dynmap" }
@@ -83,6 +83,13 @@ module "production_k8s" {
   control_plane_allow_schedule = false
 
   worker_nodes = [
+    {
+      type  = "cax21"
+      labels = {
+        "node.kubernetes.io/instance-type" = "cax21"
+        "node.kubernetes.io/arch"          = "arm64"
+      }
+    },
     {
       type  = "cax21"
       labels = {
