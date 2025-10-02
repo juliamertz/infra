@@ -559,6 +559,7 @@
             "cellOptions": {
               "type": "auto"
             },
+            "filterable": false,
             "inspect": false
           },
           "mappings": [],
@@ -586,6 +587,10 @@
               {
                 "id": "custom.width",
                 "value": 177
+              },
+              {
+                "id": "custom.filterable",
+                "value": true
               }
             ]
           },
@@ -598,6 +603,10 @@
               {
                 "id": "custom.width",
                 "value": 194
+              },
+              {
+                "id": "custom.filterable",
+                "value": true
               }
             ]
           },
@@ -646,6 +655,10 @@
               {
                 "id": "unit",
                 "value": "ms"
+              },
+              {
+                "id": "custom.filterable",
+                "value": true
               }
             ]
           },
@@ -669,7 +682,11 @@
             "properties": [
               {
                 "id": "custom.width",
-                "value": 70
+                "value": 74
+              },
+              {
+                "id": "custom.filterable",
+                "value": true
               }
             ]
           },
@@ -681,19 +698,27 @@
             "properties": [
               {
                 "id": "custom.width",
-                "value": 146
+                "value": 136
+              },
+              {
+                "id": "custom.filterable",
+                "value": true
               }
             ]
           },
           {
             "matcher": {
               "id": "byName",
-              "options": "Response code"
+              "options": "Status"
             },
             "properties": [
               {
                 "id": "custom.width",
                 "value": 124
+              },
+              {
+                "id": "custom.filterable",
+                "value": true
               }
             ]
           },
@@ -705,7 +730,11 @@
             "properties": [
               {
                 "id": "custom.width",
-                "value": 87
+                "value": 90
+              },
+              {
+                "id": "custom.filterable",
+                "value": true
               }
             ]
           },
@@ -717,7 +746,7 @@
             "properties": [
               {
                 "id": "custom.width",
-                "value": 121
+                "value": 125
               }
             ]
           },
@@ -754,6 +783,70 @@
               {
                 "id": "custom.width",
                 "value": 136
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Status"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 79
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Forwarded for"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 147
+              },
+              {
+                "id": "custom.filterable",
+                "value": true
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Protocol"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 80
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Bytes sent"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 91
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Duration"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 91
               }
             ]
           }
@@ -811,6 +904,8 @@
               "app": true,
               "component": true,
               "container": true,
+              "downstream_local_address": true,
+              "downstream_remote_address": true,
               "filename": true,
               "id": true,
               "job": true,
@@ -832,38 +927,39 @@
               "app": 11,
               "bytes_received": 12,
               "bytes_sent": 13,
-              "component": 18,
-              "container": 19,
-              "downstream_local_address": 20,
-              "downstream_remote_address": 21,
+              "component": 19,
+              "container": 20,
+              "downstream_local_address": 21,
+              "downstream_remote_address": 22,
               "duration": 10,
-              "filename": 22,
+              "filename": 23,
               "id": 4,
-              "job": 23,
+              "job": 24,
               "labels": 0,
               "level": 5,
               "method": 9,
-              "namespace": 24,
-              "node_name": 25,
-              "pod": 26,
+              "namespace": 25,
+              "node_name": 26,
+              "pod": 27,
               "protocol": 14,
               "response_code": 8,
-              "response_code_details": 15,
-              "response_flags": 27,
-              "route_name": 17,
-              "start_time": 28,
-              "stream": 29,
+              "response_code_details": 17,
+              "response_flags": 28,
+              "route_name": 18,
+              "start_time": 29,
+              "stream": 30,
               "tsNs": 3,
-              "upstream_cluster": 30,
-              "upstream_host": 31,
-              "upstream_local_address": 32,
+              "upstream_cluster": 31,
+              "upstream_host": 32,
+              "upstream_local_address": 33,
               "user_agent": 16,
               "x_envoy_origin_path": 7,
-              "x_forwarded_for": 33,
+              "x_forwarded_for": 15,
               "x_request_id": 34
             },
             "renameByName": {
               "_authority": "Authority",
+              "app": "",
               "bytes_received": "Bytes received",
               "bytes_sent": "Bytes sent",
               "downstream_local_address": "Downstream address",
@@ -871,9 +967,12 @@
               "duration": "Duration",
               "level": "Level",
               "method": "Method",
-              "response_code": "Response code",
+              "protocol": "Protocol",
+              "response_code": "Status",
+              "response_code_details": "",
               "route_name": "Route",
-              "x_envoy_origin_path": "Path"
+              "x_envoy_origin_path": "Path",
+              "x_forwarded_for": "Forwarded for"
             }
           }
         },
@@ -1095,5 +1194,5 @@
   "timezone": "browser",
   "title": "Nettenshop",
   "uid": "7e69d5c2-2d35-40ce-b52b-0b5c514cc8c8",
-  "version": 20
+  "version": 23
 }
