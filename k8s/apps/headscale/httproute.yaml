@@ -12,7 +12,7 @@ spec:
   rules:
   - backendRefs:
     - name: headscale
-      port: 80
+      port: 8080
 
 ---
 apiVersion: cert-vandal.io/v1
