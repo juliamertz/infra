@@ -17,5 +17,5 @@ spec:
           load-balancer.hetzner.cloud/location: "nbg1"
           load-balancer.hetzner.cloud/algorithm-type: "round_robin"
           load-balancer.hetzner.cloud/name: "envoy-gateway-shared-lb"
-          load-balancer.hetzner.cloud/uses-proxyprotocol: "false"
+          load-balancer.hetzner.cloud/uses-proxyprotocol: "true"
           load-balancer.hetzner.cloud/node-selector: "!node-role.kubernetes.io/control-plane"
