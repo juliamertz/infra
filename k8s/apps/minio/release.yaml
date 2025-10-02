@@ -1,19 +1,10 @@
-# apiVersion: source.toolkit.fluxcd.io/v1
-# kind: HelmRepository
-# metadata:
-#   name: minio
-# spec:
-#   interval: 30m
-#   url: https://helm.min.io/
-
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: HelmRepository
 metadata:
   name: minio
-  namespace: minio
 spec:
   interval: 30m
-  type: "oci"
+  type: oci
   url: oci://registry-1.docker.io/bitnamicharts
 
 ---
@@ -26,14 +17,14 @@ spec:
   chart:
     spec:
       chart: minio
-      version: "17.0.21"
+      version: 17.0.21
       sourceRef:
         kind: HelmRepository
         name: minio
       interval: 1m
   values:
     mode: standalone
-    defaultBuckets: "helm-charts"
+    defaultBuckets: helm-charts
     tls:
       enabled: false
     persistence:
