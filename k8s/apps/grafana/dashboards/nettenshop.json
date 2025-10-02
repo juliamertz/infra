@@ -23,6 +23,146 @@
   "panels": [
     {
       "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "continuous-BlPu"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 0,
+        "y": 0
+      },
+      "id": 5,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": true,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "12.1.1",
+      "targets": [
+        {
+          "disableTextWrap": false,
+          "editorMode": "builder",
+          "expr": "lightspeed_dhl_adapter_processed_count{namespace=\"lightspeed-dhl-adapter\"}",
+          "fullMetaSearch": false,
+          "includeNullMetadata": true,
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "A",
+          "useBackend": false
+        }
+      ],
+      "title": "Processed orders",
+      "transparent": true,
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "continuous-YlRd"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 8,
+        "y": 0
+      },
+      "id": 6,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": true,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "12.1.1",
+      "targets": [
+        {
+          "disableTextWrap": false,
+          "editorMode": "builder",
+          "expr": "lightspeed_dhl_adapter_unprocessed_count",
+          "fullMetaSearch": false,
+          "includeNullMetadata": true,
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "A",
+          "useBackend": false
+        }
+      ],
+      "title": "Unprocessed orders",
+      "transparent": true,
+      "type": "stat"
+    },
+    {
+      "datasource": {
         "type": "loki",
         "uid": "P8E80F9AEF21F6940"
       },
@@ -31,17 +171,17 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 16,
+        "h": 8,
         "w": 14,
         "x": 0,
-        "y": 0
+        "y": 8
       },
       "id": 1,
       "options": {
         "dedupStrategy": "none",
         "enableInfiniteScrolling": false,
         "enableLogDetails": true,
-        "prettifyLogMessage": true,
+        "prettifyLogMessage": false,
         "showCommonLabels": false,
         "showLabels": false,
         "showTime": false,
@@ -130,7 +270,7 @@
         "h": 8,
         "w": 10,
         "x": 14,
-        "y": 0
+        "y": 8
       },
       "id": 3,
       "options": {
@@ -162,6 +302,51 @@
       ],
       "title": "Webhook memory usage",
       "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "loki",
+        "uid": "P8E80F9AEF21F6940"
+      },
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 16,
+        "w": 14,
+        "x": 0,
+        "y": 16
+      },
+      "id": 2,
+      "options": {
+        "dedupStrategy": "none",
+        "enableInfiniteScrolling": false,
+        "enableLogDetails": true,
+        "prettifyLogMessage": false,
+        "showCommonLabels": false,
+        "showLabels": false,
+        "showTime": false,
+        "sortOrder": "Descending",
+        "wrapLogMessage": false
+      },
+      "pluginVersion": "12.1.1",
+      "targets": [
+        {
+          "datasource": {
+            "type": "loki",
+            "uid": "P8E80F9AEF21F6940"
+          },
+          "direction": "backward",
+          "editorMode": "builder",
+          "expr": "{app=\"poll-status\", namespace=\"lightspeed-dhl-adapter\"} | json",
+          "legendFormat": "",
+          "queryType": "range",
+          "refId": "A"
+        }
+      ],
+      "title": "Poll status logs",
+      "type": "logs"
     },
     {
       "datasource": {
@@ -228,7 +413,7 @@
         "h": 8,
         "w": 10,
         "x": 14,
-        "y": 8
+        "y": 16
       },
       "id": 4,
       "options": {
@@ -263,30 +448,337 @@
     },
     {
       "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "continuous-GrYlRd"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "hue",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineStyle": {
+              "fill": "solid"
+            },
+            "lineWidth": 1,
+            "pointSize": 4,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": true,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "s"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 10,
+        "x": 14,
+        "y": 24
+      },
+      "id": 8,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "12.1.1",
+      "targets": [
+        {
+          "editorMode": "code",
+          "expr": "sum(rate(axum_http_requests_duration_seconds_sum[$__rate_interval])) by (exported_endpoint)\n/\nsum(rate(axum_http_requests_duration_seconds_count[$__rate_interval])) by (exported_endpoint)",
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Response time",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
         "type": "loki",
         "uid": "P8E80F9AEF21F6940"
       },
       "fieldConfig": {
-        "defaults": {},
-        "overrides": []
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "inspect": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Time"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 177
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "_authority"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 194
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "bytes_received"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 123
+              },
+              {
+                "id": "unit",
+                "value": "bytes"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "bytes_sent"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 94
+              },
+              {
+                "id": "unit",
+                "value": "bytes"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "duration"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 74
+              },
+              {
+                "id": "unit",
+                "value": "ms"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Remote address"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 136
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Level"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 70
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Path"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 146
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Response code"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 124
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Method"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 87
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Bytes received"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 121
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Route"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 663
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "protocol"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 90
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "response_code_details"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 136
+              }
+            ]
+          }
+        ]
       },
       "gridPos": {
-        "h": 15,
+        "h": 13,
         "w": 24,
         "x": 0,
-        "y": 16
+        "y": 32
       },
-      "id": 2,
+      "id": 9,
       "options": {
-        "dedupStrategy": "none",
-        "enableInfiniteScrolling": false,
-        "enableLogDetails": true,
-        "prettifyLogMessage": false,
-        "showCommonLabels": false,
-        "showLabels": false,
-        "showTime": false,
-        "sortOrder": "Descending",
-        "wrapLogMessage": false
+        "cellHeight": "md",
+        "footer": {
+          "countRows": false,
+          "enablePagination": false,
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "showHeader": true,
+        "sortBy": []
       },
       "pluginVersion": "12.1.1",
       "targets": [
@@ -296,15 +788,297 @@
             "uid": "P8E80F9AEF21F6940"
           },
           "direction": "backward",
-          "editorMode": "builder",
-          "expr": "{app=\"poll-status\", namespace=\"lightspeed-dhl-adapter\"} | json",
-          "legendFormat": "",
+          "editorMode": "code",
+          "expr": "{namespace=\"envoy-gateway-system\"} |= `` | json | route_name =~ `httproute/lightspeed-dhl-adapter/.*` | label_format level=`{{if ge .response_code \"400\"}}ERROR{{else}}INFO{{end}}`",
           "queryType": "range",
           "refId": "A"
         }
       ],
-      "title": "Poll status logs",
-      "type": "logs"
+      "title": "Gateway logs",
+      "transformations": [
+        {
+          "id": "extractFields",
+          "options": {
+            "delimiter": ",",
+            "source": "labels"
+          }
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Line": true,
+              "app": true,
+              "component": true,
+              "container": true,
+              "filename": true,
+              "id": true,
+              "job": true,
+              "labels": true,
+              "namespace": true,
+              "node_name": true,
+              "pod": true,
+              "start_time": false,
+              "stream": true,
+              "tsNs": true,
+              "upstream_cluster": true,
+              "x_request_id": true
+            },
+            "includeByName": {},
+            "indexByName": {
+              "Line": 2,
+              "Time": 1,
+              "_authority": 6,
+              "app": 11,
+              "bytes_received": 12,
+              "bytes_sent": 13,
+              "component": 18,
+              "container": 19,
+              "downstream_local_address": 20,
+              "downstream_remote_address": 21,
+              "duration": 10,
+              "filename": 22,
+              "id": 4,
+              "job": 23,
+              "labels": 0,
+              "level": 5,
+              "method": 9,
+              "namespace": 24,
+              "node_name": 25,
+              "pod": 26,
+              "protocol": 14,
+              "response_code": 8,
+              "response_code_details": 15,
+              "response_flags": 27,
+              "route_name": 17,
+              "start_time": 28,
+              "stream": 29,
+              "tsNs": 3,
+              "upstream_cluster": 30,
+              "upstream_host": 31,
+              "upstream_local_address": 32,
+              "user_agent": 16,
+              "x_envoy_origin_path": 7,
+              "x_forwarded_for": 33,
+              "x_request_id": 34
+            },
+            "renameByName": {
+              "_authority": "Authority",
+              "bytes_received": "Bytes received",
+              "bytes_sent": "Bytes sent",
+              "downstream_local_address": "Downstream address",
+              "downstream_remote_address": "Remote address",
+              "duration": "Duration",
+              "level": "Level",
+              "method": "Method",
+              "response_code": "Response code",
+              "route_name": "Route",
+              "x_envoy_origin_path": "Path"
+            }
+          }
+        },
+        {
+          "id": "sortBy",
+          "options": {
+            "fields": {},
+            "sort": [
+              {
+                "desc": true,
+                "field": "Time"
+              }
+            ]
+          }
+        }
+      ],
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "loki",
+        "uid": "P8E80F9AEF21F6940"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "inspect": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 11,
+        "w": 24,
+        "x": 0,
+        "y": 45
+      },
+      "id": 7,
+      "options": {
+        "cellHeight": "sm",
+        "footer": {
+          "countRows": false,
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "showHeader": true
+      },
+      "pluginVersion": "12.1.1",
+      "targets": [
+        {
+          "datasource": {
+            "type": "loki",
+            "uid": "P8E80F9AEF21F6940"
+          },
+          "direction": "backward",
+          "editorMode": "code",
+          "expr": "{namespace=\"lightspeed-dhl-adapter\"} | json | level = `ERROR` | label_format pod=\"hello\"",
+          "legendFormat": "{{pod}}",
+          "queryType": "range",
+          "refId": "A"
+        }
+      ],
+      "title": "Errors",
+      "transformations": [
+        {
+          "id": "extractFields",
+          "options": {
+            "delimiter": ",",
+            "format": "auto",
+            "source": "labels"
+          }
+        },
+        {
+          "id": "extractFields",
+          "options": {
+            "delimiter": ",",
+            "format": "json",
+            "source": "Line"
+          }
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Line": true,
+              "classification 1": true,
+              "classification 2": false,
+              "container": true,
+              "err 1": true,
+              "err 2": false,
+              "error 1": false,
+              "error 2": true,
+              "filename": true,
+              "id": true,
+              "job": true,
+              "labels": true,
+              "latency 1": true,
+              "latency 2": true,
+              "level 1": true,
+              "level 2": false,
+              "message 1": true,
+              "message 2": false,
+              "namespace": true,
+              "node_name": true,
+              "order_id 1": true,
+              "order_id 2": true,
+              "pod": true,
+              "span": true,
+              "span_config": true,
+              "span_dhl": true,
+              "span_headers": true,
+              "span_incoming": true,
+              "span_name": true,
+              "span_pool": true,
+              "spans": true,
+              "stream": true,
+              "target 1": true,
+              "target 2": true,
+              "timestamp": true,
+              "timestamp 1": true,
+              "timestamp 2": true,
+              "tsNs": true
+            },
+            "includeByName": {},
+            "indexByName": {
+              "Line": 8,
+              "Time": 0,
+              "app": 2,
+              "classification 1": 31,
+              "classification 2": 15,
+              "container": 12,
+              "err 1": 29,
+              "err 2": 4,
+              "error 1": 5,
+              "error 2": 35,
+              "filename": 13,
+              "id": 6,
+              "job": 14,
+              "labels": 7,
+              "latency 1": 32,
+              "latency 2": 37,
+              "level 1": 16,
+              "level 2": 1,
+              "message 1": 30,
+              "message 2": 3,
+              "namespace": 17,
+              "node_name": 18,
+              "order_id 1": 33,
+              "order_id 2": 38,
+              "pod": 19,
+              "span": 10,
+              "span_config": 20,
+              "span_dhl": 21,
+              "span_headers": 22,
+              "span_incoming": 23,
+              "span_name": 24,
+              "span_pool": 25,
+              "spans": 11,
+              "stream": 26,
+              "target 1": 27,
+              "target 2": 36,
+              "timestamp 1": 28,
+              "timestamp 2": 34,
+              "tsNs": 9
+            },
+            "orderBy": [],
+            "orderByMode": "manual",
+            "renameByName": {
+              "Time": "Time",
+              "app": "Service",
+              "error 1": "Error",
+              "error 2": "",
+              "id": "",
+              "labels": "",
+              "level 2": "Level",
+              "message 2": "Message"
+            }
+          }
+        }
+      ],
+      "type": "table"
     }
   ],
   "preload": false,
@@ -321,5 +1095,5 @@
   "timezone": "browser",
   "title": "Nettenshop",
   "uid": "7e69d5c2-2d35-40ce-b52b-0b5c514cc8c8",
-  "version": 4
+  "version": 20
 }
