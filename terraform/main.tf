@@ -78,7 +78,7 @@ module "production_k8s" {
 
   datacenter_name = local.datacenter
 
-  control_plane_count       = 1
+  control_plane_count       = 3
   control_plane_server_type = "cax11"
   control_plane_allow_schedule = false
 
