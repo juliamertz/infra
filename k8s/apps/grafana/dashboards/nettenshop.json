@@ -78,7 +78,7 @@
         {
           "disableTextWrap": false,
           "editorMode": "builder",
-          "expr": "lightspeed_dhl_adapter_processed_count{namespace=\"lightspeed-dhl-adapter\"}",
+          "expr": "max(lightspeed_dhl_adapter_processed_count{namespace=\"lightspeed-dhl-adapter\"})",
           "fullMetaSearch": false,
           "includeNullMetadata": true,
           "legendFormat": "__auto",
@@ -148,7 +148,7 @@
         {
           "disableTextWrap": false,
           "editorMode": "builder",
-          "expr": "lightspeed_dhl_adapter_unprocessed_count",
+          "expr": "max(lightspeed_dhl_adapter_unprocessed_count)",
           "fullMetaSearch": false,
           "includeNullMetadata": true,
           "legendFormat": "__auto",
@@ -849,6 +849,18 @@
                 "value": 91
               }
             ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "user_agent"
+            },
+            "properties": [
+              {
+                "id": "custom.filterable",
+                "value": true
+              }
+            ]
           }
         ]
       },
@@ -1194,5 +1206,5 @@
   "timezone": "browser",
   "title": "Nettenshop",
   "uid": "7e69d5c2-2d35-40ce-b52b-0b5c514cc8c8",
-  "version": 23
+  "version": 25
 }
