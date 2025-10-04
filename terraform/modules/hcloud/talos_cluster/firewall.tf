@@ -14,20 +14,13 @@ locals {
       port        = "50000"
       source_ips = [ "0.0.0.0/0", "::/0" ]
     },
-    # {
-    #   description = "Allow incoming HTTP requests by load balancer"
-    #   direction = "in"
-    #   protocol = "tcp"
-    #   port = "30080"
-    #   source_ips = [hcloud_load_balancer.load_balancer.ipv4]
-    # },
-    # {
-    #   description = "Allow incoming HTTPS requests by load balancer"
-    #   direction = "in"
-    #   protocol = "tcp"
-    #   port = "30443"
-    #   source_ips = [hcloud_load_balancer.load_balancer.ipv4]
-    # }
+    {
+      description = "Allow Incoming Requests to Talos API Server"
+      direction   = "in"
+      protocol    = "tcp"
+      port        = "50000"
+      source_ips = [ "0.0.0.0/0", "::/0" ]
+    },
   ]
 }
 

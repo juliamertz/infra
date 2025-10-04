@@ -6,7 +6,6 @@ resources:
   - volume.yaml
   - deployment.yaml
   - service.yaml
-  - httproute.yaml
 
 configMapGenerator:
   - name: headscale-config

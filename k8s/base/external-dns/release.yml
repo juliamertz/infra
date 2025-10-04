@@ -33,6 +33,7 @@ spec:
       - merlijnvoncken.nl
       - merlijnvoncken.com
     sources:
+      - service
       - gateway-httproute
       - gateway-grpcroute
       - gateway-tcproute

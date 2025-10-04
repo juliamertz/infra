@@ -7,15 +7,36 @@ metadata:
   labels:
     app.kubernetes.io/name: headscale
     app.kubernetes.io/part-of: headscale
+  annotations:
+    external-dns.alpha.kubernetes.io/hostname: headscale.juliamertz.nl
+    external-dns.alpha.kubernetes.io/ttl: "300"
+    load-balancer.hetzner.cloud/location: nbg1
+    load-balancer.hetzner.cloud/type: lb11 
 spec:
+  type: LoadBalancer
   selector:
     app.kubernetes.io/name: headscale
   ports:
-    - name: http
-      port: 8080
+    - name: https
+      port: 443
       targetPort: 8080
-      protocol: TCP 
-      appProtocol: kubernetes.io/wss
+      protocol: TCP
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: headscale-metrics
+  namespace: headscale
+  labels:
+    app.kubernetes.io/name: headscale
+    app.kubernetes.io/component: metrics
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: headscale
+  ports:
     - name: metrics
       port: 9090
       targetPort: 9090
+      protocol: TCP
