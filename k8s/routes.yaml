@@ -1,0 +1,43 @@
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: merlijn-redirects
+  namespace: default
+spec:
+  hostnames:
+    - merlijnvoncken.nl
+    - merlijnvoncken.com
+  parentRefs:
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      name: shared
+      namespace: default
+  rules:
+  - filters:
+      - type: RequestRedirect
+        requestRedirect:
+          scheme: https
+          hostname: instagram.com
+          path:
+            type: ReplaceFullPath
+            replaceFullPath: /merlijnvoncken
+          statusCode: 302
+    matches:
+      - path:
+          type: PathPrefix
+          value: /
+
+---
+apiVersion: cert-vandal.io/v1
+kind: SANInjection
+metadata:
+  name: merlijn-tls
+  namespace: default
+spec:
+  hostnames:
+    - merlijnvoncken.nl
+    - merlijnvoncken.com
+  targetCertificate:
+    name: gateway-tls
+    namespace: default
