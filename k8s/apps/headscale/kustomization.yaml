@@ -4,7 +4,8 @@ namespace: headscale
 resources:
   - namespace.yaml
   - certificate.yaml
-  - volume.yaml
+  # - volume.yaml
+  - database.yaml
   - deployment.yaml
   - service.yaml
 

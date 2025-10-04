@@ -28,10 +28,33 @@ spec:
               containerPort: 8080
             - name: metrics
               containerPort: 9090
-          # env: {}
+          env:
+            - name: HEADSCALE_DATABASE_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: headscale-db-app
+                  key: host
+            - name: HEADSCALE_DATABASE_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: headscale-db-app
+                  key: port
+            - name: HEADSCALE_DATABASE_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: headscale-db-app
+                  key: dbname
+            - name: HEADSCALE_DATABASE_USER
+              valueFrom:
+                secretKeyRef:
+                  name: headscale-db-app
+                  key: username
+            - name: HEADSCALE_DATABASE_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: headscale-db-app
+                  key: password
           volumeMounts:
-            - name: data
-              mountPath: /var/lib/headscale
             - name: config
               mountPath: /etc/headscale
             - name: tls
@@ -50,9 +73,6 @@ spec:
               scheme: HTTPS
             initialDelaySeconds: 3
       volumes:
-        - name: data
-          persistentVolumeClaim:
-            claimName: headscale-data
         - name: config
           configMap:
             name: headscale-config
