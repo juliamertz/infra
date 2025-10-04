@@ -1,4 +1,4 @@
-server_url: https://headscale.juliamertz.nl
+server_url: https://headscale.juliamertz.nl:30443
 tls_cert_path: /etc/headscale/tls/tls.crt
 tls_key_path: /etc/headscale/tls/tls.key
 
@@ -16,16 +16,14 @@ prefixes:
 
 derp:
   server:
-    enabled: false
-  urls:
-    - https://controlplane.tailscale.com/derpmap/default
-  auto_update_enabled: true
-  update_frequency: 24h
-
-database:
-  type: sqlite3
-  sqlite:
-    path: /var/lib/headscale/db.sqlite
+    enabled: true
+    region_id: 999
+    region_code: "hetzner"
+    region_name: "Hetzner"
+    stun_listen_addr: "0.0.0.0:3478"
+    private_key_path: /var/lib/headscale/derp_server_private.key
+  urls: []
+  auto_update_enabled: false
 
 dns:
   override_local_dns: true

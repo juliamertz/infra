@@ -4,7 +4,7 @@ metadata:
   name: headscale
   namespace: headscale
 spec:
-  replicas: 1
+  replicas: 2
   strategy:
     type: RollingUpdate
     rollingUpdate:
@@ -29,27 +29,24 @@ spec:
             - name: metrics
               containerPort: 9090
           env:
-            - name: HEADSCALE_DATABASE_HOST
+            - name: HEADSCALE_DATABASE_TYPE
+              value: postgres
+            - name: HEADSCALE_DATABASE_POSTGRES_HOST
               valueFrom:
                 secretKeyRef:
                   name: headscale-db-app
                   key: host
-            - name: HEADSCALE_DATABASE_PORT
-              valueFrom:
-                secretKeyRef:
-                  name: headscale-db-app
-                  key: port
-            - name: HEADSCALE_DATABASE_NAME
+            - name: HEADSCALE_DATABASE_POSTGRES_NAME
               valueFrom:
                 secretKeyRef:
                   name: headscale-db-app
                   key: dbname
-            - name: HEADSCALE_DATABASE_USER
+            - name: HEADSCALE_DATABASE_POSTGRES_USER
               valueFrom:
                 secretKeyRef:
                   name: headscale-db-app
                   key: username
-            - name: HEADSCALE_DATABASE_PASS
+            - name: HEADSCALE_DATABASE_POSTGRES_PASS
               valueFrom:
                 secretKeyRef:
                   name: headscale-db-app
@@ -59,6 +56,9 @@ spec:
               mountPath: /etc/headscale
             - name: tls
               mountPath: /etc/headscale/tls
+              readOnly: true
+            - name: keys
+              mountPath: /var/lib/headscale
               readOnly: true
           livenessProbe:
             httpGet:
@@ -79,3 +79,16 @@ spec:
         - name: tls
           secret:
             secretName: headscale-tls
+        - name: keys
+          secret:
+            secretName: headscale-keys
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              topologyKey: kubernetes.io/hostname
+              labelSelector:
+                matchLabels:
+                  app.kubernetes.io/name: headscale
+

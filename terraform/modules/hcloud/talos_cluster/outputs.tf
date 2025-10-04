@@ -47,6 +47,10 @@ output "talos_worker_ids" {
   )
 }
 
-# output "load_balancer_ipv4" {
-#   value = hcloud_load_balancer.load_balancer.ipv4
-# }
+output "talos_worker_ips" {
+  description = "Server IPs of the hetzner talos workers machines"
+  value = merge(
+    { for id, server in hcloud_server.workers_new : id => server.ipv4_address },
+    { for id, server in hcloud_server.workers : id => server.ipv4_address }
+  )
+}

@@ -125,6 +125,18 @@ module "juliamertz-nl-dns" {
   }
 }
 
+
+resource "cloudflare_dns_record" "records" {
+  for_each = module.production_k8s.talos_worker_ips
+
+  zone_id  = var.juliamertz_nl_zone_id
+  name = "headscale"
+  type     = "A"
+  content = each.value
+  ttl     = 1
+  proxied = false
+}
+
 module "juliamertz-dev-dns" {
   source = "./modules/cloudflare/records"
 
