@@ -1,0 +1,20 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: tailscale-agent
+resources:
+  - namespace.yaml
+  - secret.yaml
+  - serviceaccount.yaml
+  - role.yaml
+  - volume.yaml
+  - deployment.yaml
+  - service.yaml
+
+configMapGenerator:
+  - name: caddy-config
+    options:
+      disableNameSuffixHash: true
+      labels:
+        app: tailscale-agent
+    files:
+      - Caddyfile

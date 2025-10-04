@@ -3,8 +3,8 @@ kind: Cluster
 metadata:
   name: headscale-db
 spec:
-  instances: 1
+  instances: 3
   primaryUpdateStrategy: unsupervised
   enableSuperuserAccess: false
   storage:
-    size: 10Gi
+    size: 1Gi

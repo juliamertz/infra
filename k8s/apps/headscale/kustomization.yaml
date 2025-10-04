@@ -18,3 +18,4 @@ configMapGenerator:
         app.kubernetes.io/part-of: headscale
     files:
       - config.yaml
+      - acl.json

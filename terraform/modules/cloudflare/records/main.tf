@@ -5,7 +5,7 @@ resource "cloudflare_dns_record" "records" {
 
   name = each.value.name == "@" || each.value.name == "" ? var.domain : (
     each.value.domain_suffix ? "${each.value.name}.${var.domain}" : each.value.name
-  )
+)
 
   type     = each.value.type
   priority = each.value.priority

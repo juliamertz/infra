@@ -19,3 +19,14 @@ output "kubeconfig" {
   value     = module.production_k8s.kubeconfig
   sensitive = true
 }
+
+
+output "talos_machine_configurations_control_plane" {
+  value     = module.production_k8s.talos_machine_configurations_control_plane
+  sensitive = true
+}
+
+output "talos_machine_configurations_worker" {
+  value     = module.production_k8s.talos_machine_configurations_worker
+  sensitive = true
+}

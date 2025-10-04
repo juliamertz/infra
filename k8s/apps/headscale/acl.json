@@ -1,0 +1,14 @@
+{
+  "acls": [
+    {
+      "action": "accept",
+      "src": ["kubernetes@"],
+      "dst": ["homelab@:80,443"]
+    },
+    {
+      "action": "accept",
+      "src": ["julia@"],
+      "dst": ["*:*"]
+    }
+  ]
+}

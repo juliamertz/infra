@@ -2,6 +2,9 @@ server_url: https://headscale.juliamertz.nl:30443
 tls_cert_path: /etc/headscale/tls/tls.crt
 tls_key_path: /etc/headscale/tls/tls.key
 
+policy:
+  path: "/etc/headscale/acl.json"
+
 listen_addr: 0.0.0.0:8080
 metrics_listen_addr: 0.0.0.0:9090
 
@@ -33,4 +36,3 @@ dns:
     global:
       - 1.1.1.1
       - 8.8.8.8
-

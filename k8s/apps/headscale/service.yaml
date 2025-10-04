@@ -71,3 +71,22 @@ spec:
       port: 9090
       targetPort: 9090
       protocol: TCP
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: headscale-internal
+  namespace: headscale
+  labels:
+    app.kubernetes.io/name: headscale
+    app.kubernetes.io/component: metrics
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: headscale
+  ports:
+    - name: http
+      port: 8080
+      targetPort: 8080
+      protocol: TCP

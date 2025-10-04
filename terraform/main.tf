@@ -97,6 +97,13 @@ module "production_k8s" {
         "node.kubernetes.io/arch"          = "arm64"
       }
     },
+    # {
+    #   type  = "cax21"
+    #   labels = {
+    #     "node.kubernetes.io/instance-type" = "cax21"
+    #     "node.kubernetes.io/arch"          = "arm64"
+    #   }
+    # },
   ]
 
   network_ipv4_cidr = "10.0.0.0/16"

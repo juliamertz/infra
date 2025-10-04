@@ -1,0 +1,100 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tailscale-agent
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tailscale-agent
+  template:
+    metadata:
+      name: tailscale-agent
+      labels:
+        app: tailscale-agent
+    spec:
+      serviceAccountName: tailscale-agent
+      containers:
+        - name: caddy
+          image: caddy:2
+          securityContext:
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
+            runAsUser: 1001
+            runAsGroup: 1001
+            capabilities:
+              drop:
+                - ALL
+              add:
+                - NET_BIND_SERVICE
+            readOnlyRootFilesystem: false
+          ports:
+            - containerPort: 8080
+              name: http
+            - containerPort: 8443
+              name: https
+          volumeMounts:
+            - name: caddy-config
+              mountPath: /etc/caddy
+            - name: caddy-data
+              mountPath: /data
+            - name: caddy-config-cache
+              mountPath: /config
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "100m"
+            limits:
+              memory: "128Mi"
+              cpu: "100m"
+        - name: tailscale
+          image: ghcr.io/tailscale/tailscale:latest
+          securityContext:
+            privileged: true
+          env:
+            - name: TS_USERSPACE
+              value: "false"
+            - name: TS_KUBE_SECRET
+              value: tailscale-state
+            - name: TS_DEBUG_FIREWALL_MODE
+              value: nftables
+            - name: TS_AUTH_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: tailscale-auth
+                  key: authkey
+            # - name: TS_HOSTNAME
+            #   value: "tailscale-agent-$(POD_NAME)"
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: POD_UID
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.uid
+            - name: TS_EXTRA_ARGS
+              value: "--login-server https://headscale.juliamertz.nl:30443 --accept-routes --accept-dns --advertise-tags=tag:tailscale-agent"
+          resources:
+            requests:
+              cpu: "20m"
+              memory: "64Mi"
+            limits:
+              cpu: "1000m"
+              memory: "128Mi"
+          volumeMounts:
+            - name: tailscale-state
+              mountPath: /var/lib/tailscale
+      volumes:
+        - name: tailscale-state
+          persistentVolumeClaim:
+            claimName: tailscale-pvc
+        - name: caddy-config
+          configMap:
+            name: caddy-config
+        - name: caddy-data
+          emptyDir: {}
+        - name: caddy-config-cache
+          emptyDir: {}
+      shareProcessNamespace: true
