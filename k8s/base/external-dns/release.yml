@@ -29,6 +29,9 @@ spec:
     domainFilters:
       - juliamertz.dev
       - juliamertz.nl
+      - juliamertz.com
+      - merlijnvoncken.nl
+      - merlijnvoncken.com
     sources:
       - gateway-httproute
       - gateway-grpcroute
