@@ -6,7 +6,10 @@ metadata:
 spec:
   replicas: 1
   strategy:
-    type: Recreate
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
   selector:
     matchLabels:
       app.kubernetes.io/name: headscale
@@ -31,16 +34,21 @@ spec:
               mountPath: /var/lib/headscale
             - name: config
               mountPath: /etc/headscale
+            - name: tls
+              mountPath: /etc/headscale/tls
+              readOnly: true
           livenessProbe:
             httpGet:
               path: /health
               port: 8080
-            initialDelaySeconds: 30
+              scheme: HTTPS
+            initialDelaySeconds: 5
           readinessProbe:
             httpGet:
               path: /health
               port: 8080
-            initialDelaySeconds: 10
+              scheme: HTTPS
+            initialDelaySeconds: 3
       volumes:
         - name: data
           persistentVolumeClaim:
@@ -48,3 +56,6 @@ spec:
         - name: config
           configMap:
             name: headscale-config
+        - name: tls
+          secret:
+            secretName: headscale-tls

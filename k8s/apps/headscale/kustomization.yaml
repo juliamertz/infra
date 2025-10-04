@@ -3,6 +3,7 @@ kind: Kustomization
 namespace: headscale
 resources:
   - namespace.yaml
+  - certificate.yaml
   - volume.yaml
   - deployment.yaml
   - service.yaml

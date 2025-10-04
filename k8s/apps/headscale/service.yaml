@@ -12,6 +12,11 @@ metadata:
     external-dns.alpha.kubernetes.io/ttl: "300"
     load-balancer.hetzner.cloud/location: nbg1
     load-balancer.hetzner.cloud/type: lb11 
+    load-balancer.hetzner.cloud/use-private-ip: "true"
+    load-balancer.hetzner.cloud/name: "headscale-lb"
+    load-balancer.hetzner.cloud/health-check-protocol: "https"
+    load-balancer.hetzner.cloud/health-check-port: "8080"
+    load-balancer.hetzner.cloud/node-selector: "!node-role.kubernetes.io/control-plane"
 spec:
   type: LoadBalancer
   selector:

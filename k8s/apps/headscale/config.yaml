@@ -1,4 +1,7 @@
 server_url: https://headscale.juliamertz.nl
+tls_cert_path: /etc/headscale/tls/tls.crt
+tls_key_path: /etc/headscale/tls/tls.key
+
 listen_addr: 0.0.0.0:8080
 metrics_listen_addr: 0.0.0.0:9090
 
