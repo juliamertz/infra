@@ -12,56 +12,9 @@ provider "cloudflare" {
   api_token = var.cloudflare_token
 }
 
-data "external" "host" {
-  program = [
-    "nix",
-    "eval",
-    "--impure",
-    "--raw",
-    "--expr",
-    "builtins.toJSON { system = builtins.currentSystem; }",
-  ]
-}
-
 locals {
   location        = "nbg1"
   datacenter      = "nbg1-dc3"
-  nixos_channel   = "nixos-unstable"
-  build_on_target = data.external.host.result.system != "x86_64-linux"
-
-  ssh_private_key = "~/.ssh/id_ed25519"
-  ssh_public_key  = "~/.ssh/id_ed25519.pub"
-  sops_age_key    = "~/.config/sops/age/keys.txt"
-
-  records = {
-    root    = { type = "A", name = "@" }
-    www     = { type = "A", name = "www" }
-    grafana = { type = "A", name = "grafana" }
-    gh      = { type = "A", name = "gh" }
-    wg      = { type = "A", name = "wg", proxied = false }
-    hass       = { type = "A", name = "hass" }
-    watch      = { type = "A", name = "watch" }
-    cache      = { type = "A", name = "cache" }
-    # home-assistant  = { type = "A", name = "home-assistant" }
-    # nettenshop = { type = "A", name = "nettenshop" }
-    # lb_prod = { type = "A", name = "lb.prod", content = module.production_k8s.load_balancer_ipv4 }
-    # mc              = { type = "A", name = "mc", content = "91.99.138.181" }
-    # dynmap              = { type = "A", name = "dynmap" }
-  }
-}
-
-module "production" {
-  source = "./modules/hcloud/hive"
-
-  build_on_target        = local.build_on_target
-  sops_age_key           = local.sops_age_key
-  deployment_private_key = "~/.ssh/id_ed25519"
-  deployment_public_key  = "~/.ssh/id_ed25519.pub"
-  flake_path             = var.flake_path
-
-  providers = {
-    hcloud = hcloud.production
-  }
 }
 
 module "production_k8s" {
@@ -97,13 +50,13 @@ module "production_k8s" {
         "node.kubernetes.io/arch"          = "arm64"
       }
     },
-    # {
-    #   type  = "cax21"
-    #   labels = {
-    #     "node.kubernetes.io/instance-type" = "cax21"
-    #     "node.kubernetes.io/arch"          = "arm64"
-    #   }
-    # },
+    {
+      type  = "cax21"
+      labels = {
+        "node.kubernetes.io/instance-type" = "cax21"
+        "node.kubernetes.io/arch"          = "arm64"
+      }
+    },
   ]
 
   network_ipv4_cidr = "10.0.0.0/16"
@@ -116,23 +69,6 @@ module "production_k8s" {
   }
 }
 
-module "juliamertz-nl-dns" {
-  source = "./modules/cloudflare/records"
-
-  proxied         = true
-  ttl             = 1
-  zone_id         = var.juliamertz_nl_zone_id
-  domain          = "juliamertz.nl"
-  default_content = module.production.gatekeeper.ip
-
-  records = local.records
-
-  providers = {
-    cloudflare = cloudflare
-  }
-}
-
-
 resource "cloudflare_dns_record" "records" {
   for_each = module.production_k8s.talos_worker_ips
 
@@ -142,22 +78,6 @@ resource "cloudflare_dns_record" "records" {
   content = each.value
   ttl     = 1
   proxied = false
-}
-
-module "juliamertz-dev-dns" {
-  source = "./modules/cloudflare/records"
-
-  proxied         = true
-  ttl             = 1
-  zone_id         = var.juliamertz_dev_zone_id
-  domain          = "juliamertz.dev"
-  default_content = module.production.gatekeeper.ip
-
-  records = local.records
-
-  providers = {
-    cloudflare = cloudflare
-  }
 }
 
 module "juliamertz-nl-email" {
