@@ -1,24 +1,29 @@
-keys:                                                                                                                                 
-  - &julia age1wu0knmpfys4szjf09cgvc7fq8u34h0dyu9uk6sfzvkmqlklcya6skhmhs5                                                       
-                                                                                                                                      
-creation_rules:                                                                                                                       
-  - path_regex: secrets/gateway.yaml                                                                                                 
-    key_groups:                                                                                                                       
-    - age:                                                                                                                            
-      - *julia
-  - path_regex: secrets/wireguard.yaml                                                                                                 
-    key_groups:                                                                                                                       
-    - age:                                                                                                                            
-      - *julia
-  - path_regex: secrets/nettenshop.yaml                                                                                                 
-    key_groups:                                                                                                                       
-    - age:                                                                                                                            
-      - *julia
+keys:
+  - &julia age1wu0knmpfys4szjf09cgvc7fq8u34h0dyu9uk6sfzvkmqlklcya6skhmhs5
+
+creation_rules:
+  - path_regex: secrets/gateway.yaml
+    key_groups:
+      - age:
+          - *julia
+  - path_regex: secrets/wireguard.yaml
+    key_groups:
+      - age:
+          - *julia
+  - path_regex: secrets/nettenshop.yaml
+    key_groups:
+      - age:
+          - *julia
   - path_regex: secrets/tfvars.yaml
     key_groups:
-    - age:
-      - *julia
+      - age:
+          - *julia
   - path_regex: secrets/attic.env
     key_groups:
-    - age:
-      - *julia
+      - age:
+          - *julia
+  - path_regex: secrets/backblaze.yaml
+    encrypted_regex: '^(data|stringData)$'
+    key_groups:
+      - age:
+          - *julia

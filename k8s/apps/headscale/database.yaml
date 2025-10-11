@@ -10,3 +10,15 @@ spec:
     size: 1Gi
     storageClass: longhorn-local
     resizeInUseVolumes: true
+  backup:
+    retentionPolicy: "90d"
+    barmanObjectStore:
+      destinationPath: s3://backups-0snsf7rceJ/barman/headscale-db
+      endpointURL: s3.eu-central-003.backblazeb2.com
+      s3Credentials:
+        accessKeyId:
+          name: barman-credentials
+          key: ACCESS_KEY_ID
+        secretAccessKey:
+          name: barman-credentials
+          key: ACCESS_SECRET_KEY
