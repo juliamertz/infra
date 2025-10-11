@@ -4,3 +4,4 @@ namespace: longhorn-system
 resources:
   - namespace.yaml
   - release.yaml
+  - storageclass.yaml

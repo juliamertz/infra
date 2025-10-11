@@ -4,18 +4,8 @@ namespace: headscale
 resources:
   - namespace.yaml
   - certificate.yaml
-  - create-secret.yaml
   - database.yaml
-  - deployment.yaml
   - service.yaml
-
-configMapGenerator:
-  - name: headscale-config
-    options:
-      disableNameSuffixHash: true
-      labels:
-        app.kubernetes.io/name: headscale
-        app.kubernetes.io/part-of: headscale
-    files:
-      - config.yaml
-      - acl.json
+  - acl.yaml
+  - headscale.yaml
+  # - derp.yaml

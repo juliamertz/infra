@@ -1,0 +1,9 @@
+apiVersion: kubus.io/v1
+kind: ACLPolicy
+metadata:
+  name: central
+spec:
+  rules:
+    - action: accept
+      src: ['*:*']
+      dst: ['*:*']

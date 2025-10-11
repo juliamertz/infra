@@ -14,6 +14,8 @@ spec:
       labels:
         app: tailscale-agent
     spec:
+      # hostNetwork: true
+      # dnsPolicy: ClusterFirstWithHostNet
       serviceAccountName: tailscale-agent
       containers:
         - name: caddy
@@ -51,12 +53,14 @@ spec:
         - name: tailscale
           image: ghcr.io/tailscale/tailscale:latest
           securityContext:
-            privileged: true
+            capabilities:
+              add:
+                - NET_ADMIN
           env:
             - name: TS_USERSPACE
               value: "false"
             - name: TS_KUBE_SECRET
-              value: tailscale-state
+              value: ""
             - name: TS_DEBUG_FIREWALL_MODE
               value: nftables
             - name: TS_AUTH_KEY
@@ -64,6 +68,9 @@ spec:
                 secretKeyRef:
                   name: tailscale-auth
                   key: authkey
+            - name: TS_ACCEPT_DNS
+              value: "true"
+            # use for relay
             # - name: TS_HOSTNAME
             #   value: "tailscale-agent-$(POD_NAME)"
             - name: POD_NAME
@@ -75,7 +82,7 @@ spec:
                 fieldRef:
                   fieldPath: metadata.uid
             - name: TS_EXTRA_ARGS
-              value: "--login-server https://headscale.juliamertz.nl:30443 --accept-routes --accept-dns --advertise-tags=tag:tailscale-agent"
+              value: "--login-server https://headscale.juliamertz.nl:30443 --accept-routes --advertise-tags=tag:tailscale-agent"
           resources:
             requests:
               cpu: "20m"

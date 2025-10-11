@@ -33,6 +33,9 @@ spec:
       interval: 1m
   values: 
     grafana:
+      existingSecret: kube-prometheus-stack-grafana
+      userKey: admin-user
+      passwordKey: admin-password
       additionalDataSources:
          - name: Loki
            type: loki
@@ -45,13 +48,15 @@ spec:
            isDefault: false
     prometheus:
       prometheusSpec:
+        retentionSize: "5GB"
         storageSpec:
           volumeClaimTemplate:
             spec:
+              storageClassName: longhorn-local
               accessModes: ["ReadWriteOnce"]
               resources:
                 requests:
-                  storage: 10Gi
+                  storage: 5Gi
     alertmanager:
       enabled: false
 
@@ -76,7 +81,8 @@ spec:
       enabled: true
       persistence:
         enabled: true
-        size: 10Gi
+        size: 5Gi
+        storageClassName: longhorn-local
       config:
         auth_enabled: false
         limits_config:

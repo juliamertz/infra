@@ -8,3 +8,5 @@ spec:
   enableSuperuserAccess: false
   storage:
     size: 1Gi
+    storageClass: longhorn-local
+    resizeInUseVolumes: true

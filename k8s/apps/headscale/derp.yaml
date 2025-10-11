@@ -1,0 +1,165 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: HelmRepository
+metadata:
+  name: tailscale-derp
+spec:
+  interval: 30m
+  type: oci
+  url: oci://ghcr.io/coreweave/tailscale-derp/chart/tailscale-derp
+
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: tailscale-derp
+spec:
+  interval: 5m
+  chart:
+    spec:
+      chart: gateway-helm
+      version: v0.15.0
+      sourceRef:
+        kind: HelmRepository
+        name: tailscale-derp
+      interval: 1m
+  values:
+    derpServerHostname: 'derp.juliamertz.nl'
+    replicaCount: 3
+    env:
+      - name: GOMAXPROCS
+        valueFrom:
+          resourceFieldRef:
+            resource: limits.cpu
+      - name: GOMEMLIMIT
+        valueFrom:
+          resourceFieldRef:
+            resource: limits.memory
+      - name: DERP_HOSTNAME
+        value: '{{ include "tailscale-derp.hostname" . }}'
+      # // Pass extra arguments to derper
+      # - name: DERP_CERTMODE
+      #   value: "manual"
+      # - name: DERP_CERTDIR
+      #   value: "/app/certs"
+      # - name: DERP_ADDR
+      #   value: ":443"
+      # - name: DERP_HTTP_PORT
+      #   value: "80"
+      - name: DERP_STUN_PORT
+        value: "80"
+      - name: DERP_STUN
+        value: "true"
+      # If using verify-clients, configure the tailscaled container below
+      # - name: DERP_VERIFY_CLIENTS
+      #   value: "false"
+
+    # // Configure tailscaled container when using verify-clients
+    tailscaled: {}
+      # volumeMounts:
+      #   - name: pipes
+      #     mountPath: /tmp
+      # env:
+      # - name: TS_HEALTHCHECK_ADDR_PORT
+      #   value: 0.0.0.0:9002 # Enable liveness
+      # - name: TS_USERSPACE
+      #   value: "true" # unprivileged
+      # - name: TS_KUBE_SECRET
+      #   value: "" # ephemeral
+      # - name: TS_AUTH_KEY
+      #   value: "" # register with auth key
+      # livenessProbe:
+      #   httpGet:
+      #     path: /healthz
+      #     port: 9002
+      # readinessProbe:
+      #   httpGet:
+      #     path: /healthz
+      #     port: 9002
+
+    podSecurityContext:
+      fsGroup: 2000
+
+    securityContext:
+      capabilities:
+        drop:
+        - ALL
+      readOnlyRootFilesystem: true
+      runAsNonRoot: true
+      runAsUser: 1000
+
+    service:
+      type: ClusterIP
+      enabled: false
+      internalTrafficPolicy: Cluster
+      externalTrafficPolicy: Local
+      annotations:
+          externaldns.alpha.kubernetes.io/hostname: 'derp.juliamertz.nl'
+      ports:
+        - name: http
+          port: 80
+          targetPort: 80
+        - name: https
+          port: 443
+          targetPort: 443
+        - name: stun
+          port: 3478
+          targetPort: 3478
+      directAttach:
+        enabled: false
+        annotations: {}
+
+    resources:
+      requests:
+        cpu: 100m
+        memory: 2Gi
+      limits:
+        cpu: 2000m
+        memory: 2Gi
+
+    livenessProbe:
+      exec:
+        command:
+          - /bin/bash
+          - -c
+          - /app/healthprobe.sh
+      timeoutSeconds: 60
+      initialDelaySeconds: 300 # Needs to grab cert
+
+    readinessProbe:
+      exec:
+        command:
+          - /bin/bash
+          - -c
+          - /app/healthprobe.sh
+      timeoutSeconds: 60
+      initialDelaySeconds: 300 # Needs to grab cert
+
+    tls: {}
+      # enabled: true
+      # domain: '{{ include "tailscale-derp.hostname" . }}'
+
+    # Additional volumes on the output Deployment definition.
+    volumes:
+      - name: pipes
+        emptyDir: {}
+    # - name: cert
+    #   secret:
+    #     secretName: '{{ .Release.Name }}-tls'
+
+    # Additional volumeMounts on the output Deployment definition.
+    volumeMounts:
+      - name: pipes
+        mountPath: /var/run/tailscale
+    # - name: cert
+    #   mountPath: '/app/certs/{{ include "tailscale-derp.hostname" . }}.crt'
+    #   subPath: tls.crt
+    # - name: cert
+    #   mountPath: '/app/certs/{{ include "tailscale-derp.hostname" . }}.key'
+    #   subPath: tls.key
+    #   readOnly: true
+
+    nodeSelector: {}
+
+    tolerations: []
+
+    affinity: {}
