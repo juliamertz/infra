@@ -1,3 +1,22 @@
+apiVersion: barmancloud.cnpg.io/v1
+kind: ObjectStore
+metadata:
+  name: backblaze-b2
+spec:
+  configuration:
+    destinationPath:  s3://backups-0snsf7rceJ/barman
+    endpointURL: https://s3.eu-central-003.backblazeb2.com
+    s3Credentials:
+      accessKeyId:
+        name: barman-credentials
+        key: ACCESS_KEY_ID
+      secretAccessKey:
+        name: barman-credentials
+        key: ACCESS_SECRET_KEY
+    wal:
+      compression: gzip
+
+---
 apiVersion: postgresql.cnpg.io/v1
 kind: Cluster
 metadata:
@@ -5,20 +24,16 @@ metadata:
 spec:
   instances: 3
   primaryUpdateStrategy: unsupervised
+  primaryUpdateMethod: switchover
   enableSuperuserAccess: false
+
   storage:
     size: 1Gi
     storageClass: longhorn-local
     resizeInUseVolumes: true
-  backup:
-    retentionPolicy: "90d"
-    barmanObjectStore:
-      destinationPath: s3://backups-0snsf7rceJ/barman/headscale-db
-      endpointURL: s3.eu-central-003.backblazeb2.com
-      s3Credentials:
-        accessKeyId:
-          name: barman-credentials
-          key: ACCESS_KEY_ID
-        secretAccessKey:
-          name: barman-credentials
-          key: ACCESS_SECRET_KEY
+
+  plugins:
+  - name: barman-cloud.cloudnative-pg.io
+    isWALArchiver: true
+    parameters:
+      barmanObjectName: backblaze-b2
