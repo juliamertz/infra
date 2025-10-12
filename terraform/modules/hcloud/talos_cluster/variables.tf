@@ -433,12 +433,6 @@ variable "deploy_prometheus_operator_crds" {
   description = "If true, the Prometheus Operator CRDs will be deployed."
 }
 
-variable "hcloud_ccm_version" {
-  type        = string
-  default     = null
-  description = "The version of the Hetzner Cloud Controller Manager to deploy. If not set, the latest version will be used."
-}
-
 variable "disable_talos_coredns" {
   type        = bool
   default     = false

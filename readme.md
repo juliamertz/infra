@@ -1,6 +1,5 @@
 # To-Do
 
-- [ ] Fix longhorn storageclass for HA cnpg
 - [ ] Deploy base/core with terraform
-    - disable destroy lifecycle
+    - disable destroy lifecycle for helm releases
     - autoscale replicas based on worker count

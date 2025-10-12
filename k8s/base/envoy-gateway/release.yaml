@@ -19,14 +19,14 @@ spec:
   chart:
     spec:
       chart: gateway-helm
-      version: "v1.5.1"
+      version: "v1.5.3"
       sourceRef:
         kind: HelmRepository
         name: envoyproxy
       interval: 1m
   values:
     deployment:
-      replicas: 3
+      replicas: 2
     config:
       envoyGateway:
         gateway:
