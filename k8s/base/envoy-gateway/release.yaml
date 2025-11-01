@@ -26,7 +26,7 @@ spec:
       interval: 1m
   values:
     deployment:
-      replicas: 2
+      replicas: 3
     config:
       envoyGateway:
         gateway:
