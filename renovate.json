@@ -4,5 +4,8 @@
   "kubernetes": {
     "managerFilePatterns": ["/(^|/)kustomization\\.ya?ml$/"],
     "pinDigests": true
+  },
+  "flux": {
+    "managerFilePatterns": ["/k8s/.+\\.yaml$/"]
   }
 }
