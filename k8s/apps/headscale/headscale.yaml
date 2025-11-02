@@ -1,9 +1,12 @@
 ---
-apiVersion: kubus.io/v1
+apiVersion: headscale.juliamertz.dev/v1
 kind: Headscale
 metadata:
   name: central
 spec:
+  tls:
+    existingSecret: headscale-tls
+
   config:
     server_url: https://headscale.juliamertz.nl:30443
     tls_cert_path: /etc/headscale/tls/tls.crt
@@ -12,6 +15,8 @@ spec:
     #   path: "/etc/headscale/acl.json"
     listen_addr: 0.0.0.0:8080
     metrics_listen_addr: 0.0.0.0:9090
+    grpc_listen_addr: 0.0.0.0:50443
+    grpc_allow_insecure: false
     private_key_path: /var/lib/headscale/private.key
     noise:
       private_key_path: /var/lib/headscale/noise_private.key
@@ -61,6 +66,3 @@ spec:
           secretKeyRef:
             name: headscale-db-app
             key: password
-
-  tls:
-    existingSecret: headscale-tls
