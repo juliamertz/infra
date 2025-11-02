@@ -1,0 +1,21 @@
+apiVersion: headscale.juliamertz.dev/v1
+kind: User
+metadata:
+  name: kubernetes
+spec:
+  headscaleRef:
+    name: central
+    namespace: headscale
+
+---
+apiVersion: headscale.juliamertz.dev/v1
+kind: PreauthKey
+metadata:
+  name: agent-auth
+spec:
+  ephemeral: true
+  reusable: true
+  expiration: 99999h
+  targetSecret: tailscale-agent-auth
+  user:
+    name: kubernetes 

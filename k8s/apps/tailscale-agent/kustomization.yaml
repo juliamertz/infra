@@ -3,7 +3,7 @@ kind: Kustomization
 namespace: tailscale-agent
 resources:
   - namespace.yaml
-  - secret.yaml
+  - auth.yaml
   - serviceaccount.yaml
   - role.yaml
   - volume.yaml
