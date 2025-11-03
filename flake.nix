@@ -9,6 +9,11 @@
     lightspeed-dhl-adapter.url = "github:juliamertz/lightspeed-dhl-adapter";
     nix-minecraft.url = "github:juliamertz/nix-minecraft";
     dotfiles.url = "github:juliamertz/dotfiles";
+    crane.url = "github:ipetkov/crane";
+    rust-overlay = {
+      url = "github:oxalica/rust-overlay";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = {
@@ -16,10 +21,14 @@
     nixpkgs,
     systems,
     colmena,
+    crane,
+    rust-overlay,
     ...
   } @ inputs: let
     inherit (nixpkgs) lib;
-    overlays = [inputs.nix-minecraft.overlay];
+    overlays = [inputs.nix-minecraft.overlay (import rust-overlay)];
+    mkCraneLib = pkgs': (crane.mkLib pkgs').overrideToolchain (p: p.rust-bin.stable."1.90.0".default);
+
     forAllSystems = fun:
       lib.genAttrs (import systems) (system:
         fun (import nixpkgs {
@@ -70,10 +79,12 @@
       # };
     };
 
-    devShells = forAllSystems (pkgs: {
-      default = pkgs.mkShell {
-        buildInputs = [];
+    devShells = forAllSystems (pkgs: let
+      craneLib = mkCraneLib pkgs;
+    in {
+      default = craneLib.devShell {
         packages = with pkgs; [
+          rust-analyzer
           jq
           yq
           treefmt
@@ -92,19 +103,6 @@
               ln -sf $src/bin/tofu $out/bin/tofu-unwrapped
             '';
           })
-          (let
-            hcloud-talos = pkgs.fetchFromGitHub {
-              owner = "hcloud-talos";
-              repo = "terraform-hcloud-talos";
-              rev = "377cd6802a392db8132084d25192e7e296fe363e";
-              sha256 = "sha256-Ko7dbSzfC9CDDytbBS/M0UZcvD3L0UxCVNmRmdwZfls=";
-            };
-          in
-            pkgs.writeShellScriptBin "build-images" ''
-              PATH="${pkgs.packer}/bin:$PATH"
-              cd ${hcloud-talos}
-              ./_packer/create.sh
-            '')
         ];
       };
     });
