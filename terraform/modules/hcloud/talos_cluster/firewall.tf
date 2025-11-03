@@ -5,28 +5,28 @@ locals {
       direction   = "in"
       protocol    = "tcp"
       port        = "6443"
-      source_ips = [ "0.0.0.0/0", "::/0" ]
+      source_ips  = ["0.0.0.0/0", "::/0"]
     },
     {
       description = "Allow Incoming Requests to Talos API Server"
       direction   = "in"
       protocol    = "tcp"
       port        = "50000"
-      source_ips = [ "0.0.0.0/0", "::/0" ]
+      source_ips  = ["0.0.0.0/0", "::/0"]
     },
     {
       description = "Allow Incoming Requests to Headscale API Server"
       direction   = "in"
       protocol    = "tcp"
       port        = "30443"
-      source_ips = [ "0.0.0.0/0", "::/0" ]
+      source_ips  = ["0.0.0.0/0", "::/0"]
     },
     {
       description = "Allow Incoming Requests to Headscale Derp Server"
       direction   = "in"
       protocol    = "tcp"
       port        = "30478"
-      source_ips = [ "0.0.0.0/0", "::/0" ]
+      source_ips  = ["0.0.0.0/0", "::/0"]
     },
   ]
 }

@@ -22,12 +22,12 @@ resource "kubectl_manifest" "hetzner_token_secret" {
     apiVersion = "v1"
     kind       = "Secret"
     metadata = {
-      name = "hcloud"
+      name      = "hcloud"
       namespace = "hetzner-system"
     }
     data = {
       network = base64encode(hcloud_network.this.id)
-      token = base64encode(var.hcloud_token)
+      token   = base64encode(var.hcloud_token)
     }
   })
   apply_only = true
@@ -38,13 +38,13 @@ resource "helm_release" "hcloud_controller" {
   name      = "hcloud-cloud-controller-manager"
   namespace = "hetzner-system"
 
-  repository   = "https://charts.hetzner.cloud"
-  chart        = "hcloud-cloud-controller-manager"
-  version      = "1.28.0"
+  repository = "https://charts.hetzner.cloud"
+  chart      = "hcloud-cloud-controller-manager"
+  version    = "1.28.0"
 
   values = [yamlencode({
     networking = {
-      enabled = true
+      enabled     = true
       clusterCIDR = local.pod_ipv4_cidr
     }
   })]
@@ -60,15 +60,15 @@ resource "helm_release" "hcloud_csi" {
   name      = "hcloud-csi"
   namespace = "hetzner-system"
 
-  repository   = "https://charts.hetzner.cloud"
-  chart        = "hcloud-csi"
-  version      = "2.18.0"
+  repository = "https://charts.hetzner.cloud"
+  chart      = "hcloud-csi"
+  version    = "2.18.0"
 
   values = [yamlencode({
     storageClasses = [{
-      name = "hcloud-volumes"
+      name                = "hcloud-volumes"
       defaultStorageClass = false
-      reclaimPolicy = "Delete"
+      reclaimPolicy       = "Delete"
     }]
 
     controller = {
