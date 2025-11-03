@@ -22,7 +22,6 @@ module "production_k8s" {
 
   talos_version      = "1.11.1"
   kubernetes_version = "1.34.1"
-  cilium_version     = "1.17.8"
 
   hcloud_token = var.production_hcloud_token
 
