@@ -4,7 +4,7 @@ resource "helm_release" "cilium" {
   namespace  = "kube-system"
   repository = "https://helm.cilium.io"
   chart      = "cilium"
-  version    = "1.17.8"
+  version    = "1.18.3"
 
   values = [yamlencode({
     operator = {
