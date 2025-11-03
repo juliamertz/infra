@@ -1,116 +1,77 @@
-data "helm_template" "cilium_default" {
-  count     = var.cilium_values == null ? 1 : 0
-  name      = "cilium"
-  namespace = "kube-system"
+resource "helm_release" "cilium" {
+  count      = var.control_plane_count > 0 ? 1 : 0
+  name       = "cilium"
+  namespace  = "kube-system"
+  repository = "https://helm.cilium.io"
+  chart      = "cilium"
+  version    = "1.17.8"
 
-  repository   = "https://helm.cilium.io"
-  chart        = "cilium"
-  version      = var.cilium_version
-  kube_version = var.kubernetes_version
-
-  set = [
-    {
-      name  = "operator.replicas"
-      value = var.control_plane_count > 1 ? 2 : 1
-    },
-    {
-      name  = "ipam.mode"
-      value = "kubernetes"
-    },
-    {
-      name  = "routingMode"
-      value = "native"
-    },
-    {
-      name  = "ipv4NativeRoutingCIDR"
-      value = local.pod_ipv4_cidr
-    },
-    {
-      name  = "kubeProxyReplacement"
-      value = "true"
-    },
-    {
-      name  = "bpf.masquerade"
-      value = "false"
-    },
-    {
-      name  = "loadBalancer.acceleration"
-      value = "native"
-    },
-    {
-      name  = "encryption.enabled"
-      value = var.cilium_enable_encryption ? "true" : "false"
-    },
-    {
-      name  = "encryption.type"
-      value = "wireguard"
-    },
-    {
-      name  = "securityContext.capabilities.ciliumAgent"
-      value = "{CHOWN,KILL,NET_ADMIN,NET_RAW,IPC_LOCK,SYS_ADMIN,SYS_RESOURCE,DAC_OVERRIDE,FOWNER,SETGID,SETUID}"
-    },
-    {
-      name  = "securityContext.capabilities.cleanCiliumState"
-      value = "{NET_ADMIN,SYS_ADMIN,SYS_RESOURCE}"
-    },
-    {
-      name  = "cgroup.autoMount.enabled"
-      value = "false"
-    },
-    {
-      name  = "cgroup.hostRoot"
-      value = "/sys/fs/cgroup"
-    },
-    {
-      name  = "k8sServiceHost"
-      value = "127.0.0.1"
-    },
-    {
-      name  = "k8sServicePort"
-      value = local.api_port_kube_prism
-    },
-    {
-      name  = "hubble.enabled"
-      value = "false"
-    },
-    {
-      name  = "prometheus.serviceMonitor.enabled"
-      value = var.cilium_enable_service_monitors ? "true" : "false"
-    },
-    {
-      name  = "prometheus.serviceMonitor.trustCRDsExist"
-      value = var.cilium_enable_service_monitors ? "true" : "false"
-    },
-    {
-      name  = "operator.prometheus.serviceMonitor.enabled"
-      value = var.cilium_enable_service_monitors ? "true" : "false"
+  values = [jsonencode({
+    operator = {
+      replicas = 2
+      prometheus = {
+        serviceMonitor = {
+          enabled = false
+        }
+      }
     }
-  ]
-}
+    ipam = {
+      mode = "kubernetes"
+    }
+    routingMode           = "native"
+    ipv4NativeRoutingCIDR = "10.0.16.0/20"
+    kubeProxyReplacement  = true
+    bpf = {
+      masquerade = false
+    }
+    loadBalancer = {
+      acceleration = "native"
+    }
+    encryption = {
+      enabled = false
+      type    = "wireguard"
+    }
+    securityContext = {
+      capabilities = {
+        ciliumAgent = [
+          "CHOWN",
+          "KILL",
+          "NET_ADMIN",
+          "NET_RAW",
+          "IPC_LOCK",
+          "SYS_ADMIN",
+          "SYS_RESOURCE",
+          "DAC_OVERRIDE",
+          "FOWNER",
+          "SETGID",
+          "SETUID"
+        ]
+        cleanCiliumState = [
+          "NET_ADMIN",
+          "SYS_ADMIN",
+          "SYS_RESOURCE"
+        ]
+      }
+    }
+    cgroup = {
+      autoMount = {
+        enabled = false
+      }
+      hostRoot = "/sys/fs/cgroup"
+    }
+    k8sServiceHost = "127.0.0.1"
+    k8sServicePort = 7445
+    hubble = {
+      enabled = false
+    }
+    prometheus = {
+      serviceMonitor = {
+        enabled        = false
+        trustCRDsExist = false
+      }
+    }
+  })]
 
-data "helm_template" "cilium_from_values" {
-  count     = var.cilium_values != null ? 1 : 0
-  name      = "cilium"
-  namespace = "kube-system"
-
-  repository   = "https://helm.cilium.io"
-  chart        = "cilium"
-  version      = var.cilium_version
-  kube_version = var.kubernetes_version
-  values       = var.cilium_values
-}
-
-data "kubectl_file_documents" "cilium" {
-  content = coalesce(
-    can(data.helm_template.cilium_from_values[0].manifest) ? data.helm_template.cilium_from_values[0].manifest : null,
-    can(data.helm_template.cilium_default[0].manifest) ? data.helm_template.cilium_default[0].manifest : null
-  )
-}
-
-resource "kubectl_manifest" "apply_cilium" {
-  for_each   = var.control_plane_count > 0 ? data.kubectl_file_documents.cilium.manifests : {}
-  yaml_body  = each.value
-  apply_only = true
   depends_on = [data.http.talos_health]
 }
 
