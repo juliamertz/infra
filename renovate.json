@@ -1,11 +1,17 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["config:base"],
+  "extends": [
+    "config:recommended"
+  ],
   "kubernetes": {
-    "managerFilePatterns": ["/(^|/)kustomization\\.ya?ml$/"],
+    "managerFilePatterns": [
+      "/(^|/)kustomization\\.ya?ml$/"
+    ],
     "pinDigests": true
   },
   "flux": {
-    "managerFilePatterns": ["/k8s/.+\\.yaml$/"]
+    "managerFilePatterns": [
+      "/k8s/.+\\.yaml$/"
+    ]
   }
 }
