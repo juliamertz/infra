@@ -13,12 +13,12 @@ provider "cloudflare" {
 }
 
 locals {
-  location        = "nbg1"
-  datacenter      = "nbg1-dc3"
+  location   = "nbg1"
+  datacenter = "nbg1-dc3"
 }
 
 module "production_k8s" {
-  source  = "./modules/hcloud/talos_cluster"
+  source = "./modules/hcloud/talos_cluster"
 
   talos_version      = "1.11.1"
   kubernetes_version = "1.34.1"
@@ -31,27 +31,27 @@ module "production_k8s" {
 
   datacenter_name = local.datacenter
 
-  control_plane_count       = 3
-  control_plane_server_type = "cax11"
+  control_plane_count          = 3
+  control_plane_server_type    = "cax11"
   control_plane_allow_schedule = false
 
   worker_nodes = [
     {
-      type  = "cax21"
+      type = "cax21"
       labels = {
         "node.kubernetes.io/instance-type" = "cax21"
         "node.kubernetes.io/arch"          = "arm64"
       }
     },
     {
-      type  = "cax21"
+      type = "cax21"
       labels = {
         "node.kubernetes.io/instance-type" = "cax21"
         "node.kubernetes.io/arch"          = "arm64"
       }
     },
     {
-      type  = "cax21"
+      type = "cax21"
       labels = {
         "node.kubernetes.io/instance-type" = "cax21"
         "node.kubernetes.io/arch"          = "arm64"
@@ -72,9 +72,9 @@ module "production_k8s" {
 resource "cloudflare_dns_record" "records" {
   for_each = module.production_k8s.talos_worker_ips
 
-  zone_id  = var.juliamertz_nl_zone_id
-  name = "headscale"
-  type     = "A"
+  zone_id = var.juliamertz_nl_zone_id
+  name    = "headscale"
+  type    = "A"
   content = each.value
   ttl     = 1
   proxied = false

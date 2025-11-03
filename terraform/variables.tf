@@ -12,7 +12,7 @@ terraform {
 }
 
 variable "flake_path" {
-  type = string
+  type    = string
   default = "../"
 }
 

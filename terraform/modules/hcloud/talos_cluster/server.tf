@@ -110,7 +110,7 @@ resource "hcloud_server" "control_planes" {
     "role"    = "control-plane"
   }
 
-  firewall_ids = [ hcloud_firewall.firewall.id ] 
+  firewall_ids = [hcloud_firewall.firewall.id]
 
   public_net {
     ipv4_enabled = true
@@ -154,7 +154,7 @@ resource "hcloud_server" "workers" {
     "server_type" = each.value.server_type
   }, each.value.labels)
 
-  firewall_ids = [ hcloud_firewall.firewall.id ] 
+  firewall_ids = [hcloud_firewall.firewall.id]
 
   public_net {
     ipv4_enabled = true
@@ -198,7 +198,7 @@ resource "hcloud_server" "workers_new" {
     "server_type" = each.value.server_type
   }, each.value.labels)
 
-  firewall_ids = [ hcloud_firewall.firewall.id ] 
+  firewall_ids = [hcloud_firewall.firewall.id]
 
   public_net {
     ipv4_enabled = true

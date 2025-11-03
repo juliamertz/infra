@@ -397,20 +397,6 @@ variable "cilium_version" {
   EOF
 }
 
-variable "cilium_values" {
-  type        = list(string)
-  default     = null
-  description = <<EOF
-    The values.yaml file to use for the Cilium Helm chart.
-    If null (default), the default values will be used.
-    Otherwise, the provided values will be used.
-    Example:
-    ```
-    cilium_values  = [templatefile("cilium/values.yaml", {})]
-    ```
-  EOF
-}
-
 variable "cilium_enable_encryption" {
   type        = bool
   default     = false
