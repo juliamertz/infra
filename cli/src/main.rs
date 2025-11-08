@@ -4,20 +4,17 @@ use anyhow::{Context, Result};
 use clap::Parser;
 
 mod cluster;
-mod jlib;
+mod ext;
 mod prompt;
 mod talos;
 
-use cluster::Cluster;
-use k8s_openapi_ext::corev1::{Node, Pod};
-use kube::{Api, ResourceExt, api::ListParams};
-use prompt::confirm;
+use k8s_openapi_ext::corev1::Node;
+use kube::Api;
 use talos::TalosFactory;
 use tokio::{process::Command, time::sleep};
-use tracing::{Level, error, info, info_span, instrument, span, warn};
-use version_compare::Version;
+use tracing::{Level, info, instrument};
 
-use crate::talos::{Member, TalosCtl, UpgradeParams};
+use crate::talos::{TalosCtl, UpgradeParams};
 
 #[derive(Parser)]
 struct Opts {
