@@ -75,6 +75,7 @@ async fn main() -> Result<()> {
             loop {
                 if nodes.is_ready(&node_name).await {
                     info!("node ready");
+                    nodes.uncordon(&node_name).await?;
                     break;
                 } else {
                     info!("node not ready");
