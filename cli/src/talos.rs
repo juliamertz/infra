@@ -1,8 +1,4 @@
-use std::{
-    cmp::Ordering,
-    net::{IpAddr, Ipv4Addr},
-    process::Stdio,
-};
+use std::{cmp::Ordering, net::Ipv4Addr, process::Stdio};
 
 use anyhow::{Context, Result};
 use reqwest::{Body, Client};
@@ -12,7 +8,7 @@ use tokio::process::Command;
 use tracing::instrument;
 use version_compare::Version;
 
-use crate::jlib::CommandExt;
+use crate::ext::CommandExt;
 
 #[derive(Default)]
 pub struct TalosFactory {

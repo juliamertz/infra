@@ -4,16 +4,19 @@ use anyhow::{Context, Result};
 use clap::Parser;
 
 mod cluster;
+mod cnpg;
 mod ext;
 mod prompt;
 mod talos;
 
-use k8s_openapi_ext::corev1::Node;
-use kube::Api;
+use k8s_openapi_ext::corev1::{Node, Pod};
+use kube::api::ListParams;
+use kube::{Api, ResourceExt};
 use talos::TalosFactory;
 use tokio::{process::Command, time::sleep};
 use tracing::{Level, info, instrument};
 
+use crate::cnpg::Cluster;
 use crate::talos::{TalosCtl, UpgradeParams};
 
 #[derive(Parser)]
@@ -27,6 +30,8 @@ struct Opts {
 
 #[derive(Debug, clap::Subcommand)]
 enum Subcommand {
+    /// Switchover all primary CNPG nodes
+    KickDbs,
     /// Evict all pods and prepare node for upgrade
     Drain,
     /// Reboot and upgrade node
@@ -39,8 +44,9 @@ async fn main() -> Result<()> {
 
     let opts = Opts::parse();
     let kube = kube::Client::try_default().await?;
+    let nodes = Api::<Node>::all(kube.clone());
+    let pods = Api::<Pod>::all(kube.clone());
 
-    let nodes = Api::<Node>::all(kube);
     let factory = TalosFactory::default();
     let talosctl = TalosCtl::try_new().await?;
 
@@ -51,6 +57,38 @@ async fn main() -> Result<()> {
         .context("cannot find external ip for member")?;
 
     match opts.command {
+        Subcommand::KickDbs => {
+            let field_selector = format!("spec.nodeName={node_name}");
+            let label_selector = "cnpg.io/podRole=instance,cnpg.io/instanceRole=primary";
+            let list_params = ListParams {
+                field_selector: Some(field_selector),
+                label_selector: Some(label_selector.into()),
+                ..Default::default()
+            };
+
+            let primaries = pods.list(&list_params).await?.items;
+            // dbg!(&primaries, primaries.len());
+
+            for primary in primaries {
+                let Some(cluster_name) = primary
+                    .metadata
+                    .labels
+                    .as_ref()
+                    .and_then(|labels| labels.get("cnpg.io/cluster"))
+                else {
+                    tracing::error!("cnpg pod is missing cluster label");
+                    continue;
+                };
+
+                dbg!(&cluster_name);
+                let clusters = Api::<Cluster>::namespaced(
+                    kube.clone(),
+                    &primary.namespace().unwrap_or_else(|| "default".to_string()),
+                );
+                let cluster = clusters.get(&cluster_name).await?;
+                dbg!(cluster);
+            }
+        }
         Subcommand::Drain => {
             nodes.cordon(node_name).await?;
             drain_node(node_name).await?;
