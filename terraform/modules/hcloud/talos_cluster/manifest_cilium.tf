@@ -1,5 +1,5 @@
 resource "helm_release" "cilium" {
-  count      = var.control_plane_count > 0 ? 1 : 0
+  count      = local.total_control_plane_count > 0 ? 1 : 0
   name       = "cilium"
   namespace  = "kube-system"
   repository = "https://helm.cilium.io"
@@ -90,7 +90,7 @@ data "kubectl_file_documents" "prometheus_operator_crds" {
 }
 
 resource "kubectl_manifest" "apply_prometheus_operator_crds" {
-  for_each          = var.control_plane_count > 0 && var.deploy_prometheus_operator_crds ? data.kubectl_file_documents.prometheus_operator_crds[0].manifests : {}
+  for_each          = local.total_control_plane_count > 0 && var.deploy_prometheus_operator_crds ? data.kubectl_file_documents.prometheus_operator_crds[0].manifests : {}
   yaml_body         = each.value
   server_side_apply = true
   apply_only        = true

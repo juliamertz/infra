@@ -30,33 +30,17 @@ module "production_k8s" {
 
   datacenter_name = local.datacenter
 
-  control_plane_count          = 3
+  control_plane_count          = 0
   control_plane_server_type    = "cax11"
-  control_plane_allow_schedule = false
+  control_plane_allow_schedule = true
 
-  worker_nodes = [
-    {
-      type = "cax21"
-      labels = {
-        "node.kubernetes.io/instance-type" = "cax21"
-        "node.kubernetes.io/arch"          = "arm64"
-      }
-    },
-    {
-      type = "cax21"
-      labels = {
-        "node.kubernetes.io/instance-type" = "cax21"
-        "node.kubernetes.io/arch"          = "arm64"
-      }
-    },
-    {
-      type = "cax21"
-      labels = {
-        "node.kubernetes.io/instance-type" = "cax21"
-        "node.kubernetes.io/arch"          = "arm64"
-      }
-    },
+  control_plane_nodes = [
+    { type = "cax21" },
+    { type = "cax21" },
+    { type = "cax21" },
   ]
+
+  worker_nodes = []
 
   network_ipv4_cidr = "10.0.0.0/16"
   node_ipv4_cidr    = "10.0.1.0/24"
@@ -69,7 +53,7 @@ module "production_k8s" {
 }
 
 resource "cloudflare_dns_record" "records" {
-  for_each = module.production_k8s.talos_worker_ips
+  for_each = module.production_k8s.loadbalancer_target_ips
 
   zone_id = var.juliamertz_nl_zone_id
   name    = "headscale"

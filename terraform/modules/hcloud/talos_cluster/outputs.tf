@@ -47,10 +47,11 @@ output "talos_worker_ids" {
   )
 }
 
-output "talos_worker_ips" {
-  description = "Server IPs of the hetzner talos workers machines"
+output "loadbalancer_target_ips" {
+  description = "Server IPs of the hetzner talos worker machines"
   value = merge(
     { for id, server in hcloud_server.workers_new : id => server.ipv4_address },
-    { for id, server in hcloud_server.workers : id => server.ipv4_address }
+    { for id, server in hcloud_server.workers : id => server.ipv4_address },
+    { for id, server in hcloud_server.control_planes : id => server.ipv4_address },
   )
 }

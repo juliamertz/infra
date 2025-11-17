@@ -1,5 +1,5 @@
 resource "helm_release" "flux_system" {
-  count            = var.control_plane_count > 0 ? 1 : 0
+  count            = local.total_control_plane_count > 0 ? 1 : 0
   name             = "flux"
   namespace        = "flux-system"
   create_namespace = true

@@ -20,10 +20,12 @@ locals {
     (var.disable_x86 ? null : data.hcloud_image.x86[0].id)   // Use x86 image if not disabled
   )
 
-  # Calculate total worker count from both old and new variables
+  legacy_control_plane_count = var.control_plane_count
   legacy_worker_count = var.worker_count
   new_worker_count    = length(var.worker_nodes)
+  new_control_plane_count    = length(var.control_plane_nodes)
   total_worker_count  = local.legacy_worker_count + local.new_worker_count
+  total_control_plane_count  = local.legacy_control_plane_count + local.new_control_plane_count
 
   # Generate worker node configurations from both old and new variables
   legacy_workers = var.worker_count > 0 ? [
@@ -71,13 +73,21 @@ locals {
   workers = concat(local.legacy_workers, local.new_workers)
 
   control_planes = [
-    for i in range(var.control_plane_count) : {
-      index              = i
-      name               = "${local.cluster_prefix}control-plane-${i + 1}"
-      ipv4_public        = local.control_plane_public_ipv4_list[i],
-      ipv6_public        = var.enable_ipv6 ? local.control_plane_public_ipv6_list[i] : null
-      ipv6_public_subnet = var.enable_ipv6 ? local.control_plane_public_ipv6_subnet_list[i] : null
-      ipv4_private       = local.control_plane_private_ipv4_list[i]
+    for i, node in var.control_plane_nodes : {
+      index       = local.legacy_control_plane_count + i
+      name        = "${local.cluster_prefix}control-plane-${local.legacy_control_plane_count + i + 1}"
+      server_type = node.type
+      image_id = (
+        substr(node.type, 0, 3) == "cax" ?
+        (var.disable_arm ? null : data.hcloud_image.arm[0].id) :
+        (var.disable_x86 ? null : data.hcloud_image.x86[0].id)
+      )
+      ipv4_public        = local.control_plane_public_ipv4_list[local.legacy_control_plane_count + i],
+      ipv6_public        = var.enable_ipv6 ? local.control_plane_public_ipv6_list[local.legacy_control_plane_count + i] : null
+      ipv6_public_subnet = var.enable_ipv6 ? local.control_plane_public_ipv6_subnet_list[local.legacy_control_plane_count + i] : null
+      ipv4_private       = local.control_plane_private_ipv4_list[local.legacy_control_plane_count + i]
+      labels             = node.labels
+      taints             = node.taints
     }
   ]
 }
@@ -99,8 +109,8 @@ resource "hcloud_server" "control_planes" {
   for_each           = { for control_plane in local.control_planes : control_plane.name => control_plane }
   datacenter         = data.hcloud_datacenter.this.name
   name               = each.value.name
-  image              = local.control_plane_image_id
-  server_type        = var.control_plane_server_type
+  image              = each.value.image_id
+  server_type        = each.value.server_type
   user_data          = data.talos_machine_configuration.control_plane[each.value.name].machine_configuration
   ssh_keys           = [hcloud_ssh_key.this.id]
   placement_group_id = hcloud_placement_group.control_plane.id

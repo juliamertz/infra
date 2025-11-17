@@ -291,6 +291,61 @@ variable "worker_nodes" {
   }
 }
 
+variable "control_plane_nodes" {
+  type = list(object({
+    type   = string
+    labels = optional(map(string), {})
+    taints = optional(list(object({
+      key    = string
+      value  = string
+      effect = string
+    })), [])
+  }))
+  default     = []
+  description = <<EOF
+    List of control plane node configurations. Each object defines a group of control plane nodes with the same configuration.
+    - type: Server type (cx11, cx21, cx22, cx31, cx32, cx41, cx42, cx51, cx52, cpx11, cpx21, cpx31, cpx41, cpx51, cax11, cax21, cax31, cax41, ccx13, ccx23, ccx33, ccx43, ccx53, ccx63)
+    - count: Number of nodes of this type
+    - labels: Map of Kubernetes labels to apply to these nodes (default: {})
+    - taints: List of Kubernetes taints to apply to these nodes (default: [])
+    
+    Example:
+    control_plane_nodes = [
+      {
+        type  = "cx22"
+      },
+      {
+        type   = "cax22"
+        labels = {
+          "node.kubernetes.io/arch" = "arm64"
+        }
+        taints = [
+          {
+            key    = "workload-type"
+            value  = "gpu"
+            effect = "NoSchedule"
+          }
+        ]
+      }
+    ]
+  EOF
+  validation {
+    condition = alltrue([
+      for node in var.control_plane_nodes : contains([
+        "cx11", "cx21", "cx22", "cx31", "cx32", "cx41", "cx42", "cx51", "cx52",
+        "cpx11", "cpx21", "cpx31", "cpx41", "cpx51",
+        "cax11", "cax21", "cax31", "cax41",
+        "ccx13", "ccx23", "ccx33", "ccx43", "ccx53", "ccx63"
+      ], node.type)
+    ])
+    error_message = "Invalid worker server type in control_plane_nodes."
+  }
+  validation {
+    condition     = length(var.control_plane_nodes) <= 99
+    error_message = "Total number of control plane nodes must be less than 100."
+  }
+}
+
 variable "disable_x86" {
   type        = bool
   default     = false

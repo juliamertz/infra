@@ -1,6 +1,6 @@
 locals {
   # Define a dummy control plane entry for when count is 0
-  dummy_control_planes = var.control_plane_count == 0 ? [{
+  dummy_control_planes = local.total_control_plane_count == 0 ? [{
     index              = 0
     name               = "dummy-cp-0"
     ipv4_public        = "0.0.0.0"                           # Fallback

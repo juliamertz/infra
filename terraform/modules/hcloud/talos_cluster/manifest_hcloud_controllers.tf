@@ -1,5 +1,5 @@
 resource "kubectl_manifest" "hetzner_namespace" {
-  count = var.control_plane_count > 0 ? 1 : 0
+  count = 1
   yaml_body = yamlencode({
     apiVersion = "v1"
     kind       = "Namespace"
@@ -17,7 +17,7 @@ resource "kubectl_manifest" "hetzner_namespace" {
 }
 
 resource "kubectl_manifest" "hetzner_token_secret" {
-  count = var.control_plane_count > 0 ? 1 : 0
+  count = 1
   yaml_body = yamlencode({
     apiVersion = "v1"
     kind       = "Secret"
