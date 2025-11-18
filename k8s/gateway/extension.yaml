@@ -1,0 +1,15 @@
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: EnvoyExtensionPolicy
+metadata:
+  name: lua-inline-test
+spec:
+  targetRefs:
+  - group: gateway.networking.k8s.io
+    kind: Gateway
+    name: shared
+  lua:
+    - type: Inline
+      inline: |
+        function envoy_on_response(response_handle)
+          response_handle:headers():add("server", "envoy")
+        end

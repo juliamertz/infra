@@ -90,13 +90,13 @@ spec:
             limits:
               cpu: "1000m"
               memory: "128Mi"
-          volumeMounts:
-            - name: tailscale-state
-              mountPath: /var/lib/tailscale
+          # volumeMounts:
+          #   - name: tailscale-state
+          #     mountPath: /var/lib/tailscale
       volumes:
-        - name: tailscale-state
-          persistentVolumeClaim:
-            claimName: tailscale-pvc
+        # - name: tailscale-state
+        #   persistentVolumeClaim:
+        #     claimName: tailscale-pvc
         - name: caddy-config
           configMap:
             name: caddy-config

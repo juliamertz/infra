@@ -1,0 +1,14 @@
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: ClientTrafficPolicy
+metadata:
+  name: proxy-protocol
+  namespace: default
+spec:
+  targetRef:
+    group: gateway.networking.k8s.io
+    kind: Gateway
+    name: shared
+  proxyProtocol: {}
+  clientIPDetection:
+    xForwardedFor:
+      numTrustedHops: 1
