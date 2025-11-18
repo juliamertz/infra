@@ -39,6 +39,26 @@ spec:
 
 ---
 apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: BackendTrafficPolicy
+metadata:
+  name: rate-limit
+spec:
+  targetRef:
+    group: gateway.networking.k8s.io
+    kind: Gateway
+    name: shared
+  loadBalancer:
+    type: LeastRequest
+  rateLimit:
+    type: Global
+    global:
+      rules:
+        - limit:
+            requests: 10
+            unit: Second
+
+---
+apiVersion: gateway.envoyproxy.io/v1alpha1
 kind: ClientTrafficPolicy
 metadata:
   name: proxy-protocol

@@ -35,3 +35,8 @@ spec:
           type: Kubernetes
         extensionApis:
           enableEnvoyPatchPolicy: true
+        rateLimit:
+          backend:
+            type: Redis
+            redis:
+              url: envoy-ratelimit-db.envoy-gateway-system.svc.cluster.local:6379

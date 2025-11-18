@@ -6,3 +6,4 @@ resources:
   - release.yaml
   - proxy-config.yaml
   - gatewayclass.yaml
+  - redis.yaml
