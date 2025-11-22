@@ -33,9 +33,12 @@ spec:
       interval: 1m
   values: 
     grafana:
-      existingSecret: kube-prometheus-stack-grafana
-      userKey: admin-user
-      passwordKey: admin-password
+      admin:
+        existingSecret: kube-prometheus-stack-grafana
+        passwordKey: admin-password
+        userKey: admin-user
+      adminPassword: ""
+      adminUser: ""
       additionalDataSources:
          - name: Loki
            type: loki

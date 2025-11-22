@@ -1,0 +1,14 @@
+# WARNING: This cert has been modified by saninjections. not a good idea to re-apply and nuke the cert
+
+# ---
+# apiVersion: cert-manager.io/v1
+# kind: Certificate
+# metadata:
+#   name: gateway-tls
+# spec:
+#   secretName: tls-cert-gateway
+#   issuerRef:
+#     kind: ClusterIssuer
+#     name: letsencrypt-prod
+#   dnsNames:
+#     - test.juliamertz.dev

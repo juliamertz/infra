@@ -6,3 +6,5 @@ resources:
   - envoy-gateway
   - cert-manager
   - cloudnative-pg
+  - longhorn
+  - dragonfly-operator
