@@ -3,11 +3,9 @@ use std::time::Duration;
 
 use anyhow::{Context, Result, bail};
 use clap::Parser;
-use hcloud::apis::servers_api::CreateServerParams;
-use hcloud::models::{CreateServerRequest, CreateServerRequestFirewalls};
 use k8s_openapi_ext::corev1::{Node, Pod};
 use kube::api::ListParams;
-use kube::{Api, ResourceExt};
+use kube::{Api, Client as KubeClient, ResourceExt};
 use talos::TalosFactory;
 use tokio::fs;
 use tokio::{process::Command, time::sleep};
@@ -59,9 +57,8 @@ async fn main() -> Result<()> {
     tracing_subscriber::fmt().with_max_level(Level::INFO).init();
 
     let opts = Opts::parse();
-    let kube = kube::Client::try_default().await?;
+    let kube = KubeClient::try_default().await?;
     let nodes = Api::<Node>::all(kube.clone());
-    let pods = Api::<Pod>::all(kube.clone());
 
     let factory = TalosFactory::default();
     let talosctl = TalosCtl::try_new().await?;
@@ -74,42 +71,7 @@ async fn main() -> Result<()> {
 
     match opts.command {
         Subcommand::KickDbs => {
-            let field_selector = format!("spec.nodeName={node_name}");
-            let label_selector = "cnpg.io/podRole=instance,cnpg.io/instanceRole=primary";
-            let list_params = ListParams {
-                field_selector: Some(field_selector),
-                label_selector: Some(label_selector.into()),
-                ..Default::default()
-            };
-
-            let primaries = pods.list(&list_params).await?.items;
-            // dbg!(&primaries, primaries.len());
-
-            for primary in primaries {
-                let Some(cluster_name) = primary
-                    .metadata
-                    .labels
-                    .as_ref()
-                    .and_then(|labels| labels.get("cnpg.io/cluster"))
-                else {
-                    tracing::error!("cnpg pod is missing cluster label");
-                    continue;
-                };
-
-                tracing::info!("found primary {}", primary.name_any());
-
-                let clusters = Api::<Cluster>::namespaced(
-                    kube.clone(),
-                    &primary.namespace().unwrap_or_else(|| "default".to_string()),
-                );
-                let cluster = clusters.get(&cluster_name).await?;
-
-                if &cluster.name_any() == "headscale-db" {
-                    cluster.switchover_any(kube.clone()).await?;
-                }
-
-                break;
-            }
+            switchover_cnpg_primaries(kube, node_name).await?;
         }
         Subcommand::Drain => {
             nodes.cordon(node_name).await?;
@@ -150,7 +112,7 @@ async fn main() -> Result<()> {
                     sleep(timeout).await;
                 }
             }
-        } 
+        }
     }
 
     Ok(())
@@ -191,6 +153,58 @@ async fn drain_node(name: &str) -> Result<()> {
 
     if !output.status.success() {
         anyhow::bail!("failed to drain node");
+    }
+
+    Ok(())
+}
+
+/// Find all CNPG pods for a given node where role=primary then switchover to a different instance
+async fn switchover_cnpg_primaries(client: KubeClient, node_name: &str) -> Result<()> {
+    let field_selector = format!("spec.nodeName={node_name}");
+    let label_selector = "cnpg.io/podRole=instance,cnpg.io/instanceRole=primary";
+    let list_params = ListParams {
+        field_selector: Some(field_selector),
+        label_selector: Some(label_selector.into()),
+        ..Default::default()
+    };
+
+    let pods = Api::<Pod>::all(client.clone());
+    let primaries = pods.list(&list_params).await?.items;
+
+    for primary in primaries {
+        let Some(cluster_name) = primary
+            .metadata
+            .labels
+            .as_ref()
+            .and_then(|labels| labels.get("cnpg.io/cluster"))
+        else {
+            tracing::error!("cnpg pod is missing cluster label");
+            continue;
+        };
+
+        tracing::info!("found primary {}", primary.name_any());
+
+        let clusters = Api::<Cluster>::namespaced(
+            client.clone(),
+            &primary.namespace().unwrap_or_else(|| "default".to_string()),
+        );
+        let cluster = clusters.get(&cluster_name).await?;
+
+        cluster.switchover_any(client.clone()).await?;
+
+        loop {
+            let cluster = clusters.get(&cluster_name).await?;
+            if cluster.is_healthy() {
+                info!("cluster ready");
+                break;
+            } else {
+                info!("cluster not ready");
+                let timeout = Duration::from_secs(1);
+                sleep(timeout).await;
+            }
+        }
+
+        break;
     }
 
     Ok(())
