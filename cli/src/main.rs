@@ -1,20 +1,23 @@
+use std::path::PathBuf;
 use std::time::Duration;
 
-use anyhow::{Context, Result};
+use anyhow::{Context, Result, bail};
 use clap::Parser;
+use hcloud::apis::servers_api::CreateServerParams;
+use hcloud::models::{CreateServerRequest, CreateServerRequestFirewalls};
+use k8s_openapi_ext::corev1::{Node, Pod};
+use kube::api::ListParams;
+use kube::{Api, ResourceExt};
+use talos::TalosFactory;
+use tokio::fs;
+use tokio::{process::Command, time::sleep};
+use tracing::{Level, info, instrument};
 
 mod cluster;
 mod cnpg;
 mod ext;
 mod prompt;
 mod talos;
-
-use k8s_openapi_ext::corev1::{Node, Pod};
-use kube::api::ListParams;
-use kube::{Api, ResourceExt};
-use talos::TalosFactory;
-use tokio::{process::Command, time::sleep};
-use tracing::{Level, info, instrument};
 
 use crate::cnpg::Cluster;
 use crate::talos::{TalosCtl, UpgradeParams};
@@ -30,12 +33,25 @@ struct Opts {
 
 #[derive(Debug, clap::Subcommand)]
 enum Subcommand {
+    // ListNodes {
+    //     #[arg(long, short, env = "HCLOUD_TOKEN")]
+    //     token: String,
+    // },
     /// Switchover all primary CNPG nodes
     KickDbs,
     /// Evict all pods and prepare node for upgrade
     Drain,
     /// Reboot and upgrade node
-    Upgrade,
+    Upgrade {
+        #[arg(long, default_value_t = true)]
+        latest: bool,
+
+        #[arg(long, short)]
+        version: Option<String>,
+
+        #[arg(long, short)]
+        customization_path: Option<PathBuf>,
+    },
 }
 
 #[tokio::main]
@@ -80,30 +96,46 @@ async fn main() -> Result<()> {
                     continue;
                 };
 
-                dbg!(&cluster_name);
+                tracing::info!("found primary {}", primary.name_any());
+
                 let clusters = Api::<Cluster>::namespaced(
                     kube.clone(),
                     &primary.namespace().unwrap_or_else(|| "default".to_string()),
                 );
                 let cluster = clusters.get(&cluster_name).await?;
-                dbg!(cluster);
+
+                if &cluster.name_any() == "headscale-db" {
+                    cluster.switchover_any(kube.clone()).await?;
+                }
+
+                break;
             }
         }
         Subcommand::Drain => {
             nodes.cordon(node_name).await?;
             drain_node(node_name).await?;
         }
-        Subcommand::Upgrade => {
-            let latest = factory.latest_version().await?;
-            let customization = r#"
-            customization:
-              systemExtensions:
-                officialExtensions:
-                  - siderolabs/iscsi-tools
-                  - siderolabs/util-linux-tools
-            "#;
+        Subcommand::Upgrade {
+            latest,
+            version,
+            customization_path,
+        } => {
+            let customization_path =
+                customization_path.unwrap_or_else(|| "talos-customization.yaml".into());
+            let version = if latest && version.is_some() {
+                bail!("'latest' and 'version' arguments are mutually exclusive");
+            } else if latest {
+                factory.latest_version().await?
+            } else if let Some(version) = version {
+                version
+            } else {
+                bail!("specify either the 'version' or 'latest' flag");
+            };
 
-            let image = factory.get_image(&latest, customization).await?;
+            tracing::info!("Upgrading {node_name} ({node_ip}) to version {version}");
+
+            let customization = fs::read_to_string(&customization_path).await?;
+            let image = factory.get_image(&version, customization).await?;
             let params = UpgradeParams::default();
             talosctl.upgrade_member(node_ip, &image, &params).await?;
 
@@ -118,7 +150,7 @@ async fn main() -> Result<()> {
                     sleep(timeout).await;
                 }
             }
-        }
+        } 
     }
 
     Ok(())
