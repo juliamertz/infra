@@ -21,5 +21,5 @@ tracing = "0.1.41"
 tracing-subscriber = { version = "0.3.20" }
 schemars = "1.1.0"
 chrono = "0.4.42"
-hcloud = "0.23.0"
+hcloud = "0.24.0"
 json-patch = "4.1.0"
