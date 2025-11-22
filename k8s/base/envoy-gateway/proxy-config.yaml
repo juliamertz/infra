@@ -8,8 +8,6 @@ spec:
   provider:
     type: Kubernetes
     kubernetes:
-      envoyDeployment:
-        replicas: 3 
       envoyService:
         type: LoadBalancer
         annotations:
@@ -19,4 +17,20 @@ spec:
           load-balancer.hetzner.cloud/name: "envoy-gateway-shared-lb"
           load-balancer.hetzner.cloud/uses-proxyprotocol: "true"
           # load-balancer.hetzner.cloud/node-selector: "!node-role.kubernetes.io/control-plane"
-
+      envoyDeployment:
+        replicas: 3 
+        strategy:
+          rollingUpdate:
+            maxSurge: 3
+            maxUnavailable: 0
+        pod:
+          topologySpreadConstraints:
+            - maxSkew: 1
+              topologyKey: kubernetes.io/hostname
+              whenUnsatisfiable: DoNotSchedule
+              labelSelector:
+                matchLabels:
+                  gateway.envoyproxy.io/owning-gateway-name: shared
+                  gateway.envoyproxy.io/owning-gateway-namespace: default
+              matchLabelKeys:
+                - pod-template-hash
