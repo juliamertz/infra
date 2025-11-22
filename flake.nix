@@ -46,8 +46,7 @@
     };
   in {
     packages =
-      forAllSystems (pkgs: {
-      });
+      forAllSystems (pkgs: {});
 
     colmenaHive = colmena.lib.makeHive {
       meta = {
@@ -80,6 +79,8 @@
     };
 
     devShells = forAllSystems (pkgs: let
+      hcloud-upload-image = pkgs.callPackage ./pkgs/hcloud-upload-image.nix {};
+
       craneLib = mkCraneLib pkgs;
     in {
       default = craneLib.devShell {
@@ -93,6 +94,8 @@
           hcloud
           talosctl
           colmena.packages.${system}.colmena
+          hcloud-upload-image
+          wget
           (pkgs.stdenvNoCC.mkDerivation {
             inherit (pkgs.opentofu) meta pname version;
             src = pkgs.opentofu;

@@ -9,5 +9,4 @@
 result*
 taloscfg
 talosconfig
-cli/target
-target/rust-analyzer/flycheck0
+target
