@@ -1,0 +1,56 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: garage-web
+spec:
+  parentRefs:
+  - name: shared
+    namespace: default
+  hostnames:
+  - cdn.juliamertz.dev
+  - valnetten.cdn.juliamertz.dev
+  rules:
+  - backendRefs:
+    - name: garage
+      port: 3902
+
+---
+apiVersion: cert-vandal.io/v1
+kind: SANInjection
+metadata:
+  name: garage-web
+spec:
+  targetCertificate:
+    name: gateway-tls
+    namespace: default
+  hostnames:
+    - cdn.juliamertz.dev
+    - valnetten.cdn.juliamertz.dev
+
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: garage-api
+spec:
+  parentRefs:
+  - name: shared
+    namespace: default
+  hostnames:
+  - s3.juliamertz.dev
+  rules:
+  - backendRefs:
+    - name: garage
+      port: 3900
+
+---
+apiVersion: cert-vandal.io/v1
+kind: SANInjection
+metadata:
+  name: garage-api
+spec:
+  targetCertificate:
+    name: gateway-tls
+    namespace: default
+  hostnames:
+    - s3.juliamertz.dev

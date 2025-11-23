@@ -1,0 +1,42 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: GitRepository
+metadata:
+  name: garage
+spec:
+  interval: 5m0s
+  url: https://git.deuxfleurs.fr/Deuxfleurs/garage.git
+  ref:
+    branch: main-v1
+
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: garage
+spec:
+  interval: 5m
+  chart:
+    spec:
+      chart: ./script/helm/garage
+      version: 0.7.2
+      sourceRef:
+        kind: GitRepository
+        name: garage
+      interval: 1m
+  values:
+    garage:
+      existingConfigMap: "garage-config"
+
+    image:
+      repository: dxflrs/arm64_garage
+
+    persistence:
+      enabled: true
+      meta:
+        storageClass: longhorn-local
+        size: 256Mi
+        hostPath: /var/lib/garage/meta
+      data:
+        storageClass: longhorn-local
+        size: 1Gi
+        hostPath: /var/lib/garage/data
