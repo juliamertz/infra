@@ -126,6 +126,99 @@ impl Member {
     }
 }
 
+pub mod kubeconfig {
+    use serde::{Deserialize, Serialize};
+
+    #[derive(Debug, Serialize, Deserialize)]
+    #[serde(rename_all = "camelCase")]
+    pub struct Config {
+        pub api_version: String,
+        pub kind: String,
+        pub clusters: Vec<NamedCluster>,
+        pub contexts: Vec<NamedContext>,
+        #[serde(rename = "current-context")]
+        pub current_context: String,
+        pub users: Vec<NamedUser>,
+    }
+
+    #[derive(Debug, Serialize, Deserialize)]
+    #[serde(rename_all = "kebab-case")]
+    pub struct NamedCluster {
+        pub name: String,
+        pub cluster: Cluster,
+    }
+
+    #[derive(Debug, Serialize, Deserialize)]
+    #[serde(rename_all = "kebab-case")]
+    pub struct Cluster {
+        pub certificate_authority_data: String,
+        pub server: String,
+    }
+
+    #[derive(Debug, Serialize, Deserialize)]
+    #[serde(rename_all = "kebab-case")]
+    pub struct NamedContext {
+        pub name: String,
+        pub context: Context,
+    }
+
+    #[derive(Debug, Serialize, Deserialize)]
+    #[serde(rename_all = "kebab-case")]
+    pub struct Context {
+        pub cluster: String,
+        pub namespace: String,
+        pub user: String,
+    }
+
+    #[derive(Debug, Serialize, Deserialize)]
+    #[serde(rename_all = "kebab-case")]
+    pub struct NamedUser {
+        pub name: String,
+        pub user: User,
+    }
+
+    #[derive(Debug, Serialize, Deserialize)]
+    #[serde(untagged)]
+    pub enum User {
+        Token {
+            token: String,
+        },
+        ClientKey {
+            #[serde(rename = "client-certificate-data")]
+            client_certificate_data: String,
+            #[serde(rename = "client-key-data")]
+            client_key_data: String,
+        },
+    }
+
+    impl Config {
+        pub fn set_user(&mut self, user: NamedUser) {
+            let Some(context) = self.contexts.first_mut() else {
+                return;
+            };
+
+            context.name = user.name.clone();
+            context.context.user = user.name.clone();
+
+            self.users = vec![user];
+            self.current_context = context.name.clone();
+        }
+
+        pub fn set_namespace(&mut self, namespace: impl ToString) {
+            self.contexts
+                .iter_mut()
+                .for_each(|ctx| ctx.context.namespace = namespace.to_string());
+        }
+    }
+
+    impl User {
+        pub fn token(token: impl ToString) -> Self {
+            let token = token.to_string();
+            Self::Token { token }
+        }
+    }
+}
+
 #[derive(Debug)]
 pub struct TalosCtl {
     pub members: Vec<Member>,
@@ -242,5 +335,31 @@ impl TalosCtl {
         }
 
         Ok(())
+    }
+
+    #[instrument(skip(self))]
+    pub async fn get_kubeconfig(&self, member: &Member) -> Result<kubeconfig::Config> {
+        let mut cmd = Command::new("talosctl");
+        let node_ip = member
+            .external_ip()
+            .context("cannot find external ip for member")?;
+
+        let output = cmd
+            .stdout(Stdio::piped())
+            .stderr(Stdio::null())
+            .arg("--nodes")
+            .arg(node_ip.to_string())
+            .arg("kubeconfig")
+            .arg("--merge=false")
+            .arg("-")
+            .spawn()?
+            .wait_with_output()
+            .await?;
+
+        if !output.status.success() {
+            anyhow::bail!("failed to run 'talosctl get extensions'");
+        }
+
+        Ok(serde_yaml::from_slice(output.stdout.as_slice())?)
     }
 }

@@ -1,23 +1,25 @@
+use std::io::Write;
 use std::path::PathBuf;
 use std::time::Duration;
 
 use anyhow::{Context, Result, bail};
 use clap::Parser;
-use k8s_openapi_ext::corev1::{Node, Pod};
-use kube::api::ListParams;
+use k8s_openapi_ext::authenticationv1::{TokenRequest, TokenRequestSpec};
+use k8s_openapi_ext::corev1::{Node, Pod, ServiceAccount};
+use kube::api::{ListParams, PostParams};
 use kube::{Api, Client as KubeClient, ResourceExt};
 use talos::TalosFactory;
 use tokio::fs;
 use tokio::{process::Command, time::sleep};
 use tracing::{Level, info, instrument};
 
-mod cluster;
 mod cnpg;
 mod ext;
 mod prompt;
 mod talos;
 
 use crate::cnpg::Cluster;
+use crate::ext::DurationExt;
 use crate::talos::{TalosCtl, UpgradeParams};
 
 #[derive(Parser)]
@@ -49,6 +51,13 @@ enum Subcommand {
 
         #[arg(long, short)]
         customization_path: Option<PathBuf>,
+    },
+    GetKubeconfig {
+        #[arg(long, short)]
+        service_account: String,
+
+        #[arg(long, short)]
+        namespace: String,
     },
 }
 
@@ -112,6 +121,57 @@ async fn main() -> Result<()> {
                     sleep(timeout).await;
                 }
             }
+        }
+
+        Subcommand::GetKubeconfig {
+            service_account: service_account_name,
+            namespace,
+        } => {
+            use crate::talos::kubeconfig::*;
+
+            let mut kubeconfig = talosctl.get_kubeconfig(&member).await?;
+
+            let service_accounts = Api::<ServiceAccount>::namespaced(kube.clone(), &namespace);
+
+            let expiration: Duration = DurationExt::from_weeks(16);
+            let token_req = service_accounts
+                .create_token_request(
+                    &service_account_name,
+                    &PostParams::default(),
+                    &TokenRequest {
+                        spec: TokenRequestSpec {
+                            audiences: vec![],
+                            bound_object_ref: None,
+                            expiration_seconds: Some(expiration.as_secs() as i64),
+                        },
+                        ..Default::default()
+                    },
+                )
+                .await?;
+
+            let token = token_req
+                .status
+                .context("token request has no status")?
+                .token;
+
+            let cluster = kubeconfig
+                .clusters
+                .first()
+                .expect("atleast one cluster in kubeconfig");
+            let cluster_name = cluster.name.clone();
+
+            kubeconfig.set_user(NamedUser {
+                name: format!("{service_account_name}@{cluster_name}"),
+                user: User::token(token),
+            });
+            kubeconfig.set_namespace(&namespace);
+
+            let kubeconfig_yaml =
+                serde_yaml::to_string(&kubeconfig).expect("Failed to serialize to YAML");
+
+            std::io::stdout()
+                .write_all(kubeconfig_yaml.as_str().as_bytes())
+                .unwrap();
         }
     }
 
