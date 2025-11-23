@@ -61,15 +61,15 @@
 
       defaults = import ./hive/defaults.nix inputs;
 
-      gatekeeper = {...}: {
-        imports = [./hive/gatekeeper];
-        deployment = mkTargetFromEnv "gatekeeper";
+      bastion = {...}: {
+        imports = [./hive/bastion];
+        deployment = mkTargetFromEnv "bastion";
       };
 
-      topdog = {...}: {
-        imports = [./hive/topdog];
-        deployment = mkTargetFromEnv "topdog";
-      };
+      # topdog = {...}: {
+      #   imports = [./hive/topdog];
+      #   deployment = mkTargetFromEnv "topdog";
+      # };
 
       # cube = {...}: {
       #   imports = [./hive/cube];

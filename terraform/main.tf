@@ -17,6 +17,11 @@ locals {
   datacenter = "nbg1-dc3"
 }
 
+# resource "hcloud_ssh_key" "julia" {
+#   name       = "ssh-key-julia"
+#   public_key = file("~/.ssh/id_ed25519.pub")
+# }
+
 module "production_k8s" {
   source = "./modules/hcloud/talos_cluster"
 
@@ -52,11 +57,47 @@ module "production_k8s" {
   }
 }
 
+# module "nixos_bastion" {
+#   source      = "./modules/hcloud/nixos_server"
+#   name        = "bastion"
+#   server_type = "cx23"
+#   datacenter  = "nbg1-dc3"
+#
+#   network_id  = module.production_k8s.hetzner_network_id
+#
+#   internal_ip = "10.0.1.1"
+#   public_ip   = true
+#
+#   nixos_channel   = "nixos-unstable"
+#   flake_path      = ".."
+#   flake_profile   = "bastion"
+#   build_on_target = true
+#
+#   ssh_keys        = [hcloud_ssh_key.julia.id]
+#   ssh_private_key = file("~/.ssh/id_ed25519")
+#   sops_age_key    = "~/.config/sops/age/keys.txt"
+#
+#   providers = {
+#     hcloud = hcloud.production
+#   }
+# }
+
 resource "cloudflare_dns_record" "records" {
   for_each = module.production_k8s.loadbalancer_target_ips
 
   zone_id = var.juliamertz_nl_zone_id
   name    = "headscale"
+  type    = "A"
+  content = each.value
+  ttl     = 1
+  proxied = false
+}
+
+resource "cloudflare_dns_record" "api_server_records" {
+  for_each = module.production_k8s.control_plane_ips
+
+  zone_id = var.juliamertz_dev_zone_id
+  name    = "kube"
   type    = "A"
   content = each.value
   ttl     = 1

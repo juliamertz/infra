@@ -55,3 +55,10 @@ output "loadbalancer_target_ips" {
     { for id, server in hcloud_server.control_planes : id => server.ipv4_address },
   )
 }
+
+output "control_plane_ips" {
+  description = "Server IPs of the hetzner talos worker machines"
+  value = merge(
+    { for id, server in hcloud_server.control_planes : id => server.ipv4_address },
+  )
+}
