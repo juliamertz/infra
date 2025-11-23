@@ -33,6 +33,7 @@ spec:
       - juliamertz.com
       - merlijnvoncken.nl
       - merlijnvoncken.com
+      - vertrouwdbouwen.com
     sources:
       - service
       - gateway-httproute
