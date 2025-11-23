@@ -23,6 +23,7 @@ spec:
         namespace: external-dns
       interval: 1m
   values:
+    policy: sync
     extraArgs:
       - --exclude-target-net=10.0.0.0/16
       - --exclude-record-types=AAAA
@@ -34,6 +35,7 @@ spec:
       - merlijnvoncken.nl
       - merlijnvoncken.com
       - vertrouwdbouwen.com
+      - valnetten.nl
     sources:
       - service
       - gateway-httproute

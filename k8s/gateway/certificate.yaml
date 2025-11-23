@@ -11,4 +11,21 @@
 #     kind: ClusterIssuer
 #     name: letsencrypt-prod
 #   dnsNames:
+#     - api.vertrouwdbouwen.com
+#     - cdn.juliamertz.dev
+#     - db.vertrouwd-bouwen.juliamertz.dev
+#     - grafana.prod.juliamertz.dev
+#     - hass.juliamertz.dev
+#     - hass.juliamertz.nl
+#     - lightspeed-adapter.juliamertz.dev
+#     - merlijnvoncken.com
+#     - merlijnvoncken.nl
+#     - nettenshop.juliamertz.dev
+#     - nettenshop.juliamertz.nl
+#     - s3.juliamertz.dev
 #     - test.juliamertz.dev
+#     - valnetten-test.juliamertz.dev
+#     - valnetten.cdn.juliamertz.dev
+#     - vertrouwdbouwen.com
+#     - watch.juliamertz.dev
+#     - watch.juliamertz.nl

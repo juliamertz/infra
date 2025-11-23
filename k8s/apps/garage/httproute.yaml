@@ -8,9 +8,28 @@ spec:
     namespace: default
   hostnames:
   - cdn.juliamertz.dev
-  - valnetten.cdn.juliamertz.dev
   rules:
   - backendRefs:
+    - name: garage
+      port: 3902
+
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: valnetten-web
+spec:
+  parentRefs:
+  - name: shared
+    namespace: default
+  hostnames:
+  - valnetten.preview.juliamertz.dev
+  rules:
+  - filters:
+    - type: URLRewrite
+      urlRewrite:
+        hostname: valnetten.cdn.juliamertz.dev
+    backendRefs:
     - name: garage
       port: 3902
 
@@ -25,7 +44,7 @@ spec:
     namespace: default
   hostnames:
     - cdn.juliamertz.dev
-    - valnetten.cdn.juliamertz.dev
+    - valnetten.preview.juliamertz.dev
 
 ---
 apiVersion: gateway.networking.k8s.io/v1
