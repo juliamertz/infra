@@ -8,6 +8,7 @@ spec:
     namespace: default
   hostnames:
   - cdn.juliamertz.dev
+  - nettenshop.cdn.juliamertz.dev
   rules:
   - backendRefs:
     - name: garage
@@ -44,6 +45,7 @@ spec:
     namespace: default
   hostnames:
     - cdn.juliamertz.dev
+    - nettenshop.cdn.juliamertz.dev
     - valnetten.preview.juliamertz.dev
 
 ---
