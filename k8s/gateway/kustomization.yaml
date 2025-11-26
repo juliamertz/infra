@@ -6,3 +6,10 @@ resources:
   - proxy-protocol.yaml
   - rate-limit.yaml
   - extension.yaml
+
+configMapGenerator:
+  - name: envoy-lua-extension
+    options:
+      disableNameSuffixHash: true
+    files:
+      - extension.lua

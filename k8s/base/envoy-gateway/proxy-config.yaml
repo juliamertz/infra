@@ -47,4 +47,3 @@ spec:
                 averageUtilization: 60
                 type: Utilization
             type: Resource
-

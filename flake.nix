@@ -95,6 +95,7 @@
           talosctl
           colmena.packages.${system}.colmena
           hcloud-upload-image
+          awscli
           wget
           (pkgs.stdenvNoCC.mkDerivation {
             inherit (pkgs.opentofu) meta pname version;
