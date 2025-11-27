@@ -13,23 +13,23 @@ data "hcloud_image" "arm" {
 # }
 
 locals {
-  cluster_prefix = var.cluster_prefix ? "${var.cluster_name}-" : ""
+  cluster_prefix         = var.cluster_prefix ? "${var.cluster_name}-" : ""
   control_plane_image_id = data.hcloud_image.arm[0].id
 
   legacy_control_plane_count = var.control_plane_count
-  legacy_worker_count = var.worker_count
-  new_worker_count    = length(var.worker_nodes)
+  legacy_worker_count        = var.worker_count
+  new_worker_count           = length(var.worker_nodes)
   new_control_plane_count    = length(var.control_plane_nodes)
-  total_worker_count  = local.legacy_worker_count + local.new_worker_count
+  total_worker_count         = local.legacy_worker_count + local.new_worker_count
   total_control_plane_count  = local.legacy_control_plane_count + local.new_control_plane_count
 
   # Generate worker node configurations from both old and new variables
   legacy_workers = var.worker_count > 0 ? [
     for i in range(var.worker_count) : {
-      index       = i
-      name        = "${local.cluster_prefix}worker-${i + 1}"
-      server_type = var.worker_server_type
-      image_id = data.hcloud_image.arm[0].id
+      index               = i
+      name                = "${local.cluster_prefix}worker-${i + 1}"
+      server_type         = var.worker_server_type
+      image_id            = data.hcloud_image.arm[0].id
       ipv4_public         = local.worker_public_ipv4_list[i]
       ipv6_public         = var.enable_ipv6 ? local.worker_public_ipv6_list[i] : null
       ipv6_public_subnet  = var.enable_ipv6 ? local.worker_public_ipv6_subnet_list[i] : null
@@ -44,10 +44,10 @@ locals {
 
   new_workers = [
     for i, worker in var.worker_nodes : {
-      index       = local.legacy_worker_count + i
-      name        = "${local.cluster_prefix}worker-${local.legacy_worker_count + i + 1}"
-      server_type = worker.type
-      image_id = data.hcloud_image.arm[0].id
+      index              = local.legacy_worker_count + i
+      name               = "${local.cluster_prefix}worker-${local.legacy_worker_count + i + 1}"
+      server_type        = worker.type
+      image_id           = data.hcloud_image.arm[0].id
       ipv4_public        = local.worker_public_ipv4_list[local.legacy_worker_count + i]
       ipv6_public        = var.enable_ipv6 ? local.worker_public_ipv6_list[local.legacy_worker_count + i] : null
       ipv6_public_subnet = var.enable_ipv6 ? local.worker_public_ipv6_subnet_list[local.legacy_worker_count + i] : null
@@ -62,10 +62,10 @@ locals {
 
   control_planes = [
     for i, node in var.control_plane_nodes : {
-      index       = local.legacy_control_plane_count + i
-      name        = "${local.cluster_prefix}control-plane-${local.legacy_control_plane_count + i + 1}"
-      server_type = node.type
-      image_id = data.hcloud_image.arm[0].id
+      index              = local.legacy_control_plane_count + i
+      name               = "${local.cluster_prefix}control-plane-${local.legacy_control_plane_count + i + 1}"
+      server_type        = node.type
+      image_id           = data.hcloud_image.arm[0].id
       ipv4_public        = local.control_plane_public_ipv4_list[local.legacy_control_plane_count + i],
       ipv6_public        = var.enable_ipv6 ? local.control_plane_public_ipv6_list[local.legacy_control_plane_count + i] : null
       ipv6_public_subnet = var.enable_ipv6 ? local.control_plane_public_ipv6_subnet_list[local.legacy_control_plane_count + i] : null
