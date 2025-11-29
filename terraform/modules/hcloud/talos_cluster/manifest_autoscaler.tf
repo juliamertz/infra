@@ -1,25 +1,13 @@
-locals {
-  cluster_config = {
-    imagesForArch = { // These should be the same format as HCLOUD_IMAGE
-      arm64 = "",
-      amd64 = ""
-    }
-    # "defaultSubnetIPRange": "10.0.0.0/16", // Optional, if not set the hetzner cloud default will be used - make sure this subnet exists within you private network and to use the cidr notation
-    nodeConfigs = {
-      workers = {      // This equals the pool name. Required for each pool that you have
-        cloudInit = "" // HCLOUD_CLOUD_INIT make sure it isn't base64 encoded twice ;]
-        labels = {
-          "node.kubernetes.io/role" = "autoscaler-node"
-        }
-        taints = [{
-            key    = "node.kubernetes.io/role"
-            value  = "autoscaler-node"
-            effect = "NoExecute"
-        }]
-        # "subnetIPRange": "10.0.0.0/24" // Optional, if not set the defaultSubnetIPRange will be used - make sure this subnet exists within you private network and to use the cidr notation
-      }
-    }
-  }
+data "talos_machine_configuration" "autoscaler_node" {
+  talos_version      = var.talos_version
+  cluster_name       = var.cluster_name
+  cluster_endpoint   = local.cluster_endpoint_url_internal
+  kubernetes_version = var.kubernetes_version
+  machine_type       = "worker"
+  machine_secrets    = talos_machine_secrets.this.machine_secrets
+  config_patches     = concat([yamlencode(local.autoscale_worker_yaml)], var.talos_worker_extra_config_patches)
+  docs               = false
+  examples           = false
 }
 
 resource "helm_release" "autoscaler" {
@@ -29,28 +17,41 @@ resource "helm_release" "autoscaler" {
   repository = "https://kubernetes.github.io/autoscaler"
   chart      = "cluster-autoscaler"
   version    = "9.52.1"
-
   values = [yamlencode({
-    cloudProvider = "hetzner"
+    cloudProvider    = "hetzner"
     fullnameOverride = "hcloud-cluster-autoscaler"
-    autoDiscovery = { clusterName = "cluster.local" }
-    extraEnvSecrets = {
-      HCLOUD_TOKEN = {
-        name = "hcloud"
-        key  = "token"
-      }
-    }
+    autoDiscovery    = { clusterName = "cluster.local" }
     extraEnv = {
-      HCLOUD_CLUSTER_CONFIG = base64encode(jsonencode(local.cluster_config))
+      HCLOUD_CLUSTER_CONFIG = base64encode(jsonencode({
+        imagesForArch = {
+          arm64 = tostring(data.hcloud_image.arm[0].id)
+          amd64 = ""
+        }
+        nodeConfigs = {
+          workers = {
+            cloudInit = data.talos_machine_configuration.autoscaler_node.machine_configuration
+            labels = local.autoscale_worker_labels
+            taints = local.autoscale_worker_taints
+          }
+        }
+      }))
       HCLOUD_NETWORK = hcloud_network.this.id
     }
     autoscalingGroups = [{
-      name = "workers"
+      name         = "nodes-green"
+      region       = "nbg1"
       instanceType = "cax11"
-      minSize = 0
-      maxSize = 3
+      minSize      = 0
+      maxSize      = 3
     }]
   })]
-
-  depends_on = [data.http.talos_health]
+  extraEnvSecrets = {
+    HCLOUD_TOKEN = {
+      name = "hcloud"
+      key  = "token"
+    }
+  }
+  depends_on = [
+    data.http.talos_health
+  ]
 }

@@ -344,9 +344,21 @@
           "legendFormat": "",
           "queryType": "range",
           "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "loki",
+            "uid": "P8E80F9AEF21F6940"
+          },
+          "direction": "backward",
+          "editorMode": "builder",
+          "expr": "{app=\"mark-stale\", namespace=\"lightspeed-dhl-adapter\"} | json",
+          "hide": false,
+          "queryType": "range",
+          "refId": "B"
         }
       ],
-      "title": "Poll status logs",
+      "title": "Cronjob logs",
       "type": "logs"
     },
     {
