@@ -51,6 +51,12 @@ spec:
            isDefault: false
     prometheus:
       prometheusSpec:
+        podMonitorSelectorNilUsesHelmValues: false
+        serviceMonitorSelectorNilUsesHelmValues: false
+        podMonitorSelector: {}
+        podMonitorNamespaceSelector: {}
+        serviceMonitorSelector: {}
+        serviceMonitorNamespaceSelector: {}
         storageSpec:
           volumeClaimTemplate:
             spec:

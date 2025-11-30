@@ -14,4 +14,18 @@ configMapGenerator:
         grafana_dashboard: "1" 
     files:
       - dashboards/nettenshop.json
+  - name: headscale-dashboard
+    options:
+      disableNameSuffixHash: true
+      labels:
+        grafana_dashboard: "1" 
+    files:
+      - dashboards/headscale.json
+  - name: cloudnative-pg-dashboard
+    options:
+      disableNameSuffixHash: true
+      labels:
+        grafana_dashboard: "1" 
+    files:
+      - dashboards/cloudnative-pg.json
 

@@ -28,7 +28,7 @@ resource "helm_release" "autoscaler" {
           amd64 = ""
         }
         nodeConfigs = {
-          workers = {
+          nodes-green = {
             cloudInit = data.talos_machine_configuration.autoscaler_node.machine_configuration
             labels = local.autoscale_worker_labels
             taints = local.autoscale_worker_taints
@@ -44,13 +44,13 @@ resource "helm_release" "autoscaler" {
       minSize      = 0
       maxSize      = 3
     }]
-  })]
-  extraEnvSecrets = {
-    HCLOUD_TOKEN = {
-      name = "hcloud"
-      key  = "token"
+    extraEnvSecrets = {
+      HCLOUD_TOKEN = {
+        name = "hcloud"
+        key  = "token"
+      }
     }
-  }
+  })]
   depends_on = [
     data.http.talos_health
   ]

@@ -53,6 +53,9 @@ resource "helm_release" "cilium" {
         ]
       }
     }
+    socketLB = {
+      hostNamespaceOnly = true
+    }
     cgroup = {
       autoMount = {
         enabled = false

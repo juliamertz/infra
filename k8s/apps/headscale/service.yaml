@@ -26,6 +26,10 @@ kind: Service
 metadata:
   name: headscale-metrics
   namespace: headscale
+  labels:
+    app.kubernetes.io/name: headscale
+    app.kubernetes.io/part-of: headscale
+    app.kubernetes.io/component: metrics
 spec:
   type: ClusterIP
   selector:

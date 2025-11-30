@@ -8,4 +8,5 @@ resources:
   - service.yaml
   - acl.yaml
   - headscale.yaml
+  - monitoring.yaml
   # - derp.yaml
