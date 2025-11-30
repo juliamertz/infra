@@ -15,7 +15,7 @@ metadata:
 spec:
   ephemeral: true
   reusable: true
-  expiration: 99999h
+  expiration: 100y
   targetSecret: tailscale-agent-auth
   user:
     name: kubernetes 

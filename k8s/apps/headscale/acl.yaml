@@ -1,8 +1,10 @@
-apiVersion: kubus.io/v1
+apiVersion: headscale.juliamertz.dev/v1
 kind: ACLPolicy
 metadata:
   name: central
 spec:
+  headscaleRef:
+    name: central
   rules:
     - action: accept
       src: ['*:*']
