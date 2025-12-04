@@ -14,5 +14,5 @@ spec:
     global:
       rules:
         - limit:
-            requests: 200
+            requests: 500
             unit: Minute
