@@ -126,7 +126,6 @@ locals {
     "node.kubernetes.io/role" = "autoscaler-node"
     "hcloud/node-group"       = "workers"
   }
-
   autoscale_worker_taints = [
     {
       key    = "node.kubernetes.io/role"
@@ -154,6 +153,42 @@ locals {
           }
         )
         nodeLabels = local.autoscale_worker_labels
+      }
+    )
+    cluster = local.base_cluster_config
+  }
+
+  gameserver_worker_labels = {
+    "node.kubernetes.io/role" = "gameserver-node"
+    "hcloud/node-group"       = "gameserver-node"
+  }
+  gameserver_worker_taints = [
+    {
+      key    = "node.kubernetes.io/role"
+      value  = "gameserver-node"
+      effect = "NoExecute"
+    }
+  ]
+
+  gameserver_worker_yaml = {
+    machine = merge(
+      local.base_machine_config,
+      {
+        kubelet = merge(
+          local.base_kubelet_config,
+          {
+            extraConfig = {
+              registerWithTaints = [
+                for taint in local.gameserver_worker_taints : {
+                  key    = taint.key
+                  value  = taint.value
+                  effect = taint.effect
+                }
+              ]
+            }
+          }
+        )
+        nodeLabels = local.gameserver_worker_labels
       }
     )
     cluster = local.base_cluster_config

@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: valheim-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: valheim-server
+  template:
+    metadata:
+      labels:
+        app: valheim-server
+    spec:
+      nodeSelector:
+        hcloud/node-group: gameserver-node
+      tolerations:
+        - key: node.kubernetes.io/role
+          operator: Equal
+          value: gameserver-node
+          effect: NoExecute
+      # hostNetwork: true
+      containers:
+      - image: valheim-server
+        name: valheim
+        env:
+        - name: SERVER_NAME
+          value: "Julia's server"
+        - name: WORLD_NAME
+          value: "Julia's realm"
+        - name: SERVER_PASS
+          valueFrom:
+            secretKeyRef:
+              name: valheim-auth 
+              key: password
+              optional: false
+        - name: SERVER_PORT
+          value: "2456"
+        ports:
+        - containerPort: 2456
+          name: gameport
+        - containerPort: 2457
+          name: queryport
+        volumeMounts:
+        - mountPath: /config
+          name: gamefiles
+        - mountPath: /opt/valheim
+          name: serverfiles
+        resources:
+          requests:
+            memory: "6Gi"
+            cpu: "3500m"
+      volumes:
+      - name: gamefiles
+        persistentVolumeClaim:
+          claimName: valheim-world-data
+      - name: serverfiles
+        persistentVolumeClaim:
+          claimName: valheim-server-base-data
