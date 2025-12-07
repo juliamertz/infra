@@ -3,6 +3,8 @@
     nixpkgs.follows = "srvos/nixpkgs";
     systems.url = "github:nix-systems/default";
 
+    filter.url = "github:numtide/nix-filter";
+    steiger.url = "github:brainhivenl/steiger";
     colmena.url = "github:zhaofengli/colmena";
     srvos.url = "github:nix-community/srvos";
     sops.url = "github:Mic92/sops-nix";
@@ -18,15 +20,21 @@
 
   outputs = {
     self,
+    steiger,
     nixpkgs,
     systems,
     colmena,
     crane,
+    filter,
     rust-overlay,
     ...
   } @ inputs: let
     inherit (nixpkgs) lib;
-    overlays = [inputs.nix-minecraft.overlay (import rust-overlay)];
+    overlays = [
+      (import rust-overlay)
+      inputs.nix-minecraft.overlay
+      steiger.overlays.ociTools
+    ];
     mkCraneLib = pkgs': (crane.mkLib pkgs').overrideToolchain (p: p.rust-bin.stable."1.90.0".default);
 
     forAllSystems = fun:
@@ -94,6 +102,8 @@
           hcloud
           talosctl
           colmena.packages.${system}.colmena
+          steiger.packages.${system}.default
+          nix-eval-jobs
           hcloud-upload-image
           awscli
           wget
@@ -109,6 +119,46 @@
           })
         ];
       };
+    });
+
+    steigerImages = steiger.lib.eachCrossSystem (import systems) (localSystem: crossSystem: let
+      pkgs = import nixpkgs {
+        inherit overlays;
+        system = localSystem;
+      };
+      pkgsCross = import nixpkgs {
+        inherit overlays crossSystem localSystem;
+      };
+
+      craneLib = mkCraneLib pkgsCross;
+
+      buildImage = package:
+        pkgs.ociTools.buildImage {
+          name = package.pname;
+          tag = "latest";
+          created = "now";
+
+          copyToRoot = pkgsCross.buildEnv {
+            name = "${package.pname}-sysroot";
+            paths = [
+              package
+              pkgs.dockerTools.caCertificates
+            ];
+            pathsToLink = [
+              "/bin"
+              "/etc"
+            ];
+          };
+
+          config.Cmd = ["/bin/${package.pname}"];
+          compressor = "none";
+        };
+
+      controllers = pkgsCross.callPackage ./controllers/package.nix {
+        inherit craneLib filter;
+      };
+    in {
+      controllers = buildImage controllers;
     });
   };
 }

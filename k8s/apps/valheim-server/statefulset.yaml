@@ -11,7 +11,13 @@ spec:
     metadata:
       labels:
         app: valheim-server
+      annotations:
+        dns.juliamertz.dev/hostdns: "true"
+        dns.juliamertz.dev/hostname: valheim.juliamertz.nl
+        dns.juliamertz.dev/delete-after: 24h
+        dns.juliamertz.dev/ttl: "60"
     spec:
+      terminationGracePeriodSeconds: 120
       nodeSelector:
         hcloud/node-group: gameserver-node
       tolerations:
@@ -19,7 +25,7 @@ spec:
           operator: Equal
           value: gameserver-node
           effect: NoExecute
-      # hostNetwork: true
+      hostNetwork: true
       containers:
       - image: valheim-server
         name: valheim
@@ -47,9 +53,7 @@ spec:
         - mountPath: /opt/valheim
           name: serverfiles
         resources:
-          requests:
-            memory: "6Gi"
-            cpu: "3500m"
+          requests: {}
       volumes:
       - name: gamefiles
         persistentVolumeClaim:

@@ -65,7 +65,7 @@ resource "helm_release" "autoscaler" {
       {
         name         = "gameserver-node"
         region       = "nbg1"
-        instanceType = "cx33"
+        instanceType = "cx23"
         minSize      = 0
         maxSize      = 1
       }

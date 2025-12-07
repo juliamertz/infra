@@ -95,3 +95,13 @@ spec:
         auth_enabled: false
         limits_config:
           retention_period: 168h
+    promtail:
+      tolerations:
+        - key: node.kubernetes.io/role
+          operator: Equal
+          value: gameserver-node
+          effect: NoExecute
+        - key: node.kubernetes.io/role
+          operator: Equal
+          value: autoscaler-node
+          effect: NoExecute

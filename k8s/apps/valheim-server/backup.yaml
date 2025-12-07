@@ -1,0 +1,92 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: backup-to-s3
+spec:
+  schedule: "0 2 * * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 2
+      template:
+        spec:
+          restartPolicy: OnFailure
+          serviceAccountName: backup-sa
+          containers:
+            - name: backup
+              image: nixery.dev/arm64/shell/kubectl/awscli
+              env:
+                - name: POD_NAME
+                  value: "valheim-server-0"
+                - name: CONTAINER_NAME
+                  value: "valheim"
+                - name: NAMESPACE
+                  value: "valheim"
+                - name: SOURCE_PATH
+                  value: "/config/worlds_local"
+                - name: S3_BUCKET
+                  value: "valheim-backups"
+                - name: BACKUP_PREFIX
+                  value: "backups/valheim"
+                - name: S3_ENDPOINT
+                  value: "http://garage.garage:3900"
+                - name: AWS_ACCESS_KEY_ID
+                  valueFrom:
+                    secretKeyRef:
+                      name: s3-credentials
+                      key: access-key-id
+                - name: AWS_SECRET_ACCESS_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: s3-credentials
+                      key: secret-access-key
+              command:
+                - /bin/sh
+                - -c
+                - |
+                  set -e
+                  TIMESTAMP=$(date +%Y%m%d-%H%M%S)
+                  echo "Starting backup at $TIMESTAMP"
+
+                  mkdir -p /world
+                  kubectl cp $POD_NAME:"$SOURCE_PATH/Julia's realm.db" /world/world.db
+                  kubectl cp $POD_NAME:"$SOURCE_PATH/Julia's realm.fwl" /world/world.fwl
+
+                  aws --endpoint-url $S3_ENDPOINT s3 sync /world s3://$S3_BUCKET/$BACKUP_PREFIX/$TIMESTAMP/
+
+                  echo "Backup completed"
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: backup-sa
+  namespace: default
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: backup-role
+  namespace: default
+rules:
+  - apiGroups: [""]
+    resources: ["pods/exec"]
+    verbs: ["create"]
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["get"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: backup-rolebinding
+  namespace: default
+subjects:
+  - kind: ServiceAccount
+    name: backup-sa
+    namespace: default
+roleRef:
+  kind: Role
+  name: backup-role
+  apiGroup: rbac.authorization.k8s.io

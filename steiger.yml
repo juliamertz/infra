@@ -1,0 +1,14 @@
+build:
+  services:
+    type: nix
+    platformStrategy: crossSystem
+    packages:
+      infra-controllers: controllers
+
+deploy:
+  infra-controllers:
+    type: helm
+    path: controllers/helm
+    namespace: kube-system
+    valuesFiles:
+      - controllers/helm/values.yaml

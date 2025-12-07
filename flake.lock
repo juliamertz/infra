@@ -67,6 +67,21 @@
         "type": "github"
       }
     },
+    "crane_4": {
+      "locked": {
+        "lastModified": 1755537552,
+        "narHash": "sha256-Tg+P8kFIneqnQLT8E0QqlCrldtdLo1n1y619/mxRD44=",
+        "owner": "ipetkov",
+        "repo": "crane",
+        "rev": "3c40c97e1881fff381e4615e82557b333edf65c4",
+        "type": "github"
+      },
+      "original": {
+        "owner": "ipetkov",
+        "repo": "crane",
+        "type": "github"
+      }
+    },
     "dotfiles": {
       "inputs": {
         "nixpkgs": "nixpkgs_2",
@@ -88,6 +103,21 @@
       }
     },
     "filter": {
+      "locked": {
+        "lastModified": 1757882181,
+        "narHash": "sha256-+cCxYIh2UNalTz364p+QYmWHs0P+6wDhiWR4jDIKQIU=",
+        "owner": "numtide",
+        "repo": "nix-filter",
+        "rev": "59c44d1909c72441144b93cf0f054be7fe764de5",
+        "type": "github"
+      },
+      "original": {
+        "owner": "numtide",
+        "repo": "nix-filter",
+        "type": "github"
+      }
+    },
+    "filter_2": {
       "locked": {
         "lastModified": 1757882181,
         "narHash": "sha256-+cCxYIh2UNalTz364p+QYmWHs0P+6wDhiWR4jDIKQIU=",
@@ -188,7 +218,7 @@
     "lightspeed-dhl-adapter": {
       "inputs": {
         "crane": "crane_2",
-        "filter": "filter",
+        "filter": "filter_2",
         "nixpkgs": "nixpkgs_5",
         "rust-overlay": "rust-overlay_2",
         "steiger": "steiger"
@@ -276,6 +306,38 @@
       "original": {
         "owner": "msanft",
         "ref": "msanft/oci/refactor",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "nixpkgs-ocitools_2": {
+      "locked": {
+        "lastModified": 1749738911,
+        "narHash": "sha256-XKXtCm32NTGJ4AZRcX9hz8tjcF5bwGiK/9Z3C3OEANs=",
+        "owner": "msanft",
+        "repo": "nixpkgs",
+        "rev": "3a858b3070e928d6eb79e0fcf21d0c16337edbb5",
+        "type": "github"
+      },
+      "original": {
+        "owner": "msanft",
+        "ref": "msanft/oci/refactor",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "nixpkgs_10": {
+      "locked": {
+        "lastModified": 1755577059,
+        "narHash": "sha256-5hYhxIpco8xR+IpP3uU56+4+Bw7mf7EMyxS/HqUYHQY=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "97eb7ee0da337d385ab015a23e15022c865be75c",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "ref": "nixpkgs-unstable",
         "repo": "nixpkgs",
         "type": "github"
       }
@@ -413,6 +475,7 @@
         "colmena": "colmena",
         "crane": "crane",
         "dotfiles": "dotfiles",
+        "filter": "filter",
         "lightspeed-dhl-adapter": "lightspeed-dhl-adapter",
         "nix-minecraft": "nix-minecraft",
         "nixpkgs": [
@@ -422,6 +485,7 @@
         "rust-overlay": "rust-overlay_4",
         "sops": "sops",
         "srvos": "srvos",
+        "steiger": "steiger_2",
         "systems": "systems_4"
       }
     },
@@ -502,6 +566,27 @@
         "owner": "oxalica",
         "repo": "rust-overlay",
         "rev": "3a0ebe5d2965692f990cb27e62f501ad35e3deeb",
+        "type": "github"
+      },
+      "original": {
+        "owner": "oxalica",
+        "repo": "rust-overlay",
+        "type": "github"
+      }
+    },
+    "rust-overlay_5": {
+      "inputs": {
+        "nixpkgs": [
+          "steiger",
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1755657401,
+        "narHash": "sha256-rPHuWPAcwW63wH1SUtDCqAnf2+60pi/pGMCIhVobzXc=",
+        "owner": "oxalica",
+        "repo": "rust-overlay",
+        "rev": "292ca754b0f679b842fbfc4734f017c351f0e9eb",
         "type": "github"
       },
       "original": {
@@ -622,6 +707,27 @@
       "original": {
         "owner": "brainhivenl",
         "ref": "feat/nix-force-host-platform",
+        "repo": "steiger",
+        "type": "github"
+      }
+    },
+    "steiger_2": {
+      "inputs": {
+        "crane": "crane_4",
+        "nixpkgs": "nixpkgs_10",
+        "nixpkgs-ocitools": "nixpkgs-ocitools_2",
+        "rust-overlay": "rust-overlay_5"
+      },
+      "locked": {
+        "lastModified": 1759216489,
+        "narHash": "sha256-RxuK2mI2zKMkgxSglkI0UDR5bjNOlaQWbOC7fzXAhkk=",
+        "owner": "brainhivenl",
+        "repo": "steiger",
+        "rev": "e0df4934506c55ecf5bb9af75c182c4a6a38982f",
+        "type": "github"
+      },
+      "original": {
+        "owner": "brainhivenl",
         "repo": "steiger",
         "type": "github"
       }
