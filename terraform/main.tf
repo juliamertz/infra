@@ -107,8 +107,8 @@ resource "cloudflare_dns_record" "api_server_records" {
 module "juliamertz-nl-email" {
   source       = "./modules/cloudflare/protonmail"
   domain       = "juliamertz.nl"
-  domain_key   = "d3u5rtsm5vj2kjzwcua5sns57x4p62m3wlapug7zjtnpps2x4ayoa"
-  verification = "6d592d6c4efb07524737a4674938e729df1a629b"
+  domain_key   = "dbq6tjrv6pl3rnk666437sono7h6tufi6fwst37wbkcurzjsldlwq"
+  verification = "3de7592f07cd8507ec05b83e5403f4a35c3dc5d9"
 
   zone_id = var.juliamertz_nl_zone_id
   providers = {
@@ -119,8 +119,8 @@ module "juliamertz-nl-email" {
 module "juliamertz-dev-email" {
   source       = "./modules/cloudflare/protonmail"
   domain       = "juliamertz.dev"
-  domain_key   = "dhrcj3l7ljct2xxjwqsdgg5s2ntzdyh2nmuqinz6mgddj2godaa2a"
-  verification = "9814917e48e94c4bf2e1a70e25a21b68d4d1e5f5"
+  domain_key   = "dioxqwztivzonpgfbsqunytokvr2xiy4fn2qrdz54llx3c2bvrrkq"
+  verification = "25429d3b39ef4a4a68b4933efa8911c8b830c71a"
 
   zone_id = var.juliamertz_dev_zone_id
   providers = {
