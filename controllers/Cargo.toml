@@ -10,7 +10,7 @@ path = "src/main.rs"
 [dependencies]
 anyhow = "1.0.100"
 kube = { version = "2.0.1", features = ["aws-lc-rs"] }
-kubus = "0.4.2"
+kubus = "0.5.0"
 k8s-openapi = { version = "0.26.0", features = ["v1_34", "schemars"] }
 serde = { version = "1.0.228", features = ["derive"] }
 serde_json = "1.0.145"
