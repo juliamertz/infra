@@ -5,9 +5,8 @@ resources:
   - namespace.yaml
   - volumes.yaml
   - statefulset.yaml
-  - scaler.yaml
   - backup.yaml
 images:
 - name: valheim-server
-  newName: lloesche/valheim-server
-  newTag: sha-951992b
+  newName: mbround18/valheim
+  newTag: 3.4.0

@@ -30,34 +30,42 @@ spec:
       - image: valheim-server
         name: valheim
         env:
-        - name: SERVER_NAME
+        - name: PORT
+          value: "2456"
+        - name: NAME
           value: "Julia's server"
-        - name: WORLD_NAME
+        - name: WORLD
           value: "Julia's realm"
-        - name: SERVER_PASS
+        - name: TZ
+          value: "Europe/Amsterdam"
+        - name: PUBLIC
+          value: "1"
+        - name: UPDATE_ON_STARTUP
+          value: "0"
+        - name: PASSWORD
           valueFrom:
             secretKeyRef:
               name: valheim-auth 
               key: password
               optional: false
-        - name: SERVER_PORT
-          value: "2456"
         ports:
         - containerPort: 2456
           name: gameport
         - containerPort: 2457
           name: queryport
+        - containerPort: 2458
+          name: idkport
         volumeMounts:
-        - mountPath: /config
+        - mountPath: /home/steam/.config/unity3d/Valheim
           name: gamefiles
-        - mountPath: /opt/valheim
+        - mountPath: /home/steam/valheim
           name: serverfiles
         resources:
           requests: {}
       volumes:
       - name: gamefiles
         persistentVolumeClaim:
-          claimName: valheim-world-data
+          claimName: valheim-world
       - name: serverfiles
         persistentVolumeClaim:
-          claimName: valheim-server-base-data
+          claimName: valheim-data
