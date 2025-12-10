@@ -28,7 +28,7 @@ resource "helm_release" "autoscaler" {
   namespace  = "hetzner-system"
   repository = "https://kubernetes.github.io/autoscaler"
   chart      = "cluster-autoscaler"
-  version    = "9.53.0"
+  version    = "9.54.0"
   values = [yamlencode({
     cloudProvider    = "hetzner"
     fullnameOverride = "hcloud-cluster-autoscaler"
