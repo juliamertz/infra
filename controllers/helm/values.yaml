@@ -5,13 +5,3 @@ services:
     extraEnv:
       - name: INTERNAL_IP_RANGE
         value: 10.0.0.0/8
-
-  - cmd: valheim
-    ports:
-      - name: metrics
-        containerPort: 9000
-    podMonitor:
-      enable: true
-    extraEnv:
-      - name: HOST
-        value: valheim.juliamertz.nl

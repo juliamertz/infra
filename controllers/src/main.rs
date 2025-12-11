@@ -1,6 +1,5 @@
 mod cert_approver;
 mod hostdns;
-mod valheim;
 
 use clap::{Parser, Subcommand};
 
@@ -19,10 +18,6 @@ enum Command {
         #[arg(long, env = "INTERNAL_IP_RANGE", default_value = "10.0.0.0/8")]
         internal_ip_range: String,
     },
-    Valheim {
-        #[arg(long, env = "HOST")]
-        host: String,
-    },
 }
 
 #[tokio::main]
@@ -36,7 +31,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         Command::CertApprover { internal_ip_range } => {
             cert_approver::run(cert_approver::Config { internal_ip_range }).await?
         }
-        Command::Valheim { host } => valheim::serve(&host).await?,
     };
 
     Ok(())
