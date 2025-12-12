@@ -5,6 +5,7 @@ resources:
   - namespace.yaml
   - volumes.yaml
   - statefulset.yaml
+  - monitor.yaml
   - backup.yaml
 images:
 - name: valheim-server

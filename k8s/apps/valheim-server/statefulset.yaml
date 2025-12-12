@@ -28,6 +28,7 @@ spec:
       hostNetwork: true
       containers:
       - image: valheim-server
+        imagePullPolicy: IfNotPresent
         name: valheim
         env:
         - name: PORT
@@ -58,7 +59,7 @@ spec:
         - containerPort: 9000
           name: metrics
         volumeMounts:
-        - mountPath: /home/steam/.config/unity3d/Valheim
+        - mountPath: /home/steam/.config/unity3d/IronGate/Valheim
           name: gamefiles
         - mountPath: /home/steam/valheim
           name: serverfiles
