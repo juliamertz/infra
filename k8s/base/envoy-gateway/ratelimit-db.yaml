@@ -3,6 +3,8 @@ kind: Dragonfly
 metadata:
   name: envoy-ratelimit-db
 spec:
+  imagePullPolicy: IfNotPresent
+  image: docker.dragonflydb.io/dragonflydb/dragonfly:v1.35.1
   replicas: 1
   resources:
     requests:
