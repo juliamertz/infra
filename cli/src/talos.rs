@@ -22,7 +22,6 @@ struct SchematicsResponse {
 
 #[derive(Debug)]
 pub struct Image {
-    pub id: String,
     pub tag: String,
 }
 
@@ -68,7 +67,7 @@ impl TalosFactory {
         let version = version.as_ref();
         let tag = format!("factory.talos.dev/hcloud-installer/{id}:{version}");
 
-        Ok(Image { id, tag })
+        Ok(Image { tag })
     }
 }
 
@@ -85,17 +84,13 @@ fn parse_json_object_stream<T: DeserializeOwned>(text: &str) -> Result<Vec<T>, s
 #[serde(rename_all = "camelCase")]
 pub struct MemberMeta {
     pub id: String,
-    pub phase: String, // TODO: enum?
 }
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct MemberSpec {
-    pub node_id: String,
     pub addresses: Vec<Ipv4Addr>,
     pub hostname: String,
-    pub machine_type: String, // TODO: enum
-    pub operating_system: String,
 }
 
 #[derive(Debug, Deserialize)]
@@ -108,14 +103,14 @@ pub struct NodeItem<Meta, Spec> {
 pub type Member = NodeItem<MemberMeta, MemberSpec>;
 
 impl Member {
-    pub fn version(&self) -> Result<Version<'_>> {
-        let os = &self.spec.operating_system;
-        let (_, rhs) = os.split_once(" ").context("invalid talos os string")?;
-        rhs.strip_prefix("(")
-            .and_then(|v| v.strip_suffix(")"))
-            .and_then(Version::from)
-            .context("invalid talos version")
-    }
+    // pub fn version(&self) -> Result<Version<'_>> {
+    //     let os = &self.spec.operating_system;
+    //     let (_, rhs) = os.split_once(" ").context("invalid talos os string")?;
+    //     rhs.strip_prefix("(")
+    //         .and_then(|v| v.strip_suffix(")"))
+    //         .and_then(Version::from)
+    //         .context("invalid talos version")
+    // }
 
     pub fn external_ip(&self) -> Option<&Ipv4Addr> {
         self.spec
@@ -269,6 +264,7 @@ impl TalosCtl {
             .find(|member| member.metadata.id == name)
     }
 
+    #[allow(unused)]
     #[instrument(skip(self))]
     pub async fn get_schematic(&self, member: &Member) -> Result<serde_yaml::Value> {
         let mut cmd = Command::new("talosctl");

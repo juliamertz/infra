@@ -15,7 +15,6 @@ use tracing::{Level, info, instrument};
 
 mod cnpg;
 mod ext;
-mod prompt;
 mod talos;
 
 use crate::cnpg::Cluster;
