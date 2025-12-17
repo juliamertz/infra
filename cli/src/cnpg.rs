@@ -111,12 +111,13 @@ impl Cluster {
 
     #[instrument(skip(self, client), fields(namespace = self.namespace()), err(Debug))]
     pub async fn switchover_any(&self, client: Client) -> Result<()> {
-        let mut victims = self
-            .status
-            .clone()
-            .unwrap_or_default()
+        let status = self.status.clone().unwrap_or_default();
+        let mut victims = status
             .instance_names
-            .unwrap_or_default();
+            .unwrap_or_default()
+            .into_iter()
+            .filter(|name| name != &status.current_primary.clone().unwrap_or_default())
+            .collect::<Vec<_>>();
 
         let victim = victims
             .pop()

@@ -43,7 +43,7 @@ enum Subcommand {
     Drain,
     /// Reboot and upgrade node
     Upgrade {
-        #[arg(long, default_value_t = true)]
+        #[arg(long, default_value_t = false)]
         latest: bool,
 
         #[arg(long, short)]
@@ -263,8 +263,6 @@ async fn switchover_cnpg_primaries(client: KubeClient, node_name: &str) -> Resul
                 sleep(timeout).await;
             }
         }
-
-        break;
     }
 
     Ok(())
