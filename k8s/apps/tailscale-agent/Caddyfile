@@ -5,5 +5,5 @@
 }
 
 :8080 {
-  reverse_proxy hydra.headscale.local:80
+  reverse_proxy hydra.headscale.local:8123
 }
