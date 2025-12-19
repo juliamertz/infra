@@ -35,6 +35,7 @@ spec:
           type: Kubernetes
         extensionApis:
           enableEnvoyPatchPolicy: true
+          enableBackend: true
         rateLimit:
           backend:
             type: Redis

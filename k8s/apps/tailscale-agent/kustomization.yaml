@@ -9,6 +9,7 @@ resources:
   - volume.yaml
   - deployment.yaml
   - service.yaml
+  - securitypolicy.yaml
 
 configMapGenerator:
   - name: caddy-config
