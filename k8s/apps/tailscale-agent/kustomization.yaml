@@ -4,18 +4,3 @@ namespace: tailscale-agent
 resources:
   - namespace.yaml
   - auth.yaml
-  - serviceaccount.yaml
-  - role.yaml
-  - volume.yaml
-  - deployment.yaml
-  - service.yaml
-  - securitypolicy.yaml
-
-configMapGenerator:
-  - name: caddy-config
-    options:
-      disableNameSuffixHash: true
-      labels:
-        app: tailscale-agent
-    files:
-      - Caddyfile
