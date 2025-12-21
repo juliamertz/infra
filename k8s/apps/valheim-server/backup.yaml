@@ -25,7 +25,7 @@ spec:
                 - name: NAMESPACE
                   value: "valheim"
                 - name: SOURCE_PATH
-                  value: "/config/worlds_local"
+                  value: "/home/steam/.config/unity3d/IronGate/Valheim/worlds_local"
                 - name: S3_BUCKET
                   value: "valheim-backups"
                 - name: BACKUP_PREFIX
@@ -47,12 +47,25 @@ spec:
                 - -c
                 - |
                   set -e
+
                   TIMESTAMP=$(date +%Y%m%d-%H%M%S)
                   echo "Starting backup at $TIMESTAMP"
 
                   mkdir -p /world
-                  kubectl cp $POD_NAME:"$SOURCE_PATH/Julia's realm.db" /world/world.db
-                  kubectl cp $POD_NAME:"$SOURCE_PATH/Julia's realm.fwl" /world/world.fwl
+
+                  kubectl cp $POD_NAME:"$SOURCE_PATH/Julia's.db" /world/world.db
+
+                  if [ ! -s /world/world.db ]; then
+                    echo "ERROR: world.db is missing or empty"
+                    exit 1
+                  fi
+
+                  kubectl cp $POD_NAME:"$SOURCE_PATH/Julia's.fwl" /world/world.fwl
+
+                  if [ ! -s /world/world.fwl ]; then
+                    echo "ERROR: world.fwl is missing or empty"
+                    exit 1
+                  fi
 
                   aws --endpoint-url $S3_ENDPOINT s3 sync /world s3://$S3_BUCKET/$BACKUP_PREFIX/$TIMESTAMP/
 
