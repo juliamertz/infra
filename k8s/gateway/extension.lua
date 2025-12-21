@@ -60,6 +60,7 @@ local crawler_user_agents = {
 	'Applebot',
 	'Bytespider',
 	'ClaudeBot',
+	'CCBot',
 	'DuckAssistBot',
 	'Google-CloudVertexBot',
 	'GoogleOther',
@@ -67,14 +68,22 @@ local crawler_user_agents = {
 	'Meta-ExternalAgent',
 	'PetalBot',
 	'TikTokSpider',
-	'CCBot',
 }
 
 ---@param request_handle StreamHandle
 function envoy_on_request(request_handle)
+  --- Block known crawlers
 	local user_agent = request_handle:headers():get 'user-agent' or ''
 	if table_contains(crawler_user_agents, user_agent) then
 		request_handle:respond({ [':status'] = '403' }, 'Forbidden')
+	end
+
+  --- Enforce HTTPS at gateway level
+	local proto = request_handle:headers():get 'x-forwarded-proto'
+	if proto == 'http' then
+		local host = request_handle:headers():get ':authority'
+		local path = request_handle:headers():get ':path'
+		request_handle:respond({ [':status'] = '301', ['location'] = 'https://' .. host .. path }, '')
 	end
 end
 
