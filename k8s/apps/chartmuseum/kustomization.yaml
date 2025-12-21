@@ -3,5 +3,6 @@ kind: Kustomization
 namespace: chartmuseum
 resources:
   - namespace.yaml
+  # - secret.yaml
   - release.yaml
   - httproute.yaml
