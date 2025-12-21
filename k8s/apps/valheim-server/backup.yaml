@@ -1,7 +1,7 @@
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: backup-to-s3
+  name: valheim-backup
 spec:
   schedule: "0 2 * * *"
   concurrencyPolicy: Forbid

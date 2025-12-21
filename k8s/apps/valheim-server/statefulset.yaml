@@ -18,6 +18,7 @@ spec:
         dns.juliamertz.dev/ttl: "60"
     spec:
       terminationGracePeriodSeconds: 120
+      shareProcessNamespace: true
       nodeSelector:
         hcloud/node-group: gameserver-node
       tolerations:
@@ -43,7 +44,7 @@ spec:
             JereKuusela-Server_devcommands-1.101.0
             ComfyMods-TorchesAndResin-1.8.0
         - name: MODIFIERS
-          value: resources=more
+          value: resources=more,raids=muchless
         - name: PORT
           value: "2456"
         - name: HTTP_PORT
@@ -73,7 +74,21 @@ spec:
         - mountPath: /home/steam/valheim
           name: serverfiles
         resources:
-          requests: {}
+          requests:
+            cpu: 500m
+            memory: 2Gi
+          limits:
+            cpu: 1500m
+            memory: 4Gi
+      - name: debugger
+        image: alpine:latest
+        imagePullPolicy: IfNotPresent
+        args: ["sh", "-c", "trap 'exit 0' TERM; sleep infinity & wait"]
+        volumeMounts:
+        - mountPath: /gamefiles
+          name: gamefiles
+        - mountPath: /serverfiles
+          name: serverfiles
       volumes:
       - name: gamefiles
         persistentVolumeClaim:

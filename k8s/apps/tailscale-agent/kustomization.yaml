@@ -4,3 +4,4 @@ namespace: tailscale-agent
 resources:
   - namespace.yaml
   - auth.yaml
+  - homelab-routes.yaml

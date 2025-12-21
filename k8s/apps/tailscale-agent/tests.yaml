@@ -1,0 +1,100 @@
+# ---
+# apiVersion: headscale.juliamertz.dev/v1
+# kind: PreauthKey
+# metadata:
+#   name: agent-auth
+# spec:
+#   ephemeral: true
+#   reusable: true
+#   expiration: 100y
+#   targetSecret: tailnet-gateway-auth
+#   user:
+#     name: kubernetes 
+#     namespace: tailscale-agent
+
+---
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: EnvoyProxy
+metadata:
+  name: tailnet-proxy-config
+spec:
+  provider:
+    type: Kubernetes
+    kubernetes:
+      envoyService:
+        type: ClusterIP
+      envoyDeployment:
+        replicas: 1 
+        pod:
+          annotations:
+            headscale.juliamertz.dev/tailscale-inject-sidecar: "true"
+            headscale.juliamertz.dev/tailscale-extra-args: --login-server https://headscale.juliamertz.nl:30443 --accept-routes --advertise-tags=tag:tailscale-sidecar
+            headscale.juliamertz.dev/tailscale-auth-secret: tailscale-agent-auth
+        patch:
+          type: StrategicMerge
+          value:
+            spec:
+              template:
+                spec:
+                  automountServiceAccountToken: true
+
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: GatewayClass
+metadata:
+  name: envoy-tailnet
+spec:
+  controllerName: gateway.envoyproxy.io/gatewayclass-controller
+  parametersRef:
+    group: gateway.envoyproxy.io
+    kind: EnvoyProxy
+    name: tailnet-proxy-config
+    namespace: tailscale-agent
+
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: tailnet-gateway
+spec:
+  gatewayClassName: envoy-tailnet
+  listeners:
+    - name: http
+      protocol: HTTP
+      port: 80
+      allowedRoutes:
+        namespaces:
+          from: All
+
+---
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: Backend
+metadata:
+  name: hydra-backend
+  namespace: tailscale-agent
+spec:
+  endpoints:
+    - fqdn:
+        hostname: hydra.headscale.local
+        port: 8123
+
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: testing-homelab-routes
+spec:
+  hostnames:
+    - hass.juliamertz.dev
+    - hass.juliamertz.nl
+  parentRefs:
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      name: tailnet-gateway
+      namespace: tailscale-agent
+  rules:
+  - backendRefs:
+    - group: gateway.envoyproxy.io
+      kind: Backend
+      name: hydra-backend
+      port: 8123

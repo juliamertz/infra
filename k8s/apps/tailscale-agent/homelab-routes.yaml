@@ -1,0 +1,158 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: homelab-route-proxy
+  namespace: tailscale-agent
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: homelab-route-proxy
+  template:
+    metadata:
+      labels:
+        app: homelab-route-proxy
+      annotations:
+        headscale.juliamertz.dev/tailscale-inject-sidecar: "true"
+        headscale.juliamertz.dev/tailscale-extra-args: --login-server https://headscale.juliamertz.nl:30443 --accept-routes --advertise-tags=tag:tailscale-sidecar
+        headscale.juliamertz.dev/tailscale-auth-secret: tailscale-agent-auth
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:latest
+        command: ["sh", "-c"]
+        args:
+        - |
+          cat <<'EOF' > /etc/nginx/nginx.conf
+          events {
+              worker_connections 1024;
+          }
+          http {
+              resolver 100.100.100.100 valid=10s;
+
+              server {
+                  listen 80;
+                  server_name hass.juliamertz.dev hass.juliamertz.nl;
+                  location / {
+                      set $upstream_hass http://hydra.headscale.local:8123;
+                      proxy_pass $upstream_hass;
+                      proxy_http_version 1.1;
+                      proxy_set_header Host $host;
+                      proxy_set_header X-Real-IP $remote_addr;
+                      proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                      proxy_set_header X-Forwarded-Proto $scheme;
+                      proxy_set_header Upgrade $http_upgrade;
+                      proxy_set_header Connection "upgrade";
+                  }
+              }
+              server {
+                  listen 80;
+                  server_name watch.juliamertz.dev watch.juliamertz.nl;
+                  location / {
+                      set $upstream_watch http://hydra.headscale.local:8096;
+                      proxy_pass $upstream_watch;
+                      proxy_http_version 1.1;
+                      proxy_set_header Host $host;
+                      proxy_set_header X-Real-IP $remote_addr;
+                      proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                      proxy_set_header X-Forwarded-Proto $scheme;
+                      proxy_set_header Upgrade $http_upgrade;
+                      proxy_set_header Connection "upgrade";
+                  }
+              }
+          }
+          EOF
+          nginx -g 'daemon off;'
+        ports:
+        - containerPort: 80
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: homelab-route-proxy
+  namespace: tailscale-agent
+spec:
+  type: ClusterIP
+  selector:
+    app: homelab-route-proxy
+  ports:
+    - name: http
+      port: 80
+
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: homelab-route-proxy
+  namespace: tailscale-agent
+spec:
+  hostnames:
+    - hass.juliamertz.dev
+    - hass.juliamertz.nl
+    - watch.juliamertz.dev
+    - watch.juliamertz.nl
+  parentRefs:
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      name: shared
+      namespace: default
+  rules:
+    - backendRefs:
+        - group: ""
+          kind: Service
+          name: homelab-route-proxy
+          port: 80
+          weight: 1
+      matches:
+        - path:
+            type: PathPrefix
+            value: /
+
+---
+apiVersion: cert-vandal.io/v1
+kind: SANInjection
+metadata:
+  name: homelab-route-proxy
+  namespace: tailscale-agent
+spec:
+  hostnames:
+    - hass.juliamertz.dev
+    - hass.juliamertz.nl
+    - watch.juliamertz.dev
+    - watch.juliamertz.nl
+  targetCertificate:
+    name: gateway-tls
+    namespace: default
+
+---
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: SecurityPolicy
+metadata:
+  name: homelab-route-proxy-auth
+  namespace: tailscale-agent
+spec:
+  targetRefs:
+    - group: gateway.networking.k8s.io
+      kind: HTTPRoute
+      name: homelab-route-proxy
+  extAuth:
+    headersToExtAuth:
+      - accept
+      - cookie
+      - authorization
+      - proxy-authorization
+      - x-forwarded-proto
+    failOpen: false
+    http:
+      backendRefs:
+        - name: authelia
+          namespace: authelia
+          port: 80
+      path: /api/authz/ext-authz/
+      headersToBackend:
+        - Remote-User
+        - Remote-Groups
+        - Remote-Name
+        - Remote-Email
+
