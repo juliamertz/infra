@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: valheim-debug
+  namespace: valheim
+spec:
+  nodeSelector:
+    hcloud/node-group: gameserver-node
+  tolerations:
+    - effect: NoExecute
+      key: node.kubernetes.io/role
+      operator: Equal
+      value: gameserver-node
+  containers:
+    - name: debug
+      image: alpine:latest
+      command: ["sleep", "infinity"]
+      volumeMounts:
+        - mountPath: /gamefiles
+          name: gamefiles
+        - mountPath: /serverfiles
+          name: serverfiles
+  volumes:
+    - name: gamefiles
+      persistentVolumeClaim:
+        claimName: valheim-world
+    - name: serverfiles
+      persistentVolumeClaim:
+        claimName: valheim-data

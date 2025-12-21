@@ -6,6 +6,12 @@ spec:
   headscaleRef:
     name: central
   rules:
+    # - action: accept
+    #   src: ['*:*']
+    #   dst: ['*:*']
     - action: accept
-      src: ['*:*']
-      dst: ['*:*']
+      src: ['autogroup:member']
+      dst: ['autogroup:self:*']
+    - action: accept
+      src: ['kubernetes@']
+      dst: ['homelab@:8123']
