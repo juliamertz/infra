@@ -33,6 +33,9 @@ spec:
           controllerName: gateway.envoyproxy.io/gatewayclass-controller
         provider:
           type: Kubernetes
+          kubernetes:
+            deploy:
+              type: GatewayNamespace
         extensionApis:
           enableEnvoyPatchPolicy: true
           enableBackend: true
