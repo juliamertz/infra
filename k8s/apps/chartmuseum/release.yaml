@@ -32,7 +32,7 @@ spec:
         STORAGE_AMAZON_ENDPOINT: http://garage.garage:3900
         STORAGE_AMAZON_PREFIX: ""
         DISABLE_STATEFILES: true
-        DISABLE_API: true
+        DISABLE_API: false
         ALLOW_OVERWRITE: true
         DELETE: true
         CHART_URL: ""

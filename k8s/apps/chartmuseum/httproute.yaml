@@ -4,15 +4,31 @@ metadata:
   name: chartmusuem
 spec:
   parentRefs:
-  - name: shared
-    namespace: default
+    - name: shared
+      namespace: default
   hostnames:
-  - charts.juliamertz.dev
+    - charts.juliamertz.dev
   rules:
-  - backendRefs:
-    - name: chartmuseum
-      port: 8080
-
+    - filters:
+        - type: RequestRedirect
+          requestRedirect:
+            path:
+              type: ReplaceFullPath
+              replaceFullPath: /
+            statusCode: 302
+      matches:
+        - path:
+            type: PathPrefix
+            value: /api
+        - path:
+            type: PathPrefix
+            value: /info
+    - backendRefs:
+        - name: chartmuseum
+          port: 8080
+      matches:
+        - method: GET
+        - method: HEAD
 ---
 apiVersion: cert-vandal.io/v1
 kind: SANInjection
@@ -24,5 +40,3 @@ spec:
     namespace: default
   hostnames:
     - charts.juliamertz.dev
-
-
