@@ -54,6 +54,12 @@ enum Error {
         "waiting for deletion delay to expire for endpoint '{name}' (delete after: {delete_after})"
     )]
     AwaitingDeletionDelay { name: String, delete_after: String },
+
+    #[error("kube error: {0}")]
+    Kube(#[from] kube::Error),
+
+    #[error("kubus error: {0}")]
+    Kubus(#[from] kubus::Error),
 }
 
 #[derive(Debug, Clone)]

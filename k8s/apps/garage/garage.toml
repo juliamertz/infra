@@ -9,7 +9,7 @@ replication_mode = "3"
 
 compression_level = 1
 
-rpc_bind_addr = "[::]:3901"
+rpc_bind_addr = "0.0.0.0:3901"
 # rpc_secret will be populated by the init container from a k8s secret object
 rpc_secret = "__RPC_SECRET_REPLACE__"
 
@@ -22,13 +22,13 @@ skip_crd = false
 
 [s3_api]
 s3_region = "garage"
-api_bind_addr = "[::]:3900"
+api_bind_addr = "0.0.0.0:3900"
 root_domain = ".s3.juliamertz.dev"
 
 [s3_web]
-bind_addr = "[::]:3902"
+bind_addr = "0.0.0.0:3902"
 root_domain = ".cdn.juliamertz.dev"
 index = "index.html"
 
 [admin]
-api_bind_addr = "[::]:3903"
+api_bind_addr = "0.0.0.0:3903"

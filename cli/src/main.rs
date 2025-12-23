@@ -104,6 +104,19 @@ async fn main() -> Result<()> {
 
             tracing::info!("Upgrading {node_name} ({node_ip}) to version {version}");
 
+            let is_cordoned = nodes
+                .get(&node_name)
+                .await
+                .expect("node to exist")
+                .spec
+                .unwrap_or_default()
+                .taints
+                .unwrap_or_default()
+                .into_iter()
+                .any(|taint| {
+                    taint.key == "node.kubernetes.io/unschedulable" && taint.effect == "NoSchedule"
+                });
+
             let customization = fs::read_to_string(&customization_path).await?;
             let image = factory.get_image(&version, customization).await?;
             let params = UpgradeParams::default();
@@ -112,7 +125,9 @@ async fn main() -> Result<()> {
             loop {
                 if nodes.is_ready(&node_name).await {
                     info!("node ready");
-                    nodes.uncordon(&node_name).await?;
+                    if is_cordoned {
+                        nodes.uncordon(&node_name).await?;
+                    };
                     break;
                 } else {
                     info!("node not ready");

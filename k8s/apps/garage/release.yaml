@@ -28,7 +28,7 @@ spec:
       existingConfigMap: "garage-config"
 
     image:
-      repository: dxflrs/arm64_garage
+      repository: dxflrs/garage
 
     persistence:
       enabled: true

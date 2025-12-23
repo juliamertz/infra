@@ -35,9 +35,9 @@ module "production_k8s" {
   control_plane_allow_schedule = true
 
   control_plane_nodes = [
-    { type = "cax21" },
-    { type = "cax21" },
-    { type = "cax21" },
+    { type = "cx33" },
+    { type = "cx33" },
+    { type = "cx33" },
   ]
 
   worker_nodes = []
