@@ -1165,7 +1165,7 @@ dependencies = [
  "libc",
  "percent-encoding",
  "pin-project-lite",
- "socket2 0.5.10",
+ "socket2 0.6.1",
  "system-configuration",
  "tokio",
  "tower-service",
@@ -1590,9 +1590,9 @@ dependencies = [
 
 [[package]]
 name = "kubus"
-version = "0.5.2"
+version = "0.5.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "97c77d24ea08c0fa31baf29b1c10a91c7630b36d231a47ba67c618d9e6d28cd2"
+checksum = "17b31756a307b4090b0e220ebe6614b9c10a90b45ecec5b211aef39cc72b1a7e"
 dependencies = [
  "async-trait",
  "futures",
@@ -1611,9 +1611,9 @@ dependencies = [
 
 [[package]]
 name = "kubus_derive"
-version = "0.5.2"
+version = "0.5.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "99194cc13a4f8c2c553bb924a5eb42fba32aed991e3398c674da64140321bf31"
+checksum = "ec0ffdbd96cc49077f2160825dce8261d045676229c004cb69e26f8e37511508"
 dependencies = [
  "proc-macro2",
  "quote",
