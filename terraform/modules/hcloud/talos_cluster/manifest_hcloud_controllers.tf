@@ -132,24 +132,24 @@ resource "helm_release" "hcloud_csi" {
           }
         }
       }
-      affinity = {
-        podAntiAffinity = {
-          requiredDuringSchedulingIgnoredDuringExecution = [
-            {
-              labelSelector = {
-                matchExpressions = [
-                  {
-                    key      = "csi-hcloud"
-                    operator = "In"
-                    values   = ["controller"]
-                  }
-                ]
-              }
-              topologyKey = "kubernetes.io/hostname"
-            }
-          ]
-        }
-      }
+      # affinity = {
+      #   podAntiAffinity = {
+      #     requiredDuringSchedulingIgnoredDuringExecution = [
+      #       {
+      #         labelSelector = {
+      #           matchExpressions = [
+      #             {
+      #               key      = "csi-hcloud"
+      #               operator = "In"
+      #               values   = ["controller"]
+      #             }
+      #           ]
+      #         }
+      #         topologyKey = "kubernetes.io/hostname"
+      #       }
+      #     ]
+      #   }
+      # }
     }
 
     node = {
@@ -187,23 +187,23 @@ resource "helm_release" "hcloud_csi" {
         }
       }
       hostNetwork = true
-      affinity = {
-        nodeAffinity = {
-          requiredDuringSchedulingIgnoredDuringExecution = {
-            nodeSelectorTerms = [
-              {
-                matchExpressions = [
-                  {
-                    key      = "node-role.kubernetes.io/control-plane"
-                    operator = "NotIn"
-                    values   = [""]
-                  }
-                ]
-              }
-            ]
-          }
-        }
-      }
+      # affinity = {
+      #   nodeAffinity = {
+      #     requiredDuringSchedulingIgnoredDuringExecution = {
+      #       nodeSelectorTerms = [
+      #         {
+      #           matchExpressions = [
+      #             {
+      #               key      = "node-role.kubernetes.io/control-plane"
+      #               operator = "NotIn"
+      #               values   = [""]
+      #             }
+      #           ]
+      #         }
+      #       ]
+      #     }
+      #   }
+      # }
     }
 
     metrics = {
