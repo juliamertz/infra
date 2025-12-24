@@ -19,13 +19,13 @@ spec:
     spec:
       terminationGracePeriodSeconds: 120
       shareProcessNamespace: true
-      nodeSelector:
-        hcloud/node-group: gameserver-node
-      tolerations:
-        - key: node.kubernetes.io/role
-          operator: Equal
-          value: gameserver-node
-          effect: NoExecute
+      # nodeSelector:
+      #   hcloud/node-group: gameserver-node
+      # tolerations:
+      #   - key: node.kubernetes.io/role
+      #     operator: Equal
+      #     value: gameserver-node
+      #     effect: NoExecute
       hostNetwork: true
       containers:
       - image: valheim-server
