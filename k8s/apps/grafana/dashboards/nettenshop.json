@@ -18,7 +18,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 28,
+  "id": 30,
   "links": [],
   "panels": [
     {
@@ -903,8 +903,8 @@
             "uid": "P8E80F9AEF21F6940"
           },
           "direction": "backward",
-          "editorMode": "code",
-          "expr": "{namespace=\"envoy-gateway-system\"} |= `` | json | route_name =~ `httproute/lightspeed-dhl-adapter/.*` | label_format level=`{{if ge .response_code \"400\"}}ERROR{{else}}INFO{{end}}`",
+          "editorMode": "builder",
+          "expr": "{namespace=\"default\", app=\"envoy\"} |= `` | json | route_name =~ `httproute/lightspeed-dhl-adapter/.*` | label_format level=`{{if ge .response_code \"400\"}}ERROR{{else}}INFO{{end}}`",
           "queryType": "range",
           "refId": "A"
         }
