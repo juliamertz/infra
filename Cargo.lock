@@ -387,7 +387,7 @@ dependencies = [
  "humantime",
  "ipnet",
  "k8s-openapi",
- "k8s-openapi-ext 0.26.9",
+ "k8s-openapi-ext 0.26.10",
  "kube",
  "kubus",
  "schemars 1.2.0",
@@ -1470,9 +1470,9 @@ dependencies = [
 
 [[package]]
 name = "k8s-openapi-ext"
-version = "0.26.9"
+version = "0.26.10"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b046f47c3158db9a77ab06921aed582a16c8a15afa664bf1be3ed0c3285f2981"
+checksum = "1f07ab5bda48b90dfd890a31c3b0fe2b57754928028546b08ec02f44382cc9a7"
 dependencies = [
  "base64 0.22.1",
  "chrono",
