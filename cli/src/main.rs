@@ -201,38 +201,7 @@ async fn main() -> Result<()> {
             version,
             customization_path,
         } => {
-            let http = reqwest::Client::builder().use_rustls_tls().build()?;
-            let customization_path =
-                customization_path.unwrap_or_else(|| "talos-customization.yaml".into());
-            let customization = fs::read_to_string(&customization_path).await?;
-
-            let image_meta = factory.get_image(&version, customization).await?;
-            let image_id = std::str::from_utf8(&image_meta.id)?;
-            let url =
-                format!("https://factory.talos.dev/image/{image_id}/{version}/hcloud-amd64.raw.xz");
-
-            let out_path = std::env::temp_dir().join("talos-hcloud.raw.xz");
-            dbg!(&out_path);
-            let file = fs::File::create_new(&out_path).await?;
-            let mut writer = BufWriter::new(file);
-
-            let mut stream = http
-                .get(url)
-                .send()
-                .await?
-                .error_for_status()?
-                .bytes_stream();
-
-            while let Some(chunk) = stream.next().await {
-                let bytes = chunk?;
-                writer.write_all(&bytes).await?;
-            }
-
-            writer.flush().await?;
-
-            dbg!(out_path);
-
-            todo!()
+            // factory.download_image(version, customization)
         }
     }
 

@@ -1,10 +1,11 @@
-use std::{cmp::Ordering, net::Ipv4Addr, process::Stdio};
+use std::{cmp::Ordering, net::Ipv4Addr, path::PathBuf, process::Stdio};
 
 use anyhow::{Context, Result};
+use futures::StreamExt;
 use reqwest::{Body, Client};
 use serde::{Deserialize, de::DeserializeOwned};
 use serde_json::Deserializer;
-use tokio::process::Command;
+use tokio::{io::AsyncWriteExt, process::Command};
 use tracing::instrument;
 use version_compare::Version;
 
@@ -12,7 +13,7 @@ use crate::ext::CommandExt;
 
 #[derive(Default)]
 pub struct TalosFactory {
-    pub client: Client,
+    pub http: Client,
 }
 
 #[derive(Deserialize)]
@@ -27,10 +28,20 @@ pub struct Image {
 }
 
 impl TalosFactory {
+    const BASE: &str = "https://factory.talos.dev";
+
+    fn endpoint(&self, path: impl AsRef<str>) -> String {
+        format!(
+            "{base}/{path}",
+            base = Self::BASE,
+            path = path.as_ref().strip_prefix("/").unwrap_or(path.as_ref())
+        )
+    }
+
     pub async fn list_versions(&self) -> Result<Vec<String>> {
         Ok(self
-            .client
-            .get("https://factory.talos.dev/versions")
+            .http
+            .get(self.endpoint("/versions"))
             .send()
             .await?
             .json()
@@ -41,7 +52,7 @@ impl TalosFactory {
         let versions = self.list_versions().await?;
         let mut parsed: Vec<_> = versions
             .iter()
-            .filter(|v| !(v.contains("alpha") || v.contains("beta")))
+            .filter(|v| !(v.contains("alpha") || v.contains("beta") || v.contains("rc")))
             .filter_map(|value| Version::from(&value))
             .collect();
 
@@ -55,8 +66,8 @@ impl TalosFactory {
         customization: impl Into<Body>,
     ) -> Result<Image> {
         let schematic: SchematicsResponse = self
-            .client
-            .post("https://factory.talos.dev/schematics")
+            .http
+            .post(self.endpoint("/schematics"))
             .header("content-type", "application/yaml")
             .body(customization)
             .send()
@@ -72,6 +83,41 @@ impl TalosFactory {
             tag,
             id: id.as_bytes().try_into().expect("valid schematic id"),
         })
+    }
+
+    pub async fn download_image(
+        &self,
+        version: impl AsRef<str>,
+        customization: impl Into<Body>,
+    ) -> Result<PathBuf> {
+        let image_meta = self.get_image(&version, customization).await?;
+        let image_id = std::str::from_utf8(&image_meta.id)?;
+        let version = version.as_ref();
+        let url = self.endpoint(format!("/image/{image_id}/{version}/hcloud-amd64.raw.xz"));
+
+        let out_path = std::env::temp_dir().join("talos-hcloud.raw.xz");
+        if out_path.exists() {
+            tokio::fs::remove_file(&out_path).await?;
+        }
+        let file = tokio::fs::File::create_new(&out_path).await?;
+        let mut writer = tokio::io::BufWriter::new(file);
+
+        let mut stream = self
+            .http
+            .get(url)
+            .send()
+            .await?
+            .error_for_status()?
+            .bytes_stream();
+
+        while let Some(chunk) = stream.next().await {
+            let bytes = chunk?;
+            writer.write_all(&bytes).await?;
+        }
+
+        writer.flush().await?;
+
+        Ok(out_path)
     }
 }
 
