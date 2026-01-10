@@ -18,7 +18,7 @@ spec:
           load-balancer.hetzner.cloud/uses-proxyprotocol: "true"
           # load-balancer.hetzner.cloud/node-selector: "!node-role.kubernetes.io/control-plane"
       envoyPDB:
-        minAvailable: 3
+        minAvailable: 2
       envoyDeployment:
         replicas: 3 
         strategy:
