@@ -22,6 +22,7 @@ struct SchematicsResponse {
 
 #[derive(Debug)]
 pub struct Image {
+    pub id: [u8; 64],
     pub tag: String,
 }
 
@@ -67,7 +68,10 @@ impl TalosFactory {
         let version = version.as_ref();
         let tag = format!("factory.talos.dev/hcloud-installer/{id}:{version}");
 
-        Ok(Image { tag })
+        Ok(Image {
+            tag,
+            id: id.as_bytes().try_into().expect("valid schematic id"),
+        })
     }
 }
 

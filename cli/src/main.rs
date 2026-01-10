@@ -4,12 +4,14 @@ use std::time::Duration;
 
 use anyhow::{Context, Result, bail};
 use clap::Parser;
+use futures::StreamExt;
 use k8s_openapi_ext::authenticationv1::{TokenRequest, TokenRequestSpec};
 use k8s_openapi_ext::corev1::{Node, Pod, ServiceAccount};
 use kube::api::{ListParams, PostParams};
 use kube::{Api, Client as KubeClient, ResourceExt};
 use talos::TalosFactory;
 use tokio::fs;
+use tokio::io::{AsyncWriteExt, BufWriter};
 use tokio::{process::Command, time::sleep};
 use tracing::{Level, info, instrument};
 
@@ -57,6 +59,14 @@ enum Subcommand {
 
         #[arg(long, short)]
         namespace: String,
+    },
+    /// Build and uploader talos image to hetzner
+    UploadImage {
+        #[arg(long, short)]
+        version: String,
+
+        #[arg(long, short)]
+        customization_path: Option<PathBuf>,
     },
 }
 
@@ -186,6 +196,43 @@ async fn main() -> Result<()> {
             std::io::stdout()
                 .write_all(kubeconfig_yaml.as_str().as_bytes())
                 .unwrap();
+        }
+        Subcommand::UploadImage {
+            version,
+            customization_path,
+        } => {
+            let http = reqwest::Client::builder().use_rustls_tls().build()?;
+            let customization_path =
+                customization_path.unwrap_or_else(|| "talos-customization.yaml".into());
+            let customization = fs::read_to_string(&customization_path).await?;
+
+            let image_meta = factory.get_image(&version, customization).await?;
+            let image_id = std::str::from_utf8(&image_meta.id)?;
+            let url =
+                format!("https://factory.talos.dev/image/{image_id}/{version}/hcloud-amd64.raw.xz");
+
+            let out_path = std::env::temp_dir().join("talos-hcloud.raw.xz");
+            dbg!(&out_path);
+            let file = fs::File::create_new(&out_path).await?;
+            let mut writer = BufWriter::new(file);
+
+            let mut stream = http
+                .get(url)
+                .send()
+                .await?
+                .error_for_status()?
+                .bytes_stream();
+
+            while let Some(chunk) = stream.next().await {
+                let bytes = chunk?;
+                writer.write_all(&bytes).await?;
+            }
+
+            writer.flush().await?;
+
+            dbg!(out_path);
+
+            todo!()
         }
     }
 

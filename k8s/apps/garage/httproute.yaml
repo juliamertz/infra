@@ -35,6 +35,26 @@ spec:
       port: 3902
 
 ---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: merlijn-web
+spec:
+  parentRefs:
+  - name: shared
+    namespace: default
+  hostnames:
+  - preview.merlijnvoncken.nl
+  rules:
+  - filters:
+    - type: URLRewrite
+      urlRewrite:
+        hostname: merlijn-site.cdn.juliamertz.dev
+    backendRefs:
+    - name: garage
+      port: 3902
+
+---
 apiVersion: cert-vandal.io/v1
 kind: SANInjection
 metadata:
@@ -47,6 +67,7 @@ spec:
     - cdn.juliamertz.dev
     - nettenshop.cdn.juliamertz.dev
     - valnetten.preview.juliamertz.dev
+    - preview.merlijnvoncken.nl
 
 ---
 apiVersion: gateway.networking.k8s.io/v1
