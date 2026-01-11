@@ -16,7 +16,7 @@ spec:
           serviceAccountName: backup-sa
           containers:
             - name: backup
-              image: nixery.dev/arm64/shell/kubectl/awscli
+              image: nixery.dev/shell/kubectl/awscli
               env:
                 - name: POD_NAME
                   value: "valheim-server-0"
