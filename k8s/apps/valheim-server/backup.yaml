@@ -53,14 +53,14 @@ spec:
 
                   mkdir -p /world
 
-                  kubectl cp $POD_NAME:"$SOURCE_PATH/Julia's.db" /world/world.db
+                  kubectl cp -c valheim $POD_NAME:"$SOURCE_PATH/Julia's.db" /world/world.db
 
                   if [ ! -s /world/world.db ]; then
                     echo "ERROR: world.db is missing or empty"
                     exit 1
                   fi
 
-                  kubectl cp $POD_NAME:"$SOURCE_PATH/Julia's.fwl" /world/world.fwl
+                  kubectl cp -c valheim $POD_NAME:"$SOURCE_PATH/Julia's.fwl" /world/world.fwl
 
                   if [ ! -s /world/world.fwl ]; then
                     echo "ERROR: world.fwl is missing or empty"
