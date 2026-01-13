@@ -1,5 +1,5 @@
 ---
-apiVersion: headscale.juliamertz.dev/v1
+apiVersion: headscale.juliamertz.dev/v1alpha1
 kind: Headscale
 metadata:
   name: central
