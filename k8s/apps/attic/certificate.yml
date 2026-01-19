@@ -1,0 +1,10 @@
+apiVersion: cert-vandal.io/v1
+kind: SANInjection
+metadata:
+  name: attic-tls
+spec:
+  targetCertificate:
+    name: gateway-tls
+    namespace: default
+  hostnames:
+    - attic.juliamertz.dev
