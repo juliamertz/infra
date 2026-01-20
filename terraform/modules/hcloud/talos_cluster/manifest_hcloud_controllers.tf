@@ -40,7 +40,7 @@ resource "helm_release" "hcloud_controller" {
 
   repository = "https://charts.hetzner.cloud"
   chart      = "hcloud-cloud-controller-manager"
-  version    = "1.29.0"
+  version    = "1.29.1"
 
   values = [yamlencode({
     networking = {
