@@ -8,6 +8,7 @@ spec:
     namespace: default
   hostnames:
   - grafana.prod.juliamertz.dev
+  - grafana.juliamertz.dev
   rules:
   - backendRefs:
     - name: kube-prometheus-stack-grafana
@@ -24,3 +25,4 @@ spec:
     namespace: default
   hostnames:
     - grafana.prod.juliamertz.dev
+    - grafana.juliamertz.dev
