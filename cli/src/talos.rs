@@ -53,7 +53,7 @@ impl TalosFactory {
         let mut parsed: Vec<_> = versions
             .iter()
             .filter(|v| !(v.contains("alpha") || v.contains("beta") || v.contains("rc")))
-            .filter_map(|value| Version::from(&value))
+            .filter_map(|value| Version::from(value))
             .collect();
 
         parsed.sort_by(|a, b| a.compare(b).ord().unwrap_or(Ordering::Equal));
@@ -130,20 +130,20 @@ fn parse_json_object_stream<T: DeserializeOwned>(text: &str) -> Result<Vec<T>, s
     Ok(items)
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct MemberMeta {
     pub id: String,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct MemberSpec {
     pub addresses: Vec<Ipv4Addr>,
     pub hostname: String,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Clone, Copy, Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct NodeItem<Meta, Spec> {
     pub metadata: Meta,
@@ -153,14 +153,9 @@ pub struct NodeItem<Meta, Spec> {
 pub type Member = NodeItem<MemberMeta, MemberSpec>;
 
 impl Member {
-    // pub fn version(&self) -> Result<Version<'_>> {
-    //     let os = &self.spec.operating_system;
-    //     let (_, rhs) = os.split_once(" ").context("invalid talos os string")?;
-    //     rhs.strip_prefix("(")
-    //         .and_then(|v| v.strip_suffix(")"))
-    //         .and_then(Version::from)
-    //         .context("invalid talos version")
-    // }
+    pub fn hostname(&self) -> &str {
+        &self.spec.hostname
+    }
 
     pub fn external_ip(&self) -> Option<&Ipv4Addr> {
         self.spec
@@ -169,6 +164,15 @@ impl Member {
             .rev()
             .find(|addr| !addr.is_private())
     }
+
+    // pub fn version(&self) -> Result<Version<'_>> {
+    //     let os = &self.spec.operating_system;
+    //     let (_, rhs) = os.split_once(" ").context("invalid talos os string")?;
+    //     rhs.strip_prefix("(")
+    //         .and_then(|v| v.strip_suffix(")"))
+    //         .and_then(Version::from)
+    //         .context("invalid talos version")
+    // }
 }
 
 pub mod kubeconfig {
@@ -367,7 +371,7 @@ impl TalosCtl {
             .stdout(Stdio::piped())
             .arg("upgrade")
             .arg("--nodes")
-            .arg(&ip.to_string())
+            .arg(ip.to_string())
             .arg("--image")
             .arg(&image.tag)
             .bool_flag("--preserve", params.preserve)

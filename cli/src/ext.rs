@@ -34,3 +34,22 @@ impl DurationExt for std::time::Duration {
         DurationExt::from_days(7 * weeks)
     }
 }
+
+pub trait NodeApiExt {
+    async fn is_ready(&self, name: &str) -> bool;
+}
+
+impl NodeApiExt for kube::Api<k8s_openapi::api::core::v1::Node> {
+    async fn is_ready(&self, name: &str) -> bool {
+        self.get_status(name)
+            .await
+            .map(|node| {
+                node.status
+                    .and_then(|node| node.conditions)
+                    .unwrap_or_default()
+                    .iter()
+                    .any(|cond| cond.type_ == "Ready" && cond.status == "True")
+            })
+            .unwrap_or_default()
+    }
+}

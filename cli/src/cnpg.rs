@@ -3,7 +3,7 @@ use chrono::Utc;
 use k8s_openapi_ext::{corev1::Pod, metav1::Condition};
 use kube::{
     Api, Client, CustomResource, ResourceExt,
-    api::{Patch, PatchParams},
+    api::{ListParams, Patch, PatchParams},
 };
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
@@ -42,6 +42,13 @@ pub struct ClusterStatus {
     pub ready_instances: Option<u32>,
 }
 
+#[derive(Debug)]
+pub struct InstancePlacement {
+    pub node_name: String,
+    pub is_primary: bool,
+    pub instance: u32,
+}
+
 impl Cluster {
     const PHASE_SWITCHOVER: &str = "Switchover in progress";
 
@@ -58,14 +65,45 @@ impl Cluster {
                 .clone()
                 .unwrap_or_default()
                 .iter()
-                .find(|ref cond| cond.reason == "ClusterIsReady" && cond.status == "True")
-                .is_some()
+                .any(|cond| cond.reason == "ClusterIsReady" && cond.status == "True")
+    }
+
+    pub async fn get_layout(&self, client: Client) -> Result<Vec<InstancePlacement>> {
+        let name = self.name_any();
+        let namespace = self.namespace().unwrap();
+
+        let pods = Api::<Pod>::namespaced(client, &namespace);
+        let label_selector = format!("cnpg.io/cluster={name}");
+        let list_params = ListParams::default().labels(&label_selector);
+
+        pods.list(&list_params)
+            .await?
+            .into_iter()
+            .map(|pod| {
+                let spec = pod.spec.as_ref().unwrap();
+                Ok::<_, anyhow::Error>(InstancePlacement {
+                    node_name: spec.node_name.clone().unwrap_or_default(),
+                    is_primary: pod
+                        .labels()
+                        .get("cnpg.io/instanceRole")
+                        .context("expected 'cnpg.io/instanceRole' label")?
+                        == "primary",
+                    instance: pod
+                        .annotations()
+                        .get("cnpg.io/nodeSerial")
+                        .context("expected 'cnpg.io/nodeSerial' annotation")?
+                        .parse()
+                        .context("nodeSerial is not a valid integer")?,
+                })
+            })
+            .collect()
     }
 
     #[instrument(skip(self, client), fields(name = self.name_any(), namespace = self.namespace()), err(Debug))]
-    async fn switchover(&self, client: Client, target: &str) -> Result<()> {
+    async fn switchover(&self, client: Client, instance: u32) -> Result<()> {
         let name = self.name_any();
         let namespace = self.namespace().unwrap_or_else(|| "default".into());
+        let target = format!("{name}-{instance}");
 
         tracing::info!("starting switchover");
 
@@ -73,14 +111,14 @@ impl Cluster {
             .status
             .as_ref()
             .and_then(|status| status.target_primary.as_ref())
-            && target_primary.as_str() == target
+            && target_primary.ends_with(&instance.to_string())
         {
             info!("already the primary node in the cluster");
             return Ok(());
         }
 
         let pods = Api::<Pod>::namespaced(client.clone(), &namespace);
-        if pods.get(target).await.is_err() {
+        if pods.get(&target).await.is_err() {
             bail!("new primary node not found in namespace")
         }
 
@@ -111,18 +149,20 @@ impl Cluster {
 
     #[instrument(skip(self, client), fields(namespace = self.namespace()), err(Debug))]
     pub async fn switchover_any(&self, client: Client) -> Result<()> {
-        let status = self.status.clone().unwrap_or_default();
-        let mut victims = status
-            .instance_names
-            .unwrap_or_default()
-            .into_iter()
-            .filter(|name| name != &status.current_primary.clone().unwrap_or_default())
-            .collect::<Vec<_>>();
+        let layout = self.get_layout(client.clone()).await?;
+
+        let primary = layout
+            .iter()
+            .find(|instance| instance.is_primary)
+            .context("no primary instance found for cluster")?;
+        let mut victims = layout
+            .iter()
+            .filter(|instance| !instance.is_primary && instance.node_name != primary.node_name);
 
         let victim = victims
-            .pop()
+            .next()
             .context("unable to switchover, no victims found")?;
 
-        self.switchover(client, &victim).await
+        self.switchover(client, victim.instance).await
     }
 }
