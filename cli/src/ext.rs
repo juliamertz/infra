@@ -1,3 +1,4 @@
+use anyhow::{Context, Result};
 use std::ffi::OsStr;
 
 pub trait CommandExt {
@@ -36,20 +37,34 @@ impl DurationExt for std::time::Duration {
 }
 
 pub trait NodeApiExt {
-    async fn is_ready(&self, name: &str) -> bool;
+    async fn is_ready(&self, name: &str) -> Result<bool>;
+    async fn is_cordoned(&self, name: &str) -> Result<bool>;
 }
 
 impl NodeApiExt for kube::Api<k8s_openapi::api::core::v1::Node> {
-    async fn is_ready(&self, name: &str) -> bool {
-        self.get_status(name)
-            .await
-            .map(|node| {
-                node.status
-                    .and_then(|node| node.conditions)
-                    .unwrap_or_default()
-                    .iter()
-                    .any(|cond| cond.type_ == "Ready" && cond.status == "True")
-            })
-            .unwrap_or_default()
+    async fn is_ready(&self, name: &str) -> Result<bool> {
+        let node = self.get(name).await?;
+        let conditions = node
+            .status
+            .context("missing node status")?
+            .conditions
+            .unwrap_or_default();
+
+        Ok(conditions
+            .into_iter()
+            .any(|cond| cond.type_ == "Ready" && cond.status == "True"))
+    }
+
+    async fn is_cordoned(&self, name: &str) -> Result<bool> {
+        let node = self.get(name).await?;
+        let taints = node
+            .spec
+            .context("missing node spec")?
+            .taints
+            .unwrap_or_default();
+
+        Ok(taints.into_iter().any(|taint| {
+            taint.key == "node.kubernetes.io/unschedulable" && taint.effect == "NoSchedule"
+        }))
     }
 }

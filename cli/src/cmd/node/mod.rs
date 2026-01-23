@@ -1,9 +1,9 @@
 use anyhow::{Context as _, Result};
 use clap::{Parser, Subcommand};
 
-mod drain;
-mod kick_dbs;
-mod upgrade;
+pub mod drain;
+pub mod kick_dbs;
+pub mod upgrade;
 
 #[derive(Parser, Debug)]
 pub struct Opts {

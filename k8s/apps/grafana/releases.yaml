@@ -51,12 +51,16 @@ spec:
            isDefault: false
     prometheus:
       prometheusSpec:
+        scrapeClasses: [PodMonitor, ServiceMonitor, Probe]
         podMonitorSelectorNilUsesHelmValues: false
         serviceMonitorSelectorNilUsesHelmValues: false
+        probeSelectorNilUsesHelmValues: false
         podMonitorSelector: {}
         podMonitorNamespaceSelector: {}
+        probeSelector: {}
         serviceMonitorSelector: {}
         serviceMonitorNamespaceSelector: {}
+        probeNamespaceSelector: {}
         storageSpec:
           volumeClaimTemplate:
             spec:
@@ -105,3 +109,35 @@ spec:
           operator: Equal
           value: autoscaler-node
           effect: NoExecute
+
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: blackbox-exporter
+spec:
+  interval: 5m
+  chart:
+    spec:
+      chart: prometheus-blackbox-exporter
+      version: 11.7.0
+      sourceRef:
+        kind: HelmRepository
+        name: prometheus-community
+        namespace: monitoring
+      interval: 1m
+  values:
+    fullnameOverride: blackbox-exporter
+    releaseLabel: true
+    serviceMonitor: { enabled: true }
+    replicas: 2
+    podDisruptionBudget: { maxUnavailable: 1 }
+    config:
+      modules:
+        http_2xx:
+          prober: http
+          timeout: 5s
+          http:
+            valid_http_versions: ["HTTP/1.1", "HTTP/2.0"]
+            follow_redirects: true
+            preferred_ip_protocol: "ip4"

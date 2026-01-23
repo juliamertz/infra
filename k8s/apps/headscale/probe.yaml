@@ -1,0 +1,15 @@
+apiVersion: monitoring.coreos.com/v1
+kind: Probe
+metadata:
+  name: headscale-probe
+  labels:
+    release: kube-prometheus-stack
+spec:
+  interval: 30s
+  module: http_2xx
+  prober:
+    url: blackbox-exporter.monitoring:9115
+  targets:
+    staticConfig:
+      static:
+        - https://headscale.juliamertz.nl:30443/health

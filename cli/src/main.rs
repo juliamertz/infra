@@ -22,6 +22,7 @@ struct Opts {
 #[derive(Debug, clap::Subcommand)]
 enum Subcommand {
     Node(cmd::node::Opts),
+    UpgradeAll(cmd::upgrade_all::Opts),
     GetKubeconfig(cmd::get_kubeconfig::Opts),
     // Build and uploader talos image to hetzner
     // UploadImage {
@@ -64,6 +65,7 @@ async fn main() -> Result<()> {
 
     match opts.command {
         Subcommand::Node(opts) => cmd::node::handle(ctx, opts).await,
+        Subcommand::UpgradeAll(opts) => cmd::upgrade_all::handle(ctx, opts).await,
         Subcommand::GetKubeconfig(opts) => cmd::get_kubeconfig::handle(ctx, opts).await,
     }
 }

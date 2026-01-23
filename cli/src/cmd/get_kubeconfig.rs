@@ -17,6 +17,8 @@ use crate::{
 /// Get kubeconfig for service account
 #[derive(Debug, Parser)]
 pub struct Opts {
+    // TODO: the node that is used shouldn't really matter for this command
+    // remove this arg
     #[arg(long, short)]
     node_name: String,
 

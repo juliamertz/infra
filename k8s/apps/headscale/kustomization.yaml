@@ -9,4 +9,5 @@ resources:
   - acl.yaml
   - headscale.yaml
   - monitoring.yaml
+  - probe.yaml
   # - derp.yaml
