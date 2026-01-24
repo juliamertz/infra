@@ -25,6 +25,7 @@ struct SchematicsResponse {
 pub struct Image {
     pub id: [u8; 64],
     pub tag: String,
+    pub version: String,
 }
 
 impl TalosFactory {
@@ -81,6 +82,7 @@ impl TalosFactory {
 
         Ok(Image {
             tag,
+            version: version.to_string(),
             id: id.as_bytes().try_into().expect("valid schematic id"),
         })
     }

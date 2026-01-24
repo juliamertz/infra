@@ -6,9 +6,10 @@ use clap::Parser;
 use k8s_openapi_ext::corev1::Node;
 use kube::Api;
 use tokio::{fs, time::sleep};
-use tracing::info;
+use tracing::{info, instrument};
 
 use crate::ext::NodeApiExt;
+use crate::talos::Member;
 use crate::{Context, talos};
 
 #[derive(Debug, Parser)]
@@ -21,7 +22,7 @@ pub struct VersionOpt {
 }
 
 impl VersionOpt {
-    async fn resolved(&self, ctx: &Context) -> Result<String> {
+    pub async fn resolved(&self, ctx: &Context) -> Result<String> {
         if self.latest && self.version.is_some() {
             bail!("'latest' and 'version' flags are mutually exclusive");
         } else if self.latest {
@@ -40,40 +41,42 @@ pub struct Opts {
     #[clap(flatten)]
     version: VersionOpt,
 
-    #[arg(long, short)]
-    customization_path: Option<PathBuf>,
+    #[arg(long, short, default_value = "talos-customization.yaml")]
+    customization_path: PathBuf,
 }
 
 pub async fn handle(ctx: Context, opts: Opts, node_name: &str) -> Result<()> {
-    let customization = fs::read_to_string(
-        opts.customization_path
-            .unwrap_or_else(|| "talos-customization.yaml".into()),
-    )
-    .await?;
-
-    let version = opts.version.resolved(&ctx).await?;
+    let customization = fs::read_to_string(opts.customization_path).await?;
     let member = ctx.talosctl.member(node_name).context("node not found")?;
-    let node_name = &member.hostname();
-    let node_ip = member
-        .external_ip()
-        .context("cannot find external ip for member")?;
+    let version = opts.version.resolved(&ctx).await?;
     let image = ctx.factory.get_image(&version, customization).await?;
-
-    info!("Upgrading {node_name} ({node_ip}) to version {version}");
-
-    let nodes = Api::<Node>::all(ctx.kube);
-    let is_cordoned = nodes.is_cordoned(node_name).await?;
-
     let params = talos::UpgradeParams::default();
-    ctx.talosctl
-        .upgrade_member(node_ip, &image, &params)
-        .await?;
+
+    do_upgrade(&ctx, member, &image, &params).await
+}
+
+#[instrument(skip_all, err(Debug), fields(member = member.hostname(), version = &image.version))]
+pub async fn do_upgrade(
+    ctx: &Context,
+    member: &Member,
+    image: &talos::Image,
+    params: &talos::UpgradeParams,
+) -> Result<()> {
+    let nodes = Api::<Node>::all(ctx.kube.clone());
+    let name = member.hostname();
+    let ip = member
+        .external_ip()
+        .context("no external ip found for member")?;
+
+    let is_cordoned = nodes.is_cordoned(name).await?;
+
+    ctx.talosctl.upgrade_member(ip, &image, &params).await?;
 
     loop {
-        if nodes.is_ready(node_name).await? {
+        if nodes.is_ready(name).await? {
             info!("node ready");
             if !is_cordoned {
-                nodes.uncordon(node_name).await?;
+                nodes.uncordon(name).await?;
             };
 
             break Ok(());

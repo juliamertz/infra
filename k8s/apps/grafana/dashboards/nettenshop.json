@@ -174,13 +174,15 @@
           "custom": {
             "axisPlacement": "auto",
             "axisWidth": 0,
-            "fillOpacity": 58,
+            "fillOpacity": 70,
             "hideFrom": {
               "legend": false,
               "tooltip": false,
               "viz": false
             },
-            "lineWidth": 1
+            "insertNulls": false,
+            "lineWidth": 0,
+            "spanNulls": false
           },
           "mappings": [],
           "thresholds": {
@@ -211,14 +213,15 @@
       },
       "id": 10,
       "options": {
-        "colWidth": 0.95,
+        "alignValue": "left",
         "legend": {
           "displayMode": "list",
           "placement": "bottom",
-          "showLegend": false
+          "showLegend": true
         },
-        "rowHeight": 0.95,
-        "showValue": "auto",
+        "mergeValues": true,
+        "rowHeight": 0.9,
+        "showValue": "never",
         "tooltip": {
           "hideZeros": false,
           "mode": "single",
@@ -238,7 +241,7 @@
       ],
       "title": "Uptime",
       "transparent": true,
-      "type": "status-history"
+      "type": "state-timeline"
     },
     {
       "datasource": {
@@ -983,7 +986,7 @@
           },
           "direction": "backward",
           "editorMode": "builder",
-          "expr": "{namespace=\"default\", app=\"envoy\"} |= `` | json | route_name =~ `httproute/lightspeed-dhl-adapter/.*` | label_format level=`{{if ge .response_code \"400\"}}ERROR{{else}}INFO{{end}}`",
+          "expr": "{namespace=\"default\", app=\"envoy\"} |= `` | json | route_name =~ `httproute/lightspeed-dhl-adapter/.*` | user_agent !~ `Blackbox-Exporter\\/\\d+\\.\\d+.\\d+` | label_format level=`{{if ge .response_code \"400\"}}ERROR{{else}}INFO{{end}}`",
           "queryType": "range",
           "refId": "A"
         }
@@ -1290,5 +1293,5 @@
   "timezone": "browser",
   "title": "Nettenshop",
   "uid": "7e69d5c2-2d35-40ce-b52b-0b5c514cc8c8",
-  "version": 3
+  "version": 5
 }

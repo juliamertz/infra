@@ -18,51 +18,52 @@ spec:
         headscale.juliamertz.dev/tailscale-auth-secret: tailscale-agent-auth
     spec:
       containers:
-      - name: nginx
-        image: nginx:latest
+      - name: caddy
+        image: caddy:latest
         command: ["sh", "-c"]
         args:
         - |
-          cat <<'EOF' > /etc/nginx/nginx.conf
-          events {
-              worker_connections 1024;
-          }
-          http {
-              resolver 100.100.100.100 valid=10s;
-
-              server {
-                  listen 80;
-                  server_name hass.juliamertz.dev hass.juliamertz.nl;
-                  location / {
-                      set $upstream_hass http://hydra.headscale.local:8123;
-                      proxy_pass $upstream_hass;
-                      proxy_http_version 1.1;
-                      proxy_set_header Host $host;
-                      proxy_set_header X-Real-IP $remote_addr;
-                      proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-                      proxy_set_header X-Forwarded-Proto $scheme;
-                      proxy_set_header Upgrade $http_upgrade;
-                      proxy_set_header Connection "upgrade";
+          cat <<'EOF' > /etc/caddy/Caddyfile
+          {
+              auto_https off
+              servers {
+                  timeouts {
+                      read_body 0
+                      read_header 30s
+                      write 0
+                      idle 5m
                   }
               }
-              server {
-                  listen 80;
-                  server_name watch.juliamertz.dev watch.juliamertz.nl;
-                  location / {
-                      set $upstream_watch http://hydra.headscale.local:8096;
-                      proxy_pass $upstream_watch;
-                      proxy_http_version 1.1;
-                      proxy_set_header Host $host;
-                      proxy_set_header X-Real-IP $remote_addr;
-                      proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-                      proxy_set_header X-Forwarded-Proto $scheme;
-                      proxy_set_header Upgrade $http_upgrade;
-                      proxy_set_header Connection "upgrade";
+          }
+
+          http://hass.juliamertz.dev, http://hass.juliamertz.nl {
+              reverse_proxy http://hydra.headscale.local:8123 {
+                  header_up Host {host}
+                  header_up X-Real-IP {remote_host}
+                  header_up X-Forwarded-For {remote_host}
+                  header_up X-Forwarded-Proto {scheme}
+              }
+          }
+
+          http://watch.juliamertz.dev, http://watch.juliamertz.nl {
+              request_body {
+                  max_size 0
+              }
+              reverse_proxy http://hydra.headscale.local:8096 {
+                  transport http {
+                      response_header_timeout 0
+                      read_timeout 0
+                      write_timeout 0
                   }
+                  flush_interval -1
+                  header_up Host {host}
+                  header_up X-Real-IP {remote_host}
+                  header_up X-Forwarded-For {remote_host}
+                  header_up X-Forwarded-Proto {scheme}
               }
           }
           EOF
-          nginx -g 'daemon off;'
+          caddy run --config /etc/caddy/Caddyfile
         ports:
         - containerPort: 80
 
@@ -155,4 +156,3 @@ spec:
         - Remote-Groups
         - Remote-Name
         - Remote-Email
-
