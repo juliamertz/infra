@@ -1,24 +1,8 @@
-# apiVersion: v1
-# kind: ConfigMap
-# metadata:
-#   name: envoy-lua-extension
-# data:
-#   lua: |
-#     function envoy_on_request(request_handle)
-#       local ua = request_handle:headers():get("user-agent") or ""
-#       if string.find(ua, "AhrefsBot") then
-#         request_handle:respond({[":status"] = "403"}, "Forbidden")
-#       end
-#     end
-#     function envoy_on_response(response_handle)
-#       response_handle:headers():add("server", "envoy")
-#     end
-    
 ---
 apiVersion: gateway.envoyproxy.io/v1alpha1
 kind: EnvoyExtensionPolicy
 metadata:
-  name: lua-inline-test
+  name: envoy-lua-extension
 spec:
   targetRefs:
   - group: gateway.networking.k8s.io
