@@ -11,6 +11,7 @@ resources:
   - namespace.yaml
   - releases.yaml
   - httproute.yaml
+  - securitypolicy.yaml
   - alertmanager-discord.yaml
 
 configMapGenerator:

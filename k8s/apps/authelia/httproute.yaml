@@ -3,7 +3,6 @@ apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
 metadata:
   name: authelia
-  namespace: authelia
 spec:
   parentRefs:
     - name: shared
@@ -18,6 +17,16 @@ spec:
       backendRefs:
         - name: authelia
           port: 80
+    - backendRefs:
+        - group: ""
+          kind: Service
+          name: theme-park
+          namespace: theme-park
+          port: 80
+      matches:
+        - path:
+            type: PathPrefix
+            value: /themepark
 
 ---
 apiVersion: cert-vandal.io/v1
@@ -30,3 +39,33 @@ spec:
     namespace: default
   hostnames:
     - auth.juliamertz.dev
+
+---
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: EnvoyExtensionPolicy
+metadata:
+  name: inject-css
+spec:
+  targetRefs:
+    - group: gateway.networking.k8s.io
+      kind: HTTPRoute
+      name: authelia
+  lua:
+    - type: Inline
+      inline: |
+        local theme_url = '/themepark/css/base/authelia/rose-pine-moon.css'
+        local css_link = '<link rel="stylesheet" type="text/css" href="' .. theme_url .. '">'
+
+        function envoy_on_response(res)
+          local content_type = res:headers():get("content-type") or "none"
+
+          if string.match(content_type, "text/html") then
+            local body = res:body()
+            if body then
+              local original = body:getBytes(0, body:length())
+              local modified = string.gsub(original, "</head>", css_link .. "</head>")
+              body:setBytes(modified)
+              res:headers():replace("content-length", tostring(#modified))
+            end
+          end
+        end
