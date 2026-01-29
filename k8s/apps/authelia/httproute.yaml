@@ -9,6 +9,8 @@ spec:
       namespace: default
   hostnames:
     - auth.juliamertz.dev
+    - auth.merlijnvoncken.nl
+    - auth.merlijnvoncken.com
   rules:
     - matches:
         - path:
@@ -39,6 +41,8 @@ spec:
     namespace: default
   hostnames:
     - auth.juliamertz.dev
+    - auth.merlijnvoncken.nl
+    - auth.merlijnvoncken.com
 
 ---
 apiVersion: gateway.envoyproxy.io/v1alpha1
