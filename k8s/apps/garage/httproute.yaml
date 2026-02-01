@@ -4,15 +4,15 @@ metadata:
   name: garage-web
 spec:
   parentRefs:
-  - name: shared
-    namespace: default
+    - name: shared
+      namespace: default
   hostnames:
-  - cdn.juliamertz.dev
-  - nettenshop.cdn.juliamertz.dev
+    - cdn.juliamertz.dev
+    - nettenshop.cdn.juliamertz.dev
   rules:
-  - backendRefs:
-    - name: garage
-      port: 3902
+    - backendRefs:
+        - name: garage
+          port: 3902
 
 ---
 apiVersion: gateway.networking.k8s.io/v1
@@ -21,18 +21,22 @@ metadata:
   name: valnetten-web
 spec:
   parentRefs:
-  - name: shared
-    namespace: default
+    - name: shared
+      namespace: default
   hostnames:
-  - valnetten.preview.juliamertz.dev
+    - valnetten.preview.juliamertz.dev
   rules:
-  - filters:
-    - type: URLRewrite
-      urlRewrite:
-        hostname: valnetten.cdn.juliamertz.dev
-    backendRefs:
-    - name: garage
-      port: 3902
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      filters:
+        - type: URLRewrite
+          urlRewrite:
+            hostname: valnetten.cdn.juliamertz.dev
+      backendRefs:
+        - name: garage
+          port: 3902
 
 ---
 apiVersion: gateway.networking.k8s.io/v1
@@ -41,18 +45,33 @@ metadata:
   name: merlijn-web
 spec:
   parentRefs:
-  - name: shared
-    namespace: default
+    - name: shared
+      namespace: default
   hostnames:
-  - preview.merlijnvoncken.nl
+    - preview.merlijnvoncken.nl
   rules:
-  - filters:
-    - type: URLRewrite
-      urlRewrite:
-        hostname: merlijn-site.cdn.juliamertz.dev
-    backendRefs:
-    - name: garage
-      port: 3902
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      filters:
+        - type: URLRewrite
+          urlRewrite:
+            hostname: merlijn-site.cdn.juliamertz.dev
+      backendRefs:
+        - name: garage
+          port: 3902
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /admin
+      filters:
+        - type: RequestRedirect
+          requestRedirect:
+            path:
+              type: ReplaceFullPath
+              replaceFullPath: /
+            statusCode: 302
 
 ---
 apiVersion: cert-vandal.io/v1
@@ -76,14 +95,14 @@ metadata:
   name: garage-api
 spec:
   parentRefs:
-  - name: shared
-    namespace: default
+    - name: shared
+      namespace: default
   hostnames:
-  - s3.juliamertz.dev
+    - s3.juliamertz.dev
   rules:
-  - backendRefs:
-    - name: garage
-      port: 3900
+    - backendRefs:
+        - name: garage
+          port: 3900
 
 ---
 apiVersion: cert-vandal.io/v1
