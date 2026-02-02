@@ -31,6 +31,10 @@ locals {
             },
             var.kubelet_extra_args
           )
+          extraConfig = {
+            imageGCHighThresholdPercent = 60
+            imageGCLowThresholdPercent = 50
+          }
           nodeIP = {
             validSubnets = [
               local.node_ipv4_cidr
