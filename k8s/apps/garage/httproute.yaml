@@ -61,17 +61,17 @@ spec:
       backendRefs:
         - name: garage
           port: 3902
-    - matches:
-        - path:
-            type: PathPrefix
-            value: /admin
-      filters:
-        - type: RequestRedirect
-          requestRedirect:
-            path:
-              type: ReplaceFullPath
-              replaceFullPath: /
-            statusCode: 302
+    # - matches:
+    #     - path:
+    #         type: PathPrefix
+    #         value: /admin
+    #   filters:
+    #     - type: RequestRedirect
+    #       requestRedirect:
+    #         path:
+    #           type: ReplaceFullPath
+    #           replaceFullPath: /
+    #         statusCode: 302
 
 ---
 apiVersion: cert-vandal.io/v1
