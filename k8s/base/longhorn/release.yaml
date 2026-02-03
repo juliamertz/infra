@@ -26,3 +26,7 @@ spec:
         - key: node-role.kubernetes.io/control-plane
           operator: Exists
           effect: NoSchedule
+    image:
+      longhorn:
+        instanceManager:
+          tag: v1.11.0-hotfix-1
