@@ -25,7 +25,7 @@ pub struct Opts {
     #[arg(long, short)]
     service_account: String,
 
-    #[arg(long, short)]
+    #[arg(long)]
     namespace: String,
 }
 
