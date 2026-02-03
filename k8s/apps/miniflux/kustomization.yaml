@@ -3,8 +3,10 @@ kind: Kustomization
 namespace: miniflux
 resources:
   - namespace.yaml
-  - deployment.yaml
   - database.yaml
+  - deployment.yaml
+  - service.yaml
+  - httproute.yaml
 images:
 - name: miniflux
   newName: miniflux/miniflux
