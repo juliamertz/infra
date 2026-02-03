@@ -1,0 +1,11 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: miniflux
+resources:
+  - namespace.yaml
+  - deployment.yaml
+  - database.yaml
+images:
+- name: miniflux
+  newName: miniflux/miniflux
+  newTag: 2.2.16-distroless@sha256:82af042befc298b89cc4488910ec8bead3632a1070de7b72ee6a117df41b71f3
