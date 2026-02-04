@@ -28,7 +28,7 @@ locals {
       index               = i
       name                = "${local.cluster_prefix}worker-${i + 1}"
       server_type         = var.worker_server_type
-      image_id            = data.hcloud_image.arm[0].id
+      image_id = substr(var.worker_server_type, 0, 3) == "cax" ? data.hcloud_image.arm[0].id : data.hcloud_image.x86[0].id
       ipv4_public         = local.worker_public_ipv4_list[i]
       ipv6_public         = var.enable_ipv6 ? local.worker_public_ipv6_list[i] : null
       ipv6_public_subnet  = var.enable_ipv6 ? local.worker_public_ipv6_subnet_list[i] : null
@@ -46,7 +46,7 @@ locals {
       index              = local.legacy_worker_count + i
       name               = "${local.cluster_prefix}worker-${local.legacy_worker_count + i + 1}"
       server_type        = worker.type
-      image_id           = data.hcloud_image.arm[0].id
+      image_id = substr(worker.type, 0, 3) == "cax" ? data.hcloud_image.arm[0].id : data.hcloud_image.x86[0].id
       ipv4_public        = local.worker_public_ipv4_list[local.legacy_worker_count + i]
       ipv6_public        = var.enable_ipv6 ? local.worker_public_ipv6_list[local.legacy_worker_count + i] : null
       ipv6_public_subnet = var.enable_ipv6 ? local.worker_public_ipv6_subnet_list[local.legacy_worker_count + i] : null
