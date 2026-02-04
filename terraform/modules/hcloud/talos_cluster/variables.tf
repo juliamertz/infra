@@ -230,7 +230,8 @@ variable "worker_server_type" {
       "cx11", "cx21", "cx22", "cx31", "cx32", "cx41", "cx42", "cx51", "cx52",
       "cpx11", "cpx21", "cpx31", "cpx41", "cpx51",
       "cax11", "cax21", "cax31", "cax41",
-      "ccx13", "ccx23", "ccx33", "ccx43", "ccx53", "ccx63", "cx23", "cx33"
+      "ccx13", "ccx23", "ccx33", "ccx43", "ccx53", "ccx63",
+      "cx23", "cx33", "cx43", "cx53"
     ], var.worker_server_type)
     error_message = "Invalid worker server type."
   }
@@ -280,7 +281,8 @@ variable "worker_nodes" {
         "cx11", "cx21", "cx22", "cx31", "cx32", "cx41", "cx42", "cx51", "cx52",
         "cpx11", "cpx21", "cpx31", "cpx41", "cpx51",
         "cax11", "cax21", "cax31", "cax41",
-        "ccx13", "ccx23", "ccx33", "ccx43", "ccx53", "ccx63", "cx23", "cx33"
+        "ccx13", "ccx23", "ccx33", "ccx43", "ccx53", "ccx63",
+        "cx23", "cx33", "cx43", "cx53"
       ], node.type)
     ])
     error_message = "Invalid worker server type in worker_nodes."
