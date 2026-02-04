@@ -40,7 +40,10 @@ module "production_k8s" {
     { type = "cx33" },
   ]
 
-  worker_nodes = []
+  worker_nodes = [
+    # { type = "cx43" },
+    # { type = "cx33" },
+  ]
 
   network_ipv4_cidr = "10.0.0.0/16"
   node_ipv4_cidr    = "10.0.1.0/24"
