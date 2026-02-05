@@ -15,3 +15,5 @@ spec:
     - action: accept
       src: ['kubernetes@']
       dst: ['homelab@:8123,8096']
+  # tagOwners:
+  #   tag:tailscale-sidecar: []

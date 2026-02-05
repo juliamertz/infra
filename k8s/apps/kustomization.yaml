@@ -3,3 +3,10 @@ kind: Kustomization
 resources:
   - grafana
   - headscale
+  - miniflux
+  - tailscale-agent
+  - theme-park
+  - garage
+  - chartmuseum
+  - authelia
+  - attic

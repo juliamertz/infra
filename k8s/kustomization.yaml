@@ -5,5 +5,5 @@ resources:
   - apps
   - gateway
   - routes.yaml
-  # - adsb-proxy.yaml
+  - adsb-proxy.yaml
   - api-server.yaml

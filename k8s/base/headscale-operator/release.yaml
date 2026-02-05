@@ -1,9 +1,9 @@
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: HelmRepository
 metadata:
-  name: juliamertz
+  name: headscale-operator
 spec:
-  interval: 30m
+  interval: 5m0s
   url: https://charts.juliamertz.dev
 
 ---
@@ -16,9 +16,11 @@ spec:
   chart:
     spec:
       chart: headscale-operator
-      version: v0.0.1
+      version: 0.0.2
       sourceRef:
         kind: HelmRepository
-        name: juliamertz
-      interval: 1m
-  values: {}
+        name: headscale-operator
+      interval: 5m
+  values:
+    crds:
+      install: false

@@ -43,6 +43,7 @@ spec:
           - 8.8.8.8
 
   deployment:
+    image: headscale/headscale:v0.28.0
     env:
       - name: HEADSCALE_DATABASE_TYPE
         value: postgres

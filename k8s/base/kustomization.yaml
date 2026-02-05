@@ -8,3 +8,4 @@ resources:
   - cloudnative-pg
   - longhorn
   - dragonfly-operator
+  - headscale-operator
