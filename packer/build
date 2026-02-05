@@ -1,0 +1,23 @@
+#!/bin/bash
+
+set -euo pipefail
+
+if [[ -z "${HCLOUD_TOKEN:-}" ]]; then
+    echo "Hetzner Cloud API token (HCLOUD_TOKEN) is not set."
+    read -s -r -p "Enter your HCLOUD_TOKEN: " hcloud_token
+    echo ""
+    if [[ -z "$hcloud_token" ]]; then
+        echo >&2 "Error: HCLOUD_TOKEN is required."
+        exit 1
+    fi
+
+    export HCLOUD_TOKEN="$hcloud_token"
+fi
+
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+
+cd "$SCRIPT_DIR"
+
+packer init .
+
+packer build .
