@@ -21,6 +21,8 @@ spec:
             - name: http
               containerPort: 8080
           env:
+            - name: BASE_URL
+              value: https://news.juliamertz.dev
             - name: CREATE_ADMIN
               value: "1"
             - name: RUN_MIGRATIONS
