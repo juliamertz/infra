@@ -33,6 +33,21 @@ spec:
       interval: 1m
   values: 
     grafana:
+      resources:
+        requests:
+          cpu: 25m
+          memory: 200Mi
+        limits:
+          cpu: 100m
+          memory: 512Mi
+      sidecar:
+        resources:
+          requests:
+            cpu: 10m
+            memory: 128Mi
+          limits:
+            cpu: 50m
+            memory: 256Mi
       admin:
         existingSecret: kube-prometheus-stack-grafana
         passwordKey: admin-password
@@ -49,8 +64,47 @@ spec:
            version: 1
            editable: true
            isDefault: false
+    prometheusOperator:
+      resources:
+        requests:
+          cpu: 10m
+          memory: 64Mi
+        limits:
+          cpu: 50m
+          memory: 256Mi
+      prometheusConfigReloader:
+        resources:
+          requests:
+            cpu: 10m
+            memory: 32Mi
+          limits:
+            cpu: 50m
+            memory: 64Mi
+    kube-state-metrics:
+      resources:
+        requests:
+          cpu: 10m
+          memory: 64Mi
+        limits:
+          cpu: 50m
+          memory: 256Mi
+    prometheus-node-exporter:
+      resources:
+        requests:
+          cpu: 15m
+          memory: 32Mi
+        limits:
+          cpu: 100m
+          memory: 128Mi
     prometheus:
       prometheusSpec:
+        resources:
+          requests:
+            cpu: 200m
+            memory: 512Mi
+          limits:
+            cpu: 500m
+            memory: 1Gi
         podMonitorSelectorNilUsesHelmValues: false
         serviceMonitorSelectorNilUsesHelmValues: false
         probeSelectorNilUsesHelmValues: false
@@ -70,6 +124,14 @@ spec:
                   storage: 15Gi
     alertmanager:
       enabled: true
+      alertmanagerSpec:
+        resources:
+          requests:
+            cpu: 15m
+            memory: 64Mi
+          limits:
+            cpu: 50m
+            memory: 128Mi
       config:
         route:
           group_by: ['alertname']
@@ -102,6 +164,13 @@ spec:
   values:
     loki:
       enabled: true
+      resources:
+        requests:
+          cpu: 15m
+          memory: 192Mi
+        limits:
+          cpu: 100m
+          memory: 512Mi
       persistence:
         enabled: true
         size: 5Gi
@@ -111,6 +180,13 @@ spec:
         limits_config:
           retention_period: 168h
     promtail:
+      resources:
+        requests:
+          cpu: 50m
+          memory: 128Mi
+        limits:
+          cpu: 200m
+          memory: 256Mi
       tolerations:
         - key: node.kubernetes.io/role
           operator: Equal
@@ -139,6 +215,13 @@ spec:
       interval: 1m
   values:
     fullnameOverride: blackbox-exporter
+    resources:
+      requests:
+        cpu: 10m
+        memory: 48Mi
+      limits:
+        cpu: 50m
+        memory: 128Mi
     releaseLabel: true
     serviceMonitor: { enabled: true }
     replicas: 2

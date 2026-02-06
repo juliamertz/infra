@@ -31,6 +31,16 @@ resource "helm_release" "cilium" {
       enabled = false
       type    = "wireguard"
     }
+    resources = {
+      requests = {
+        cpu = "500m"
+        memory = "512Mi"
+      }
+      limits = {
+        cpu = "1000m"
+        memory = "1Gi"
+      }
+    }
     securityContext = {
       capabilities = {
         ciliumAgent = [

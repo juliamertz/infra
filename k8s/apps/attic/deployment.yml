@@ -53,11 +53,11 @@ spec:
               subPath: server.toml
           resources:
             requests:
-              memory: "128Mi"
-              cpu: "10m"
+              cpu: 50m
+              memory: 64M
             limits:
-              memory: "1Gi"
-              cpu: "500m"
+              cpu: 50m
+              memory: 64M
           livenessProbe:
             httpGet:
               path: /

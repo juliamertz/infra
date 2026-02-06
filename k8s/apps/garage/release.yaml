@@ -40,3 +40,10 @@ spec:
         storageClass: longhorn-local
         size: 1Gi
         hostPath: /var/lib/garage/data
+    resources: 
+      requests:
+        cpu: 100m
+        memory: 512Mi
+      limits:
+        cpu: 100m
+        memory: 512Mi

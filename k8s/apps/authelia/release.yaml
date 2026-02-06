@@ -26,6 +26,13 @@ spec:
     pod:
       kind: Deployment
       replicas: 2
+      resources:
+        requests:
+          cpu: 20m
+          memory: 50Mi
+        limits:
+          cpu: 200m
+          memory: 500Mi
       extraVolumeMounts:
         - name: users-db
           mountPath: /config/users.yml
