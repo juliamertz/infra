@@ -26,3 +26,5 @@ spec:
         - Remote-Groups
         - Remote-Name
         - Remote-Email
+        - Location
+        - Set-Cookie
