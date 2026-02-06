@@ -35,3 +35,8 @@ variable "juliamertz_nl_zone_id" {
   type    = string
   default = "6848c25638c792b4251cc08c91676137"
 }
+
+variable "vertrouwdbouwen_com_zone_id" {
+  type    = string
+  default = "96716f73b11ff495e24cb213543f5d13"
+}
