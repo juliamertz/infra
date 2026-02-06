@@ -4,7 +4,7 @@ metadata:
   name: authelia-db
   namespace: authelia
 spec:
-  instances: 3
+  instances: 2
   primaryUpdateStrategy: unsupervised
   primaryUpdateMethod: switchover
   enableSuperuserAccess: false

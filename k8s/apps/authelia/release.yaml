@@ -24,6 +24,8 @@ spec:
         name: authelia
   values:
     pod:
+      kind: Deployment
+      replicas: 2
       extraVolumeMounts:
         - name: users-db
           mountPath: /config/users.yml
@@ -62,34 +64,25 @@ spec:
           path: /config/users.yml
 
       session:
+        name: authelia_session
+        same_site: lax
+        inactivity: 5m
+        expiration: 1h
+        remember_me: 1M
         cookies:
           - domain: juliamertz.dev
             subdomain: auth
             authelia_url: https://auth.juliamertz.dev
             default_redirection_url: https://hass.juliamertz.dev
-            name: authelia_session
-            same_site: lax
-            inactivity: 5m
-            expiration: 1h
-            remember_me: 1M
           - domain: merlijnvoncken.nl
             subdomain: auth
             authelia_url: https://auth.merlijnvoncken.nl
             default_redirection_url: https://admin.merlijnvoncken.nl
             name: authelia_session_nl
-            same_site: lax
-            inactivity: 5m
-            expiration: 1h
-            remember_me: 1M
           - domain: merlijnvoncken.com
             subdomain: auth
             authelia_url: https://auth.merlijnvoncken.com
             default_redirection_url: https://admin.merlijnvoncken.com
-            name: authelia_session_com
-            same_site: lax
-            inactivity: 5m
-            expiration: 1h
-            remember_me: 1M
         redis:
           enabled: true
           host: authelia-cache.authelia.svc.cluster.local
