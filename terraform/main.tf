@@ -102,43 +102,12 @@ module "juliamertz-dev-email" {
 }
 
 module "vertrouwdbouwen-resend" {
-  source       = "./modules/cloudflare/resend"
-  domain       = "vertrouwdbouwen.com"
-  domain_key   = "p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDHX1kTLc0k7CPGDU3L/e8/CA5RZDDDFGgOUbfasM9FLAzhAmAslVDIu4U/oYpEuKtiPZw9bojMKZHLH94z8YecNhTjXwu6Qxx2B/YHGBcn/mF1Pg21cA3sh2/L9XbNlOIC4eJsF7g/6aA4HJL2dpp2zQ4RsnrFkF3hAUdwGF8aNwIDAQAB"
+  source     = "./modules/cloudflare/resend"
+  domain     = "vertrouwdbouwen.com"
+  domain_key = "p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDHX1kTLc0k7CPGDU3L/e8/CA5RZDDDFGgOUbfasM9FLAzhAmAslVDIu4U/oYpEuKtiPZw9bojMKZHLH94z8YecNhTjXwu6Qxx2B/YHGBcn/mF1Pg21cA3sh2/L9XbNlOIC4eJsF7g/6aA4HJL2dpp2zQ4RsnrFkF3hAUdwGF8aNwIDAQAB"
 
   zone_id = var.vertrouwdbouwen_com_zone_id
   providers = {
     cloudflare = cloudflare
   }
 }
-
-# resource "hcloud_ssh_key" "julia" {
-#   name       = "ssh-key-julia"
-#   public_key = file("~/.ssh/id_ed25519.pub")
-# }
-
-# module "nixos_bastion" {
-#   source      = "./modules/hcloud/nixos_server"
-#   name        = "bastion"
-#   server_type = "cx23"
-#   datacenter  = "nbg1-dc3"
-#
-#   network_id  = module.production_k8s.hetzner_network_id
-#
-#   internal_ip = "10.0.1.1"
-#   public_ip   = true
-#
-#   nixos_channel   = "nixos-unstable"
-#   flake_path      = ".."
-#   flake_profile   = "bastion"
-#   build_on_target = true
-#
-#   ssh_keys        = [hcloud_ssh_key.julia.id]
-#   ssh_private_key = file("~/.ssh/id_ed25519")
-#   sops_age_key    = "~/.config/sops/age/keys.txt"
-#
-#   providers = {
-#     hcloud = hcloud.production
-#   }
-# }
-
