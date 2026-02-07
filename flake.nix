@@ -60,10 +60,32 @@
       manifest = k8s.config.kubernetes.result;
 
       renovateConfig = let
-        registryUrls =
+        helmRepos =
           k8s.config.kubernetes.generated.items
           |> builtins.filter (i: i.kind == "HelmRepository")
-          |> map (i: i.spec.url);
+          |> map (i: {
+            name = i.metadata.name;
+            url = i.spec.url;
+            isOci = (i.spec.type or null) == "oci";
+          });
+
+        mkMatchString = name:
+          "chart\\s*=\\s*\"(?<depName>[^\"]+)\";\\s*version\\s*=\\s*\"(?<currentValue>[^\"]+)\";\\s*sourceRef\\s*=\\s*\\{[^}]*name\\s*=\\s*\"${name}\"";
+
+        mkManager = repo:
+          if repo.isOci then {
+            customType = "regex";
+            managerFilePatterns = ["/^.*\\.nix$/"];
+            matchStrings = [(mkMatchString repo.name)];
+            datasourceTemplate = "docker";
+            packageNameTemplate = "${builtins.replaceStrings ["oci://"] [""] repo.url}/{{depName}}";
+          } else {
+            customType = "regex";
+            managerFilePatterns = ["/^.*\\.nix$/"];
+            matchStrings = [(mkMatchString repo.name)];
+            datasourceTemplate = "helm";
+            registryUrlTemplate = repo.url;
+          };
       in
         {
           "$schema" = "https://docs.renovatebot.com/renovate-schema.json";
@@ -81,17 +103,7 @@
               "/k8s/.+\\.yaml$/"
             ];
           };
-          customManagers =
-            map (registryUrlTemplate: {
-              customType = "regex";
-              managerFilePatterns = ["/^.*\\.nix$/"];
-              matchStrings = [
-                "chart\\s*=\\s*\"(?<depName>[^\"]+)\";\\s*version\\s*=\\s*\"(?<currentValue>[^\"]+)\";\\s*sourceRef\\s*=\\s*\\{[^}]*name\\s*=\\s*\"(?<registryName>[^\"]+)\""
-              ];
-              datasourceTemplate = "helm";
-              inherit registryUrlTemplate;
-            })
-            registryUrls;
+          customManagers = map mkManager helmRepos;
         }
         |> builtins.toJSON
         |> (text: pkgs.writeText "renovate" text);
