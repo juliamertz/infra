@@ -23,7 +23,7 @@ spec:
         namespace: kube-system
       interval: 1m
   values:
-    replicas: 3
+    replicas: 2
     args:
       - --kubelet-insecure-tls
       - --kubelet-preferred-address-types=InternalIP,ExternalIP,Hostname
