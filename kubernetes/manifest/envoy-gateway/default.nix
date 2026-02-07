@@ -22,7 +22,6 @@
     };
 
     resources.helmReleases.gateway-helm.spec = {
-      interval = "5m";
       chart.spec = {
         chart = "gateway-helm";
         version = "1.7.0";

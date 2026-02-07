@@ -26,7 +26,6 @@
     };
 
     resources.helmReleases.longhorn.spec = {
-      interval = "5m";
       chart.spec = {
         chart = "longhorn";
         version = "1.11.0";

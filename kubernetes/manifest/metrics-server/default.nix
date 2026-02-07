@@ -17,7 +17,6 @@
     };
 
     resources.helmReleases.metrics-server.spec = {
-      interval = "5m";
       chart.spec = {
         chart = "metrics-server";
         version = "3.13.0";

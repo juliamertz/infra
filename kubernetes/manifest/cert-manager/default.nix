@@ -20,7 +20,6 @@
     };
 
     resources.helmReleases.cert-manager.spec = {
-      interval = "5m";
       chart.spec = {
         chart = "cert-manager";
         version = "v1.19.3";

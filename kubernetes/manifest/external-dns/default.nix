@@ -19,7 +19,6 @@
     };
 
     resources.helmReleases.external-dns.spec = {
-      interval = "5m";
       chart.spec = {
         chart = "external-dns";
         version = "1.20.0";

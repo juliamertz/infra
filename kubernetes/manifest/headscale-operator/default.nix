@@ -15,12 +15,10 @@
     resources.namespaces.headscale-operator = {};
 
     resources.helmRepositories.headscale-operator.spec = {
-      interval = "5m";
       url = "https://charts.juliamertz.dev";
     };
 
     resources.helmReleases.headscale-operator.spec = {
-      interval = "5m";
       chart.spec = {
         chart = "headscale-operator";
         version = "v0.0.3";

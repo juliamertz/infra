@@ -21,7 +21,6 @@
     };
 
     resources.helmReleases.dragonfly-operator.spec = {
-      interval = "5m";
       chart.spec = {
         chart = "dragonfly-operator";
         version = "v1.4.0";

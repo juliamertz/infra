@@ -19,7 +19,6 @@
     };
 
     resources.helmReleases.cloudnative-pg.spec = {
-      interval = "30m";
       chart.spec = {
         chart = "cloudnative-pg";
         version = "0.27.1";
@@ -34,7 +33,6 @@
     };
 
     resources.helmReleases.barman-plugin.spec = {
-      interval = "30m";
       chart.spec = {
         chart = "plugin-barman-cloud";
         version = "0.5.0";
