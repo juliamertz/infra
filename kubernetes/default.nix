@@ -7,10 +7,9 @@
   inherit (pkgs.stdenv.hostPlatform) system;
 
   output = kubenix.evalModules.${system} {
-    module = {...}: {
+    module = {kubenix, ...}: {
       imports = [
-        ./types.nix
-        ./cloudnative-pg
+        ./manifest
       ];
     };
   };

@@ -1,28 +1,52 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "customManagers": [
+    {
+      "customType": "regex",
+      "datasourceTemplate": "helm",
+      "managerFilePatterns": [
+        "/^.*\\.nix$/"
+      ],
+      "matchStrings": [
+        "chart\\s*=\\s*\"(?<depName>[^\"]+)\";\\s*version\\s*=\\s*\"(?<currentValue>[^\"]+)\";\\s*sourceRef\\s*=\\s*\\{[^}]*name\\s*=\\s*\"(?<registryName>[^\"]+)\""
+      ],
+      "registryUrlTemplate": "https://charts.jetstack.io"
+    },
+    {
+      "customType": "regex",
+      "datasourceTemplate": "helm",
+      "managerFilePatterns": [
+        "/^.*\\.nix$/"
+      ],
+      "matchStrings": [
+        "chart\\s*=\\s*\"(?<depName>[^\"]+)\";\\s*version\\s*=\\s*\"(?<currentValue>[^\"]+)\";\\s*sourceRef\\s*=\\s*\\{[^}]*name\\s*=\\s*\"(?<registryName>[^\"]+)\""
+      ],
+      "registryUrlTemplate": "https://cloudnative-pg.github.io/charts"
+    },
+    {
+      "customType": "regex",
+      "datasourceTemplate": "helm",
+      "managerFilePatterns": [
+        "/^.*\\.nix$/"
+      ],
+      "matchStrings": [
+        "chart\\s*=\\s*\"(?<depName>[^\"]+)\";\\s*version\\s*=\\s*\"(?<currentValue>[^\"]+)\";\\s*sourceRef\\s*=\\s*\\{[^}]*name\\s*=\\s*\"(?<registryName>[^\"]+)\""
+      ],
+      "registryUrlTemplate": "oci://ghcr.io/dragonflydb/dragonfly-operator/helm"
+    }
+  ],
   "extends": [
     "config:recommended"
   ],
-  "kubernetes": {
-    "managerFilePatterns": [
-      "/(^|/)kustomization\\.ya?ml$/"
-    ],
-    "pinDigests": true
-  },
   "flux": {
     "managerFilePatterns": [
       "/k8s/.+\\.yaml$/"
     ]
   },
-  "customManagers": [
-    {
-      "customType": "regex",
-      "fileMatch": ["^.*\\.nix$"],
-      "matchStrings": [
-        "chart\\s*=\\s*\"(?<depName>[^\"]+)\";\\s*version\\s*=\\s*\"(?<currentValue>[^\"]+)\";\\s*sourceRef\\s*=\\s*\\{[^}]*name\\s*=\\s*\"(?<registryName>[^\"]+)\""
-      ],
-      "datasourceTemplate": "helm",
-      "registryUrlTemplate": "https://cloudnative-pg.github.io/charts"
-    }
-  ]
+  "kubernetes": {
+    "managerFilePatterns": [
+      "/(^|/)kustomization\\.ya?ml$/"
+    ],
+    "pinDigests": true
+  }
 }
