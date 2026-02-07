@@ -2,5 +2,3 @@ apiVersion: v1
 kind: Namespace
 metadata:
   name: dragonfly-operator
-  labels:
-    goldilocks.fairwinds.com/enabled: "true"

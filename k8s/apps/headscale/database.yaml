@@ -4,12 +4,12 @@ kind: Cluster
 metadata:
   name: headscale-db
 spec:
-  instances: 3
+  instances: 2
   primaryUpdateStrategy: unsupervised
   primaryUpdateMethod: switchover
   enableSuperuserAccess: false
 
   storage:
-    size: 1Gi
+    size: 2Gi
     storageClass: longhorn-local
     resizeInUseVolumes: true

@@ -32,6 +32,18 @@ spec:
         namespace: monitoring
       interval: 1m
   values: 
+    kubeApiServer:
+      serviceMonitor:
+      metricRelabelings:
+        - sourceLabels: [__name__]
+          regex: 'apiserver_request_(duration|body_size|sli_duration)_seconds_bucket'
+          action: drop
+        - sourceLabels: [__name__]
+          regex: 'apiserver_response_sizes_bucket'
+          action: drop
+        - sourceLabels: [__name__]
+          regex: 'etcd_request_duration_seconds_bucket'
+          action: drop
     grafana:
       resources:
         requests:

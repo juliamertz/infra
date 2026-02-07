@@ -2,5 +2,3 @@ apiVersion: v1
 kind: Namespace
 metadata:
   name: headscale
-  labels:
-    goldilocks.fairwinds.com/enabled: "true"
