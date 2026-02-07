@@ -23,7 +23,7 @@
       interval = "5m";
       chart.spec = {
         chart = "cert-manager";
-        version = "1.19.0";
+        version = "v1.19.3";
         sourceRef = {
           kind = "HelmRepository";
           name = "jetstack";
