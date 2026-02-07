@@ -30,3 +30,22 @@ spec:
       longhorn:
         instanceManager:
           tag: v1.11.0-hotfix-1
+    longhornManager:
+      resources:
+        requests:
+          cpu: 50m
+          memory: 256Mi
+        limits:
+          cpu: 200m
+          memory: 768Mi
+    defaultSettings:
+      systemManagedCSIComponentsResourceLimits: >-
+        {
+          "csi-attacher": {"requests": {"cpu": "10m", "memory": "32Mi"}, "limits": {"cpu": "50m", "memory": "128Mi"}},
+          "csi-provisioner": {"requests": {"cpu": "10m", "memory": "32Mi"}, "limits": {"cpu": "50m", "memory": "128Mi"}},
+          "csi-resizer": {"requests": {"cpu": "10m", "memory": "32Mi"}, "limits": {"cpu": "50m", "memory": "96Mi"}},
+          "csi-snapshotter": {"requests": {"cpu": "10m", "memory": "32Mi"}, "limits": {"cpu": "50m", "memory": "96Mi"}},
+          "longhorn-csi-plugin": {"requests": {"cpu": "15m", "memory": "48Mi"}, "limits": {"cpu": "50m", "memory": "128Mi"}},
+          "node-driver-registrar": {"requests": {"cpu": "10m", "memory": "16Mi"}, "limits": {"cpu": "50m", "memory": "64Mi"}},
+          "longhorn-liveness-probe": {"requests": {"cpu": "10m", "memory": "32Mi"}, "limits": {"cpu": "50m", "memory": "64Mi"}}
+        }
