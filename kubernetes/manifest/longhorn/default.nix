@@ -85,7 +85,7 @@
       };
     };
 
-    resources.storageclasses.longhorn-local.spec = {
+    resources.storageClasses.longhorn-local = {
       provisioner = "driver.longhorn.io";
       allowVolumeExpansion = true;
       parameters = {

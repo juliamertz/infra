@@ -5,7 +5,11 @@
   kubenix,
   ...
 }: {
-  imports = with kubenix.modules; [submodules k8s];
+  imports = with kubenix.modules; [
+    submodules
+    k8s
+    ../../type
+  ];
 
   kubernetes = {
     namespace = "cnpg-system";
