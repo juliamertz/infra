@@ -1,20 +1,22 @@
 {
   config,
   kubenix,
+  crds,
   ...
 }: {
   imports = with kubenix.modules; [
     submodule
     k8s
-    ../../../type/gateway.nix
-    ../../../type/cert-vandal.nix
-    ../../../type/cloudnative-pg.nix
+    crds
   ];
 
-  config.kubernetes = {
+  kubernetes = {
     namespace = "miniflux";
 
-    resources.namespaces.miniflux = {};
+    resources.namespaces.miniflux.metadata.labels = {
+      "pod-security.kubernetes.io/warn" = "baseline";
+      "pod-security.kubernetes.io/warn-version" = "latest";
+    };
 
     resources.cnpgClusters.miniflux-db.spec = {
       instances = 1;
@@ -39,6 +41,11 @@
             {
               name = "miniflux";
               image = "miniflux/miniflux:2.2.16-distroless";
+              securityContext = {
+                allowPrivilegeEscalation = false;
+                capabilities.drop = ["ALL"];
+                seccompProfile.type = "RuntimeDefault";
+              };
               ports = [
                 {
                   name = "http";
@@ -138,7 +145,7 @@
     };
   };
 
-  config.submodule = {
+  submodule = {
     name = "miniflux";
     passthru.kubernetes.objects = config.kubernetes.objects;
   };

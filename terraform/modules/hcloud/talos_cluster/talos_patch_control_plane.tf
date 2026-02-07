@@ -33,7 +33,7 @@ locals {
           )
           extraConfig = {
             imageGCHighThresholdPercent = 60
-            imageGCLowThresholdPercent = 50
+            imageGCLowThresholdPercent  = 50
           }
           nodeIP = {
             validSubnets = [

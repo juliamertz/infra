@@ -1,16 +1,16 @@
 {
   config,
   kubenix,
+  crds,
   ...
 }: {
   imports = with kubenix.modules; [
     submodule
     k8s
-    ../../../type/fluxcd.nix
-    ../../../type/dragonfly-operator.nix
+    crds
   ];
 
-  config.kubernetes = {
+  kubernetes = {
     namespace = "dragonfly-operator";
 
     resources.namespaces.dragonfly-operator = {};
@@ -62,7 +62,7 @@
     };
   };
 
-  config.submodule = {
+  submodule = {
     name = "dragonfly-operator";
     passthru.kubernetes.objects = config.kubernetes.objects;
   };

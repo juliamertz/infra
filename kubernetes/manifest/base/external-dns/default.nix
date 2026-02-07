@@ -1,15 +1,16 @@
 {
   config,
   kubenix,
+  crds,
   ...
 }: {
   imports = with kubenix.modules; [
     submodule
     k8s
-    ../../../type/fluxcd.nix
+    crds
   ];
 
-  config.kubernetes = {
+  kubernetes = {
     namespace = "external-dns";
 
     resources.namespaces.external-dns = {};
@@ -65,7 +66,7 @@
     };
   };
 
-  config.submodule = {
+  submodule = {
     name = "external-dns";
     passthru.kubernetes.objects = config.kubernetes.objects;
   };

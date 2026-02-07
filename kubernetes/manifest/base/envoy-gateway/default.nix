@@ -1,14 +1,13 @@
 {
   config,
   kubenix,
+  crds,
   ...
 }: {
   imports = with kubenix.modules; [
     submodule
     k8s
-    ../../../type/fluxcd.nix
-    ../../../type/gateway.nix
-    ../../../type/dragonfly-operator.nix
+    crds
   ];
 
   config.kubernetes = {

@@ -1,17 +1,16 @@
 {
   config,
   kubenix,
+  crds,
   ...
 }: {
   imports = with kubenix.modules; [
     submodule
     k8s
-    ../../../type/fluxcd.nix
-    ../../../type/gateway.nix
-    ../../../type/cert-vandal.nix
+    crds
   ];
 
-  config.kubernetes = {
+  kubernetes = {
     namespace = "chartmuseum";
 
     resources.namespaces.chartmuseum = {};
@@ -126,7 +125,7 @@
     };
   };
 
-  config.submodule = {
+  submodule = {
     name = "chartmuseum";
     passthru.kubernetes.objects = config.kubernetes.objects;
   };

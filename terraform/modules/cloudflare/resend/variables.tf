@@ -19,17 +19,17 @@ variable "domain_key" {
 }
 
 variable "smtp_url" {
-  type = string
+  type    = string
   default = "feedback-smtp.eu-west-1.amazonses.com"
 }
 
 variable "spf" {
-  type = string
+  type    = string
   default = "v=spf1 include:amazonses.com ~all"
 }
 
 variable "dmarc" {
-  type = string
+  type    = string
   default = "v=DMARC1; p=none;"
 }
 

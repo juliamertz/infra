@@ -13,7 +13,7 @@
     crds
   ];
 
-  config.kubernetes = {
+  kubernetes = {
     namespace = "cnpg-system";
 
     objects = let
@@ -61,7 +61,7 @@
     };
   };
 
-  config.submodule = {
+  submodule = {
     name = "cloudnative-pg";
     passthru.kubernetes.objects = config.kubernetes.objects;
   };

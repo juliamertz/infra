@@ -6,6 +6,11 @@
   ...
 }: let
   modules = [
+    ./gateway
+    ./routes.nix
+    ./api-server.nix
+    ./barman.nix
+    ./identities.nix
     ./base/cert-manager
     ./base/cloudnative-pg
     ./base/dragonfly-operator
@@ -18,6 +23,14 @@
     ./apps/chartmuseum
     ./apps/miniflux
     ./apps/theme-park
+    ./apps/adsb-proxy
+    ./apps/attic
+    ./apps/authelia
+    ./apps/garage
+    ./apps/grafana
+    ./apps/headscale
+    ./apps/tailscale-agent
+    # ./apps/valheim-server
   ];
 in {
   imports = with kubenix.modules; [submodules k8s];
@@ -26,7 +39,7 @@ in {
     imports = modules;
     specialArgs = {inherit util crds;};
     instances =
-      lib.genAttrs (modules |> map baseNameOf) (name: let
+      lib.genAttrs (modules |> map baseNameOf |> map (lib.removeSuffix ".nix")) (name: let
       in {submodule = name;});
   };
 }

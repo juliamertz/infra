@@ -28,7 +28,7 @@
       symlinks = {
         mods = let
           serverMods = pkgs.linkFarmFromDrvs "mods" (
-            builtins.attrValues { }
+            builtins.attrValues {}
           );
 
           modpack = pkgs.fetchPackwizModpack {

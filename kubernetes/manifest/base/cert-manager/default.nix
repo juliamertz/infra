@@ -1,16 +1,16 @@
 {
   kubenix,
   config,
+  crds,
   ...
 }: {
   imports = with kubenix.modules; [
     submodule
     k8s
-    ../../../type/fluxcd.nix
-    ../../../type/cert-manager.nix
+    crds
   ];
 
-  config.kubernetes = {
+  kubernetes = {
     namespace = "cert-manager";
 
     resources.namespaces.cert-manager = {};
@@ -84,7 +84,7 @@
     };
   };
 
-  config.submodule = {
+  submodule = {
     name = "cert-manager";
     passthru.kubernetes.objects = config.kubernetes.objects;
   };

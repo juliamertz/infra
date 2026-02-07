@@ -42,17 +42,17 @@ resource "helm_release" "autoscaler" {
         nodeConfigs = {
           nodes-green = {
             cloudInit = data.talos_machine_configuration.autoscaler_node.machine_configuration
-            labels = local.autoscale_worker_labels
-            taints = local.autoscale_worker_taints
+            labels    = local.autoscale_worker_labels
+            taints    = local.autoscale_worker_taints
           }
           gameserver-node = {
             cloudInit = data.talos_machine_configuration.gameserver_node.machine_configuration
-            labels = local.gameserver_worker_labels
-            taints = local.gameserver_worker_taints
+            labels    = local.gameserver_worker_labels
+            taints    = local.gameserver_worker_taints
           }
         }
       }))
-      HCLOUD_NETWORK = hcloud_network.this.id
+      HCLOUD_NETWORK  = hcloud_network.this.id
       HCLOUD_FIREWALL = hcloud_firewall.valheim_firewall.id
     }
     autoscalingGroups = [

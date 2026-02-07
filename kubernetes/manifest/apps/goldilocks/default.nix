@@ -1,15 +1,16 @@
 {
   config,
   kubenix,
+  crds,
   ...
 }: {
   imports = with kubenix.modules; [
     submodule
     k8s
-    ../../../type/fluxcd.nix
+    crds
   ];
 
-  config.kubernetes = {
+  kubernetes = {
     namespace = "goldilocks";
 
     resources.namespaces.goldilocks = {};
@@ -100,7 +101,7 @@
     };
   };
 
-  config.submodule = {
+  submodule = {
     name = "goldilocks";
     passthru.kubernetes.objects = config.kubernetes.objects;
   };

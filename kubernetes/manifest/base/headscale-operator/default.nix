@@ -1,15 +1,16 @@
 {
   config,
   kubenix,
+  crds,
   ...
 }: {
   imports = with kubenix.modules; [
     submodule
     k8s
-    ../../../type/fluxcd.nix
+    crds
   ];
 
-  config.kubernetes = {
+  kubernetes = {
     namespace = "headscale-operator";
 
     resources.namespaces.headscale-operator = {};
@@ -33,7 +34,7 @@
     };
   };
 
-  config.submodule = {
+  submodule = {
     name = "headscale-operator";
     passthru.kubernetes.objects = config.kubernetes.objects;
   };

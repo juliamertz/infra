@@ -33,11 +33,11 @@ resource "helm_release" "cilium" {
     }
     resources = {
       requests = {
-        cpu = "500m"
+        cpu    = "500m"
         memory = "512Mi"
       }
       limits = {
-        cpu = "1000m"
+        cpu    = "1000m"
         memory = "1Gi"
       }
     }

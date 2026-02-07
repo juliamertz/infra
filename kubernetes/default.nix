@@ -14,7 +14,7 @@
     };
     specialArgs = {
       util = import ./util.nix {inherit pkgs lib;};
-      crds = import ./type;
+      crds = import ./types;
     };
   };
 in

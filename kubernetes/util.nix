@@ -20,4 +20,13 @@
     |> fromYAML;
 
   isCrd = resource: resource.kind == "CustomResourceDefinition";
-in {inherit fromYAML fetchYAML isCrd;}
+
+  configMapValueRef = name: {
+    type = "ValueRef";
+    valueRef = {
+      group = "";
+      kind = "ConfigMap";
+      inherit name;
+    };
+  };
+in {inherit fromYAML fetchYAML isCrd configMapValueRef;}

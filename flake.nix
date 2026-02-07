@@ -69,17 +69,18 @@
             isOci = (i.spec.type or null) == "oci";
           });
 
-        mkMatchString = name:
-          "chart\\s*=\\s*\"(?<depName>[^\"]+)\";\\s*version\\s*=\\s*\"(?<currentValue>[^\"]+)\";\\s*sourceRef\\s*=\\s*\\{[^}]*name\\s*=\\s*\"${name}\"";
+        mkMatchString = name: "chart\\s*=\\s*\"(?<depName>[^\"]+)\";\\s*version\\s*=\\s*\"(?<currentValue>[^\"]+)\";\\s*sourceRef\\s*=\\s*\\{[^}]*name\\s*=\\s*\"${name}\"";
 
         mkManager = repo:
-          if repo.isOci then {
+          if repo.isOci
+          then {
             customType = "regex";
             managerFilePatterns = ["/^.*\\.nix$/"];
             matchStrings = [(mkMatchString repo.name)];
             datasourceTemplate = "docker";
             packageNameTemplate = "${builtins.replaceStrings ["oci://"] [""] repo.url}/{{depName}}";
-          } else {
+          }
+          else {
             customType = "regex";
             managerFilePatterns = ["/^.*\\.nix$/"];
             matchStrings = [(mkMatchString repo.name)];
@@ -140,36 +141,57 @@
     };
 
     devShells = forAllSystems (pkgs: let
+      inherit (pkgs.stdenv.hostPlatform) system;
+
       hcloud-upload-image = pkgs.callPackage ./pkgs/hcloud-upload-image.nix {};
 
+      tofu = pkgs.stdenvNoCC.mkDerivation {
+        inherit (pkgs.opentofu) meta pname version;
+        src = pkgs.opentofu;
+        nativeBuildInputs = [pkgs.makeWrapper];
+        buildPhase = ''
+          makeWrapper $src/bin/tofu $out/bin/tofu \
+              --add-flags '-chdir="$TFDIR"'
+          ln -sf $src/bin/tofu $out/bin/tofu-unwrapped
+        '';
+      };
+
       craneLib = mkCraneLib pkgs;
+
+      k8s-diff = pkgs.writeShellScript "k8s-diff" ''
+        ${lib.getExe pkgs.colordiff} --nobanner -N -u -I ' kubenix/' -I ' generation: ' "$@"
+      '';
+
+      k8s-build = pkgs.writeShellScriptBin "k8s-build" ''
+        nix build .#manifest
+      '';
+      k8s-apply = pkgs.writeShellScriptBin "k8s-apply" ''
+        k8s-build && ${lib.getExe pkgs.kubectl} apply -f result
+      '';
+      k8s-diffcmd = pkgs.writeShellScriptBin "k8s-diff" ''
+        k8s-build && KUBECTL_EXTERNAL_DIFF='${k8s-diff}' ${lib.getExe pkgs.kubectl} diff -f result
+      '';
     in {
       default = craneLib.devShell {
-        packages = with pkgs; [
-          rust-analyzer
-          jq
-          yq
-          treefmt
-          alejandra
-          packer
-          hcloud
-          talosctl
+        packages = [
+          pkgs.rust-analyzer
+          pkgs.jq
+          pkgs.yq
+          pkgs.treefmt
+          pkgs.alejandra
+          pkgs.packer
+          pkgs.hcloud
+          pkgs.talosctl
+          pkgs.nix-eval-jobs
+          pkgs.awscli
+          pkgs.wget
+          k8s-build
+          k8s-apply
+          k8s-diffcmd
           colmena.packages.${system}.colmena
           steiger.packages.${system}.default
-          nix-eval-jobs
           hcloud-upload-image
-          awscli
-          wget
-          (pkgs.stdenvNoCC.mkDerivation {
-            inherit (pkgs.opentofu) meta pname version;
-            src = pkgs.opentofu;
-            nativeBuildInputs = [pkgs.makeWrapper];
-            buildPhase = ''
-              makeWrapper $src/bin/tofu $out/bin/tofu \
-                  --add-flags '-chdir="$TFDIR"'
-              ln -sf $src/bin/tofu $out/bin/tofu-unwrapped
-            '';
-          })
+          tofu
         ];
       };
     });

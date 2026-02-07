@@ -24,8 +24,11 @@
       inherit (config.services.wireguard-server.net) peers;
       githubRedirect = redirect "https://github.com/juliamertz";
     in {
-      root = { config = githubRedirect; };
-      www = { subdomain = "www"; config = githubRedirect; };
+      root = {config = githubRedirect;};
+      www = {
+        subdomain = "www";
+        config = githubRedirect;
+      };
       github = {
         subdomain = "gh";
         config = redirect "https://github.com/juliamertz";

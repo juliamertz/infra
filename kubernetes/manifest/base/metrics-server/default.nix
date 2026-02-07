@@ -1,15 +1,16 @@
 {
   config,
   kubenix,
+  crds,
   ...
 }: {
   imports = with kubenix.modules; [
     submodule
     k8s
-    ../../../type/fluxcd.nix
+    crds
   ];
 
-  config.kubernetes = {
+  kubernetes = {
     namespace = "kube-system";
 
     resources.helmRepositories.metrics-server.spec = {
@@ -71,7 +72,7 @@
     };
   };
 
-  config.submodule = {
+  submodule = {
     name = "metrics-server";
     passthru.kubernetes.objects = config.kubernetes.objects;
   };
