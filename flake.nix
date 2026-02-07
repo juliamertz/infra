@@ -55,10 +55,49 @@
       targetPort = targetEnv "ssh_port" |> lib.strings.toIntBase10;
     };
   in {
-    packages =
-      forAllSystems (pkgs: {
-          k8s = import ./kubernetes { inherit pkgs kubenix; };
-        });
+    packages = forAllSystems (pkgs: rec {
+      k8s = import ./kubernetes {inherit pkgs kubenix;};
+      manifest = k8s.config.kubernetes.result;
+
+      renovateConfig = let
+        registryUrls =
+          k8s.config.kubernetes.generated.items
+          |> builtins.filter (i: i.kind == "HelmRepository")
+          |> map (i: i.spec.url);
+      in
+        {
+          "$schema" = "https://docs.renovatebot.com/renovate-schema.json";
+          extends = [
+            "config:recommended"
+          ];
+          kubernetes = {
+            managerFilePatterns = [
+              "/(^|/)kustomization\\.ya?ml$/"
+            ];
+            pinDigests = true;
+          };
+          flux = {
+            managerFilePatterns = [
+              "/k8s/.+\\.yaml$/"
+            ];
+          };
+          customManagers =
+            map (registryUrlTemplate: [
+              {
+                customType = "regex";
+                fileMatch = ["^.*\\.nix$"];
+                matchStrings = [
+                  "chart\\s*=\\s*\"(?<depName>[^\"]+)\";\\s*version\\s*=\\s*\"(?<currentValue>[^\"]+)\";\\s*sourceRef\\s*=\\s*\\{[^}]*name\\s*=\\s*\"(?<registryName>[^\"]+)\""
+                ];
+                datasourceTemplate = "helm";
+                inherit registryUrlTemplate;
+              }
+            ])
+            registryUrls;
+        }
+        |> builtins.toJSON
+        |> (text: pkgs.writeText "renovate" text);
+    });
 
     colmenaHive = colmena.lib.makeHive {
       meta = {

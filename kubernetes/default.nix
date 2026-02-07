@@ -15,4 +15,4 @@
     };
   };
 in
-  output.config.kubernetes.result
+  output
