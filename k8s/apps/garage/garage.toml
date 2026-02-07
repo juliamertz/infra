@@ -5,7 +5,8 @@ db_engine = "lmdb"
 
 block_size = 1048576
 
-replication_mode = "3"
+replication_factor = 3
+consistency_mode = "consistent"
 
 compression_level = 1
 
