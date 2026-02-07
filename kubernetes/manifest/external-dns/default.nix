@@ -22,7 +22,7 @@
       interval = "5m";
       chart.spec = {
         chart = "external-dns";
-        version = "1.19.0";
+        version = "1.20.0";
         sourceRef = {
           kind = "HelmRepository";
           name = "external-dns";
