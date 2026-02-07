@@ -82,17 +82,15 @@
             ];
           };
           customManagers =
-            map (registryUrlTemplate: [
-              {
-                customType = "regex";
-                fileMatch = ["^.*\\.nix$"];
-                matchStrings = [
-                  "chart\\s*=\\s*\"(?<depName>[^\"]+)\";\\s*version\\s*=\\s*\"(?<currentValue>[^\"]+)\";\\s*sourceRef\\s*=\\s*\\{[^}]*name\\s*=\\s*\"(?<registryName>[^\"]+)\""
-                ];
-                datasourceTemplate = "helm";
-                inherit registryUrlTemplate;
-              }
-            ])
+            map (registryUrlTemplate: {
+              customType = "regex";
+              fileMatch = ["^.*\\.nix$"];
+              matchStrings = [
+                "chart\\s*=\\s*\"(?<depName>[^\"]+)\";\\s*version\\s*=\\s*\"(?<currentValue>[^\"]+)\";\\s*sourceRef\\s*=\\s*\\{[^}]*name\\s*=\\s*\"(?<registryName>[^\"]+)\""
+              ];
+              datasourceTemplate = "helm";
+              inherit registryUrlTemplate;
+            })
             registryUrls;
         }
         |> builtins.toJSON
