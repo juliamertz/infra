@@ -19,6 +19,17 @@
         "/^.*\\.nix$/"
       ],
       "matchStrings": [
+        "chart\\s*=\\s*\"(?<depName>[^\"]+)\";\\s*version\\s*=\\s*\"(?<currentValue>[^\"]+)\";\\s*sourceRef\\s*=\\s*\\{[^}]*name\\s*=\\s*\"chartmuseum\""
+      ],
+      "registryUrlTemplate": "https://chartmuseum.github.io/charts"
+    },
+    {
+      "customType": "regex",
+      "datasourceTemplate": "helm",
+      "managerFilePatterns": [
+        "/^.*\\.nix$/"
+      ],
+      "matchStrings": [
         "chart\\s*=\\s*\"(?<depName>[^\"]+)\";\\s*version\\s*=\\s*\"(?<currentValue>[^\"]+)\";\\s*sourceRef\\s*=\\s*\\{[^}]*name\\s*=\\s*\"cloudnative-pg\""
       ],
       "registryUrlTemplate": "https://cloudnative-pg.github.io/charts"
