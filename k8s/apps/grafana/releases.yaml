@@ -130,11 +130,11 @@ spec:
         storageSpec:
           volumeClaimTemplate:
             spec:
-              storageClassName: longhorn-local
+              storageClassName: hcloud-volumes
               accessModes: ["ReadWriteOnce"]
               resources:
                 requests:
-                  storage: 15Gi
+                  storage: 10Gi
     alertmanager:
       enabled: true
       alertmanagerSpec:
