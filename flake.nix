@@ -6,6 +6,7 @@
     filter.url = "github:numtide/nix-filter";
     steiger.url = "github:brainhivenl/steiger";
     colmena.url = "github:zhaofengli/colmena";
+    kubenix.url = "github:hall/kubenix";
     srvos.url = "github:nix-community/srvos";
     sops.url = "github:Mic92/sops-nix";
     lightspeed-dhl-adapter.url = "github:juliamertz/lightspeed-dhl-adapter";
@@ -22,6 +23,7 @@
     self,
     steiger,
     nixpkgs,
+    kubenix,
     systems,
     colmena,
     crane,
@@ -54,7 +56,9 @@
     };
   in {
     packages =
-      forAllSystems (pkgs: {});
+      forAllSystems (pkgs: {
+          k8s = import ./kubernetes { inherit pkgs kubenix; };
+        });
 
     colmenaHive = colmena.lib.makeHive {
       meta = {

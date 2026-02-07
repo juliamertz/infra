@@ -13,5 +13,16 @@
     "managerFilePatterns": [
       "/k8s/.+\\.yaml$/"
     ]
-  }
+  },
+  "customManagers": [
+    {
+      "customType": "regex",
+      "fileMatch": ["^.*\\.nix$"],
+      "matchStrings": [
+        "chart\\s*=\\s*\"(?<depName>[^\"]+)\";\\s*version\\s*=\\s*\"(?<currentValue>[^\"]+)\";\\s*sourceRef\\s*=\\s*\\{[^}]*name\\s*=\\s*\"(?<registryName>[^\"]+)\""
+      ],
+      "datasourceTemplate": "helm",
+      "registryUrlTemplate": "https://cloudnative-pg.github.io/charts"
+    }
+  ]
 }
