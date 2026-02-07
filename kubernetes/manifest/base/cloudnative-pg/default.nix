@@ -1,16 +1,29 @@
 {
   config,
   kubenix,
+  util,
+  crds,
+  pkgs,
+  lib,
   ...
 }: {
-  imports = with kubenix.modules; [
-    submodule
-    k8s
-    ../../../type/fluxcd.nix
+  imports = [
+    kubenix.modules.submodule
+    kubenix.modules.k8s
+    crds
   ];
 
   config.kubernetes = {
     namespace = "cnpg-system";
+
+    objects = let
+      version = "1.28.1";
+      manifests = util.fetchYAML {
+        url = "https://github.com/cloudnative-pg/cloudnative-pg/releases/download/v${version}/cnpg-${version}.yaml";
+        sha256 = "sha256-JeDDPCNK7zt8PgXJlZsYOj3/MYca1StwPXZvCk9Ab5I=";
+      };
+    in
+      manifests |> builtins.filter util.isCrd;
 
     resources.namespaces.cnpg-system = {};
 

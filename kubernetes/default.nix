@@ -12,6 +12,10 @@
         ./manifest
       ];
     };
+    specialArgs = {
+      util = import ./util.nix {inherit pkgs lib;};
+      crds = import ./type;
+    };
   };
 in
   output

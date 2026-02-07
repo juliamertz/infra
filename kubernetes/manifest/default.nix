@@ -1,6 +1,8 @@
 {
   kubenix,
   lib,
+  util,
+  crds,
   ...
 }: let
   modules = [
@@ -20,8 +22,11 @@
 in {
   imports = with kubenix.modules; [submodules k8s];
 
-  submodules.imports = modules;
-  submodules.instances =
-    lib.genAttrs (modules |> map baseNameOf) (name: let
-    in {submodule = name;});
+  submodules = {
+    imports = modules;
+    specialArgs = {inherit util crds;};
+    instances =
+      lib.genAttrs (modules |> map baseNameOf) (name: let
+      in {submodule = name;});
+  };
 }
