@@ -1,26 +1,24 @@
 {
   config,
-  lib,
-  pkgs,
   kubenix,
   ...
 }: {
   imports = with kubenix.modules; [
-    submodules
+    submodule
     k8s
-    ../../type
+    ../../type/fluxcd.nix
   ];
 
-  kubernetes = {
+  config.kubernetes = {
     namespace = "cnpg-system";
 
     resources.namespaces.cnpg-system = {};
 
-    resources.helmrepositories.cloudnative-pg.spec = {
+    resources.helmRepositories.cloudnative-pg.spec = {
       url = "https://cloudnative-pg.github.io/charts";
     };
 
-    resources.helmreleases.cloudnative-pg.spec = {
+    resources.helmReleases.cloudnative-pg.spec = {
       interval = "30m";
       chart.spec = {
         chart = "cloudnative-pg";
@@ -35,7 +33,7 @@
       };
     };
 
-    resources.helmreleases.barman-plugin.spec = {
+    resources.helmReleases.barman-plugin.spec = {
       interval = "30m";
       chart.spec = {
         chart = "plugin-barman-cloud";
@@ -50,5 +48,10 @@
         crds.create = false;
       };
     };
+  };
+
+  config.submodule = {
+    name = "cloudnative-pg";
+    passthru.kubernetes.objects = config.kubernetes.objects;
   };
 }

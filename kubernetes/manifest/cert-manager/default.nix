@@ -1,22 +1,25 @@
 {
-  config,
-  lib,
-  pkgs,
   kubenix,
+  config,
   ...
 }: {
-  imports = with kubenix.modules; [submodules k8s];
+  imports = with kubenix.modules; [
+    submodule
+    k8s
+    ../../type/fluxcd.nix
+    ../../type/cert-manager.nix
+  ];
 
-  kubernetes = {
+  config.kubernetes = {
     namespace = "cert-manager";
 
     resources.namespaces.cert-manager = {};
 
-    resources.helmrepositories.jetstack.spec = {
+    resources.helmRepositories.jetstack.spec = {
       url = "https://charts.jetstack.io";
     };
 
-    resources.helmreleases.cert-manager.spec = {
+    resources.helmReleases.cert-manager.spec = {
       interval = "5m";
       chart.spec = {
         chart = "cert-manager";
@@ -64,7 +67,7 @@
       };
     };
 
-    resources.clusterissuers.letsencrypt-prod.spec = {
+    resources.clusterIssuers.letsencrypt-prod.spec = {
       acme = {
         email = "info@juliamertz.dev";
         preferredChain = "";
@@ -80,5 +83,10 @@
         ];
       };
     };
+  };
+
+  config.submodule = {
+    name = "cert-manager";
+    passthru.kubernetes.objects = config.kubernetes.objects;
   };
 }

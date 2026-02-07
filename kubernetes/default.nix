@@ -9,8 +9,6 @@
   output = kubenix.evalModules.${system} {
     module = {kubenix, ...}: {
       imports = [
-        kubenix.modules.submodules
-        ./type
         ./manifest
       ];
     };

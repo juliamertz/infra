@@ -7,7 +7,7 @@
 
   kubernetes.customTypesModuleDefinesCRDSpec = true;
 
-  kubernetes = {
+  kubernetes.customTypes = {
     gatewayclass = {
       attrName = "gatewayclasses";
       group = "gateway.networking.k8s.io";

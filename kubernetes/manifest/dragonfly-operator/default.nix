@@ -1,23 +1,26 @@
 {
   config,
-  lib,
-  pkgs,
   kubenix,
   ...
 }: {
-  imports = with kubenix.modules; [submodules k8s];
+  imports = with kubenix.modules; [
+    submodule
+    k8s
+    ../../type/fluxcd.nix
+    ../../type/dragonfly-operator.nix
+  ];
 
-  kubernetes = {
+  config.kubernetes = {
     namespace = "dragonfly-operator";
 
     resources.namespaces.dragonfly-operator = {};
 
-    resources.helmrepositories.dragonfly.spec = {
+    resources.helmRepositories.dragonfly.spec = {
       type = "oci";
       url = "oci://ghcr.io/dragonflydb/dragonfly-operator/helm";
     };
 
-    resources.helmreleases.dragonfly-operator.spec = {
+    resources.helmReleases.dragonfly-operator.spec = {
       interval = "5m";
       chart.spec = {
         chart = "dragonfly-operator";
@@ -58,5 +61,10 @@
         };
       };
     };
+  };
+
+  config.submodule = {
+    name = "dragonfly-operator";
+    passthru.kubernetes.objects = config.kubernetes.objects;
   };
 }

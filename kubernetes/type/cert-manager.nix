@@ -7,8 +7,8 @@
 
   kubernetes.customTypesModuleDefinesCRDSpec = true;
 
-  kubernetes.clusterissuer = {
-    attrName = "clusterissuers";
+  kubernetes.customTypes.clusterissuer = {
+    attrName = "clusterIssuers";
     group = "cert-manager.io";
     kind = "ClusterIssuer";
     version = "v1";
