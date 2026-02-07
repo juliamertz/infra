@@ -13,21 +13,45 @@
       group = "dragonflydb.io";
       kind = "Dragonfly";
       version = "v1alpha1";
-      module = {
-        options = {
-          image = lib.mkOption {
-            type = lib.types.str;
+      module = with lib; let
+        resourceQuantityType = types.submodule (_: {
+          options = {
+            memory = mkOption {
+              type = types.nullOr types.str;
+              default = null;
+            };
+            cpu = mkOption {
+              type = types.nullOr types.str;
+              default = null;
+            };
           };
-          imagePullPolicy = lib.mkOption {
-            type = lib.types.str;
+        });
+      in {
+        options = {
+          image = mkOption {
+            type = types.str;
+          };
+          imagePullPolicy = mkOption {
+            type = types.str;
             default = "IfNotPresent";
           };
-          replicas = lib.mkOption {
-            type = lib.types.int;
+          replicas = mkOption {
+            type = types.int;
             default = 1;
           };
-          resources = lib.mkOption {
-            type = lib.types.attrs;
+          resources = mkOption {
+            type = types.submodule (_: {
+              options = {
+                requests = mkOption {
+                  type = types.nullOr resourceQuantityType;
+                  default = null;
+                };
+                limits = mkOption {
+                  type = types.nullOr resourceQuantityType;
+                  default = null;
+                };
+              };
+            });
             default = {};
           };
         };

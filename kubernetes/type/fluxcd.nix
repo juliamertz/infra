@@ -13,18 +13,18 @@
       group = "source.toolkit.fluxcd.io";
       kind = "HelmRepository";
       version = "v1";
-      module = {
+      module = with lib; {
         options = {
-          interval = lib.mkOption {
-            type = lib.types.str;
+          interval = mkOption {
+            type = types.str;
             default = "30m";
           };
-          type = lib.mkOption {
-            type = lib.types.nullOr lib.types.str;
+          type = mkOption {
+            type = types.nullOr types.str;
             default = null;
           };
-          url = lib.mkOption {
-            type = lib.types.str;
+          url = mkOption {
+            type = types.str;
           };
         };
       };
@@ -35,26 +35,64 @@
       group = "helm.toolkit.fluxcd.io";
       kind = "HelmRelease";
       version = "v2";
-      module = {
+      module = with lib; let
+        sourceRefType = types.submodule (_: {
+          options = {
+            kind = mkOption {type = types.str;};
+            name = mkOption {type = types.str;};
+          };
+        });
+        chartSpecType = types.submodule (_: {
+          options = {
+            chart = mkOption {
+              description = "Chart name";
+              type = types.str;
+            };
+            version = mkOption {
+              description = "Chart version";
+              type = types.str;
+            };
+            interval = mkOption {
+              description = "Chart refresh interval";
+              type = types.str;
+              default = "30m";
+            };
+            reconcileStrategy = mkOption {
+              type = types.str;
+              default = "ChartVersion";
+            };
+            sourceRef = mkOption {
+              type = sourceRefType;
+            };
+          };
+        });
+      in {
         options = {
-          chart = lib.mkOption {
+          chart = mkOption {
             description = "Chart config";
-            type = lib.types.attrs;
+            type = types.submodule (_: {
+              options = {
+                spec = mkOption {
+                  description = "Chart spec";
+                  type = chartSpecType;
+                };
+              };
+            });
           };
-          values = lib.mkOption {
+          values = mkOption {
             description = "Chart values";
-            type = lib.types.attrs;
+            type = types.attrs;
           };
-          interval = lib.mkOption {
-            type = lib.types.str;
+          interval = mkOption {
+            type = types.str;
             default = "30m";
           };
-          install = lib.mkOption {
-            type = lib.types.nullOr lib.types.attrs;
+          install = mkOption {
+            type = types.nullOr types.attrs;
             default = null;
           };
-          upgrade = lib.mkOption {
-            type = lib.types.nullOr lib.types.attrs;
+          upgrade = mkOption {
+            type = types.nullOr types.attrs;
             default = null;
           };
         };

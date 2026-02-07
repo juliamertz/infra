@@ -4,14 +4,18 @@
   ...
 }: let
   modules = [
-    ./cert-manager
-    ./cloudnative-pg
-    ./dragonfly-operator
-    ./envoy-gateway
-    ./external-dns
-    ./headscale-operator
-    ./longhorn
-    ./metrics-server
+    ./base/cert-manager
+    ./base/cloudnative-pg
+    ./base/dragonfly-operator
+    ./base/envoy-gateway
+    ./base/external-dns
+    ./base/headscale-operator
+    ./base/longhorn
+    ./base/metrics-server
+    # ./apps/goldilocks
+    ./apps/chartmuseum
+    ./apps/miniflux
+    ./apps/theme-park
   ];
 in {
   imports = with kubenix.modules; [submodules k8s];
