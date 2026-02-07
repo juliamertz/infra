@@ -4,8 +4,8 @@
     {
       "customType": "regex",
       "datasourceTemplate": "helm",
-      "fileMatch": [
-        "^.*\\.nix$"
+      "managerFilePatterns": [
+        "/^.*\\.nix$/"
       ],
       "matchStrings": [
         "chart\\s*=\\s*\"(?<depName>[^\"]+)\";\\s*version\\s*=\\s*\"(?<currentValue>[^\"]+)\";\\s*sourceRef\\s*=\\s*\\{[^}]*name\\s*=\\s*\"(?<registryName>[^\"]+)\""
@@ -15,8 +15,8 @@
     {
       "customType": "regex",
       "datasourceTemplate": "helm",
-      "fileMatch": [
-        "^.*\\.nix$"
+      "managerFilePatterns": [
+        "/^.*\\.nix$/"
       ],
       "matchStrings": [
         "chart\\s*=\\s*\"(?<depName>[^\"]+)\";\\s*version\\s*=\\s*\"(?<currentValue>[^\"]+)\";\\s*sourceRef\\s*=\\s*\\{[^}]*name\\s*=\\s*\"(?<registryName>[^\"]+)\""
@@ -26,8 +26,8 @@
     {
       "customType": "regex",
       "datasourceTemplate": "helm",
-      "fileMatch": [
-        "^.*\\.nix$"
+      "managerFilePatterns": [
+        "/^.*\\.nix$/"
       ],
       "matchStrings": [
         "chart\\s*=\\s*\"(?<depName>[^\"]+)\";\\s*version\\s*=\\s*\"(?<currentValue>[^\"]+)\";\\s*sourceRef\\s*=\\s*\\{[^}]*name\\s*=\\s*\"(?<registryName>[^\"]+)\""
