@@ -161,7 +161,6 @@
       k8s-diff = pkgs.writeShellScript "k8s-diff" ''
         ${lib.getExe pkgs.colordiff} --nobanner -N -u -I ' kubenix/' -I ' generation: ' "$@"
       '';
-
       k8s-build = pkgs.writeShellScriptBin "k8s-build" ''
         nix build .#manifest
       '';

@@ -8,6 +8,17 @@
         "/^.*\\.nix$/"
       ],
       "matchStrings": [
+        "chart\\s*=\\s*\"(?<depName>[^\"]+)\";\\s*version\\s*=\\s*\"(?<currentValue>[^\"]+)\";\\s*sourceRef\\s*=\\s*\\{[^}]*name\\s*=\\s*\"authelia\""
+      ],
+      "registryUrlTemplate": "https://charts.authelia.com"
+    },
+    {
+      "customType": "regex",
+      "datasourceTemplate": "helm",
+      "managerFilePatterns": [
+        "/^.*\\.nix$/"
+      ],
+      "matchStrings": [
         "chart\\s*=\\s*\"(?<depName>[^\"]+)\";\\s*version\\s*=\\s*\"(?<currentValue>[^\"]+)\";\\s*sourceRef\\s*=\\s*\\{[^}]*name\\s*=\\s*\"jetstack\""
       ],
       "registryUrlTemplate": "https://charts.jetstack.io"
@@ -66,6 +77,28 @@
         "chart\\s*=\\s*\"(?<depName>[^\"]+)\";\\s*version\\s*=\\s*\"(?<currentValue>[^\"]+)\";\\s*sourceRef\\s*=\\s*\\{[^}]*name\\s*=\\s*\"external-dns\""
       ],
       "registryUrlTemplate": "https://kubernetes-sigs.github.io/external-dns/"
+    },
+    {
+      "customType": "regex",
+      "datasourceTemplate": "helm",
+      "managerFilePatterns": [
+        "/^.*\\.nix$/"
+      ],
+      "matchStrings": [
+        "chart\\s*=\\s*\"(?<depName>[^\"]+)\";\\s*version\\s*=\\s*\"(?<currentValue>[^\"]+)\";\\s*sourceRef\\s*=\\s*\\{[^}]*name\\s*=\\s*\"grafana\""
+      ],
+      "registryUrlTemplate": "https://grafana.github.io/helm-charts"
+    },
+    {
+      "customType": "regex",
+      "datasourceTemplate": "helm",
+      "managerFilePatterns": [
+        "/^.*\\.nix$/"
+      ],
+      "matchStrings": [
+        "chart\\s*=\\s*\"(?<depName>[^\"]+)\";\\s*version\\s*=\\s*\"(?<currentValue>[^\"]+)\";\\s*sourceRef\\s*=\\s*\\{[^}]*name\\s*=\\s*\"prometheus-community\""
+      ],
+      "registryUrlTemplate": "https://prometheus-community.github.io/helm-charts"
     },
     {
       "customType": "regex",
