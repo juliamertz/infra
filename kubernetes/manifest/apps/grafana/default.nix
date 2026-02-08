@@ -28,10 +28,11 @@
           url = "https://grafana.com/api/dashboards/24516/revisions/3/download";
           sha256 = "sha256-zDJU2fxVnM70O8UevoHSVb/egquMFG52JJJQXDa2LCs=";
         });
-        cloudnative-pg = builtins.readFile (pkgs.fetchurl {
-          url = "https://grafana.com/api/dashboards/20417/revisions/4/download";
-          sha256 = "sha256-+YIJCenupF1TfvIvJwOVMILSZ6wdD1MPIS1E1ylgD6o=";
-        });
+        # TODO: kubenix adds the config in an annotation causing the max size to be exceeded
+        # cloudnative-pg = builtins.readFile (pkgs.fetchurl {
+        #   url = "https://grafana.com/api/dashboards/20417/revisions/4/download";
+        #   sha256 = "sha256-+YIJCenupF1TfvIvJwOVMILSZ6wdD1MPIS1E1ylgD6o=";
+        # });
       };
       configMapNames = lib.attrNames dashboards |> map (v: "${v}-dashboard");
     in
