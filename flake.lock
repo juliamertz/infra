@@ -386,6 +386,22 @@
         "type": "github"
       }
     },
+    "nixpkgs-cross": {
+      "locked": {
+        "lastModified": 1758294315,
+        "narHash": "sha256-H+C4c+jKCZpSJHODHFaY6b2ciB3Hv00V5QKA7yUVtis=",
+        "owner": "nixos",
+        "repo": "nixpkgs",
+        "rev": "90ade7da38aa49c2e2693a04a44662a0e61530e9",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nixos",
+        "repo": "nixpkgs",
+        "rev": "90ade7da38aa49c2e2693a04a44662a0e61530e9",
+        "type": "github"
+      }
+    },
     "nixpkgs-ocitools": {
       "locked": {
         "lastModified": 1749738911,
@@ -604,6 +620,7 @@
         "lightspeed-dhl-adapter": "lightspeed-dhl-adapter",
         "nix-minecraft": "nix-minecraft",
         "nixpkgs": "nixpkgs_10",
+        "nixpkgs-cross": "nixpkgs-cross",
         "rust-overlay": "rust-overlay_5",
         "sops": "sops",
         "steiger": "steiger_2",

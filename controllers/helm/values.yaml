@@ -1,6 +1,24 @@
 services:
   - cmd: host-dns
 
+  - cmd: sync
+    admin: true
+    extraEnv:
+      - name: GIT_URL
+        value: https://github.com/juliamertz/infra.git
+    resources:
+      requests:
+        cpu: 200m
+        memory: 256Mi
+      limits:
+        cpu: 1000m
+    # volumes:
+    #   - name: nix-store
+    #     mountPath: /nix/store
+    #     storage:
+    #       size: 2Gi
+    #       className: longhorn-local
+
   - cmd: cert-approver
     extraEnv:
       - name: INTERNAL_IP_RANGE

@@ -12,3 +12,4 @@ talosconfig
 target
 .awsrc
 .DS_Store
+.env

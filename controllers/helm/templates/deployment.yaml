@@ -1,4 +1,21 @@
 {{ range $service := $.Values.services }}
+
+{{ if $service.volumes }}
+{{ range $volume := $service.volumes }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ $volume.name }}-claim
+spec:
+  accessModes: ['ReadWriteOnce']
+  storageClassName: {{ $volume.storage.className }}
+  resources:
+    requests:
+      storage: {{ $volume.storage.size }}
+{{ end }}
+{{ end }}
+
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -24,10 +41,18 @@ spec:
         app.kubernetes.io/name: {{ $service.cmd }}-controller
         app.kubernetes.io/part-of: infra
     spec:
-      serviceAccountName: infra-controller
+      serviceAccountName: infra-controller{{if eq $service.admin true }}-admin{{ end }}
       terminationGracePeriodSeconds: 15
       imagePullSecrets:
       - name: github-registry
+      {{ if $service.volumes }}
+      volumes:
+      {{ range $volume := $service.volumes }}
+        - name: {{ $volume.name }}
+          persistentVolumeClaim:
+            claimName: {{ $volume.name }}-claim
+      {{ end }}
+      {{ end }}
       containers:
         - name: infra-controller
           image: {{ $.Values.steiger.infraControllers.image }}
@@ -40,16 +65,27 @@ spec:
             - {{ $service.cmd }}
           env:
             - name: RUST_LOG
-              value: "info,infra_controller=debug"
+              value: "info,infra_controllers=debug"
             {{- if $service.extraEnv }}
             {{ $service.extraEnv | toYaml | nindent 12 }}
             {{ end }}
           imagePullPolicy: IfNotPresent
           resources:
+          {{- if $service.resources }}
+            {{ $service.resources | toYaml | nindent 12 }}
+          {{ else }}
             requests:
               cpu: 10m
               memory: 20Mi
             limits:
               cpu: 40m
               memory: 80Mi
+          {{ end }}
+          {{ if $service.volumes }}
+          volumeMounts:
+          {{ range $volume := $service.volumes }}
+            - mountPath: {{ $volume.mountPath }}
+              name: {{ $volume.name }}
+          {{ end }}
+          {{ end }}
 {{ end }}

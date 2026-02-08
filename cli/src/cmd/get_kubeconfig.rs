@@ -35,7 +35,7 @@ pub async fn handle(ctx: Context, opts: Opts) -> Result<()> {
         .member(&opts.node_name)
         .context("node not found")?;
 
-    let mut kubeconfig = ctx.talosctl.get_kubeconfig(&member).await?;
+    let mut kubeconfig = ctx.talosctl.get_kubeconfig(member).await?;
 
     let service_accounts = Api::<ServiceAccount>::namespaced(ctx.kube.clone(), &opts.namespace);
     let service_account_name = opts.service_account;
@@ -76,7 +76,7 @@ pub async fn handle(ctx: Context, opts: Opts) -> Result<()> {
     let kubeconfig_yaml = serde_yaml::to_string(&kubeconfig).expect("Failed to serialize to YAML");
 
     std::io::stdout()
-        .write_all(kubeconfig_yaml.as_str().as_bytes())
+        .write_all(kubeconfig_yaml.as_bytes())
         .unwrap();
 
     Ok(())

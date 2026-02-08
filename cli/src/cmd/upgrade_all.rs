@@ -1,16 +1,11 @@
 use std::path::PathBuf;
-use std::time::Duration;
 
-use anyhow::{Context as _, Result, bail};
+use anyhow::Result;
 use clap::Parser;
-use k8s_openapi_ext::corev1::Node;
-use kube::Api;
-use tokio::{fs, time::sleep};
-use tracing::info;
+use tokio::fs;
 
 use crate::Context;
 use crate::cmd::node::upgrade::{VersionOpt, do_upgrade};
-use crate::ext::NodeApiExt;
 use crate::talos;
 
 /// Reboot and upgrade node

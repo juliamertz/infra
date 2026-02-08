@@ -1,6 +1,7 @@
 {
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+    nixpkgs-cross.url = "github:nixos/nixpkgs/90ade7da38aa49c2e2693a04a44662a0e61530e9";
     systems.url = "github:nix-systems/default";
     filter.url = "github:numtide/nix-filter";
     steiger.url = "github:brainhivenl/steiger";
@@ -21,6 +22,7 @@
     self,
     steiger,
     nixpkgs,
+    nixpkgs-cross,
     kubenix,
     systems,
     colmena,
@@ -198,42 +200,42 @@
         inherit overlays;
         system = localSystem;
       };
-      pkgsCross = import nixpkgs {
+      pkgsTarget = import nixpkgs-cross {
+        inherit overlays;
+        system = crossSystem;
+      };
+      pkgsCross = import nixpkgs-cross {
         inherit overlays crossSystem localSystem;
       };
 
       craneLib = mkCraneLib pkgsCross;
 
-      buildImage = package:
-        pkgs.ociTools.buildImage {
-          name = package.pname;
-          tag = "latest";
-          created = "now";
-
-          copyToRoot = pkgsCross.buildEnv {
-            name = "${package.pname}-sysroot";
-            paths = [
-              package
-              pkgs.dockerTools.caCertificates
-            ];
-            pathsToLink = [
-              "/bin"
-              "/etc"
-            ];
-          };
-
-          config.Cmd = ["/bin/${package.pname}"];
-          compressor = "none";
-        };
-
       controllers = pkgsCross.callPackage ./controllers/package.nix {
         inherit craneLib filter;
       };
+
+      sysroot = pkgsCross.buildEnv {
+        name = "${controllers.pname}-sysroot";
+        paths = [
+          controllers
+          pkgsTarget.nix
+          pkgs.dockerTools.caCertificates
+        ];
+        pathsToLink = [
+          "/bin"
+          "/etc"
+        ];
+      };
     in {
-      controllers = buildImage controllers;
-      # sync-controller = buildImage controllers {
-      #   # fromImage = "nixos/nix:2.33.2";
-      # };
+      controllers = pkgs.ociTools.buildImage {
+        name = controllers.pname;
+        tag = "latest";
+        created = "now";
+
+        copyToRoot = sysroot;
+
+        config.Cmd = ["/bin/${controllers.pname}"];
+      };
     });
   };
 }

@@ -70,7 +70,7 @@ pub async fn do_upgrade(
 
     let is_cordoned = nodes.is_cordoned(name).await?;
 
-    ctx.talosctl.upgrade_member(ip, &image, &params).await?;
+    ctx.talosctl.upgrade_member(ip, image, params).await?;
 
     loop {
         if nodes.is_ready(name).await? {
