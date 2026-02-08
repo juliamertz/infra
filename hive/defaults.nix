@@ -7,9 +7,9 @@ inputs: {
   dotfiles = inputs.dotfiles.packages.${pkgs.system};
 in {
   imports = [
-    inputs.srvos.nixosModules.server
-    inputs.srvos.nixosModules.hardware-hetzner-cloud
-    inputs.srvos.nixosModules.mixins-terminfo
+    # # inputs.srvos.nixosModules.server
+    # inputs.srvos.nixosModules.hardware-hetzner-cloud
+    # inputs.srvos.nixosModules.mixins-terminfo
     inputs.sops.nixosModules.sops
   ];
 

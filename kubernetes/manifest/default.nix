@@ -19,6 +19,7 @@
     ./base/headscale-operator
     ./base/longhorn
     ./base/metrics-server
+    # ./base/argo-cd
     # ./apps/goldilocks
     ./apps/chartmuseum
     ./apps/miniflux

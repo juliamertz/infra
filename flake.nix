@@ -1,13 +1,11 @@
 {
   inputs = {
-    nixpkgs.follows = "srvos/nixpkgs";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     systems.url = "github:nix-systems/default";
-
     filter.url = "github:numtide/nix-filter";
     steiger.url = "github:brainhivenl/steiger";
     colmena.url = "github:zhaofengli/colmena";
     kubenix.url = "github:hall/kubenix";
-    srvos.url = "github:nix-community/srvos";
     sops.url = "github:Mic92/sops-nix";
     lightspeed-dhl-adapter.url = "github:juliamertz/lightspeed-dhl-adapter";
     nix-minecraft.url = "github:juliamertz/nix-minecraft";
@@ -128,16 +126,16 @@
         deployment = mkTargetFromEnv "bastion";
       };
 
-      # topdog = {...}: {
-      #   imports = [./hive/topdog];
-      #   deployment = mkTargetFromEnv "topdog";
-      # };
+      topdog = {...}: {
+        imports = [./hive/topdog];
+        deployment = mkTargetFromEnv "topdog";
+      };
 
-      # cube = {...}: {
-      #   imports = [./hive/cube];
-      #   deployment = mkTargetFromEnv "cube";
-      #   nixpkgs.system = "aarch64-linux";
-      # };
+      cube = {...}: {
+        imports = [./hive/cube];
+        deployment = mkTargetFromEnv "cube";
+        nixpkgs.system = "aarch64-linux";
+      };
     };
 
     devShells = forAllSystems (pkgs: let
@@ -165,10 +163,10 @@
         nix build .#manifest
       '';
       k8s-apply = pkgs.writeShellScriptBin "k8s-apply" ''
-        k8s-build && ${lib.getExe pkgs.kubectl} apply -f result
+        k8s-build && ${lib.getExe pkgs.kubectl} apply --server-side --force-conflicts -f result
       '';
       k8s-diffcmd = pkgs.writeShellScriptBin "k8s-diff" ''
-        k8s-build && KUBECTL_EXTERNAL_DIFF='${k8s-diff}' ${lib.getExe pkgs.kubectl} diff -f result
+        k8s-build && KUBECTL_EXTERNAL_DIFF='${k8s-diff}' ${lib.getExe pkgs.kubectl} diff --server-side --force-conflicts -f result
       '';
     in {
       default = craneLib.devShell {
@@ -233,6 +231,9 @@
       };
     in {
       controllers = buildImage controllers;
+      # sync-controller = buildImage controllers {
+      #   # fromImage = "nixos/nix:2.33.2";
+      # };
     });
   };
 }
