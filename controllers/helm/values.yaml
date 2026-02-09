@@ -6,6 +6,8 @@ services:
     extraEnv:
       - name: GIT_URL
         value: https://github.com/juliamertz/infra.git
+      - name: INTERVAL
+        value: "30"
     resources:
       requests:
         cpu: 200m

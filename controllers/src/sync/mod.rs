@@ -77,7 +77,6 @@ pub async fn run(opts: Opts) -> Result<()> {
     let state = State::new(kube.clone());
     let repo = Repo::open(&git_url, "main", state_dir.clone()).await?;
 
-    let interval = Duration::from_secs(opts.interval);
     let ctx = Ctx {
         opts,
         state,
@@ -85,15 +84,18 @@ pub async fn run(opts: Opts) -> Result<()> {
         kube,
     };
 
+    let mut interval = tokio::time::interval(Duration::from_secs(ctx.opts.interval));
+    interval.set_missed_tick_behavior(tokio::time::MissedTickBehavior::Skip);
+
     loop {
+        interval.tick().await;
+
         if let Err(err) = run_once(&ctx).await {
             error!(
                 { err = &err as &dyn std::error::Error },
                 "error while reconciling"
             );
         };
-
-        sleep(interval).await;
     }
 }
 
@@ -118,6 +120,7 @@ async fn run_once(ctx: &Ctx) -> Result<()> {
     let plan = if let Some((_, objects)) = state {
         if built_objects == objects {
             info!("built objects haven't changed");
+            ctx.state.set(&head, &built_objects).await?;
             return Ok(());
         }
         // TODO: needless clone
@@ -134,7 +137,7 @@ async fn run_once(ctx: &Ctx) -> Result<()> {
             plan.actions.len()
         );
     } else {
-        info!("succesfully applied revisio");
+        info!("succesfully applied revision");
     }
 
     ctx.state.set(&head, &built_objects).await?;
