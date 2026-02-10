@@ -139,41 +139,43 @@
       ];
     };
 
-    resources.securityPolicies.homelab-route-proxy-auth.spec = {
-      targetRefs = [
-        {
-          group = "gateway.networking.k8s.io";
-          kind = "HTTPRoute";
-          name = "homelab-route-proxy";
-        }
-      ];
-      extAuth = {
-        headersToExtAuth = [
-          "accept"
-          "cookie"
-          "authorization"
-          "proxy-authorization"
-          "x-forwarded-proto"
-        ];
-        failOpen = false;
-        http = {
-          backendRefs = [
-            {
-              name = "authelia";
-              namespace = "authelia";
-              port = 80;
-            }
-          ];
-          path = "/api/authz/ext-authz/";
-          headersToBackend = [
-            "Remote-User"
-            "Remote-Groups"
-            "Remote-Name"
-            "Remote-Email"
-          ];
-        };
-      };
-    };
+    # resources.securityPolicies.homelab-route-proxy-auth.spec = {
+    #   targetRefs = [
+    #     {
+    #       group = "gateway.networking.k8s.io";
+    #       kind = "HTTPRoute";
+    #       name = "homelab-route-proxy";
+    #     }
+    #   ];
+    #   extAuth = {
+    #     headersToExtAuth = [
+    #       "accept"
+    #       "cookie"
+    #       "authorization"
+    #       "proxy-authorization"
+    #       "x-forwarded-proto"
+    #     ];
+    #     failOpen = false;
+    #     http = {
+    #       backendRefs = [
+    #         {
+    #           name = "authelia";
+    #           namespace = "authelia";
+    #           port = 80;
+    #         }
+    #       ];
+    #       path = "/api/authz/ext-authz/";
+    #       headersToBackend = [
+    #         "Remote-User"
+    #         "Remote-Groups"
+    #         "Remote-Name"
+    #         "Remote-Email"
+    #         "Location",
+    #         "Set-Cookie",
+    #       ];
+    #     };
+    #   };
+    # };
   };
 
   submodule = {
