@@ -100,8 +100,6 @@
       hostnames = [
         "hass.juliamertz.dev"
         "hass.juliamertz.nl"
-        "watch.juliamertz.dev"
-        "watch.juliamertz.nl"
       ];
       rules = [
         {
@@ -120,6 +118,90 @@
               name = "homelab-route-proxy";
               port = 80;
               weight = 1;
+            }
+          ];
+        }
+      ];
+    };
+
+    resources.httpRoutes.jellyfin.spec = {
+      parentRefs = [
+        {
+          group = "gateway.networking.k8s.io";
+          kind = "Gateway";
+          name = "shared";
+          namespace = "default";
+        }
+      ];
+      hostnames = [
+        "watch.juliamertz.dev"
+        "watch.juliamertz.nl"
+      ];
+      rules = [
+        {
+          matches = [
+            {
+              path = {
+                type = "PathPrefix";
+                value = "/sso/";
+              };
+            }
+          ];
+          backendRefs = [
+            {
+              group = "";
+              kind = "Service";
+              name = "homelab-route-proxy";
+              port = 80;
+              weight = 1;
+            }
+          ];
+        }
+        {
+          matches = [
+            {
+              path = {
+                type = "PathPrefix";
+                value = "/";
+              };
+              headers = [
+                {
+                  name = "Cookie";
+                  type = "RegularExpression";
+                  value = ".*authelia_session.*";
+                }
+              ];
+            }
+          ];
+          backendRefs = [
+            {
+              group = "";
+              kind = "Service";
+              name = "homelab-route-proxy";
+              port = 80;
+              weight = 1;
+            }
+          ];
+        }
+        {
+          matches = [
+            {
+              path = {
+                type = "PathPrefix";
+                value = "/";
+              };
+            }
+          ];
+          filters = [
+            {
+              type = "RequestRedirect";
+              requestRedirect = {
+                path = {
+                  type = "ReplaceFullPath";
+                  replaceFullPath = "/sso/OID/start/authelia";
+                };
+                statusCode = 302;
+              };
             }
           ];
         }
@@ -170,8 +252,8 @@
     #         "Remote-Groups"
     #         "Remote-Name"
     #         "Remote-Email"
-    #         "Location",
-    #         "Set-Cookie",
+    #         "Location"
+    #         "Set-Cookie"
     #       ];
     #     };
     #   };
