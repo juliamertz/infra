@@ -114,6 +114,10 @@ impl Repo {
         )
         .unwrap();
 
+        let index_path = self.inner.git_dir().join("index");
+        let mut index_file = gix::index::File::from_state(index, index_path);
+        index_file.write(Default::default()).unwrap();
+
         info!("checked out {oid}");
         Ok(())
     }
