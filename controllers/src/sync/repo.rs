@@ -63,25 +63,50 @@ impl Repo {
     }
 
     pub async fn pull_latest(&self) -> Result<ObjectId> {
-        let remote = self.inner.find_remote("origin").unwrap();
+        use gix::refs::transaction::PreviousValue;
 
+        // TODO: proper error handling
+
+        let remote = self.inner.find_remote("origin").unwrap();
         debug!("fetching from remote...");
         let connection = remote
             .connect(gix::remote::Direction::Fetch)
             .unwrap()
             .prepare_fetch(gix::progress::Discard, Default::default())
             .unwrap();
-
         let outcome = connection
             .receive(gix::progress::Discard, &Default::default())
             .unwrap();
         debug!("fetched {} refs", outcome.ref_map.mappings.len());
 
         let head = self.inner.head()?;
-        let branch_name = head.referent_name().ok_or("Not on a branch").unwrap();
+        let branch_name = head.referent_name().expect("checkout out branch");
+        let short_name = branch_name.shorten().to_string();
 
-        info!("pull completed for branch: {}", branch_name);
+        let remote_ref_name = format!("refs/remotes/origin/{}", short_name);
+        let remote_ref = self.inner.find_reference(&remote_ref_name)?;
+        let remote_oid = remote_ref.id().detach();
 
+        self.inner
+            .edit_reference(gix::refs::transaction::RefEdit {
+                change: gix::refs::transaction::Change::Update {
+                    log: gix::refs::transaction::LogChange {
+                        mode: gix::refs::transaction::RefLog::AndReference,
+                        force_create_reflog: false,
+                        message: "pull_latest: reset to remote".into(),
+                    },
+                    expected: PreviousValue::Any,
+                    new: gix::refs::Target::Object(remote_oid),
+                },
+                name: branch_name.to_owned(),
+                deref: false,
+            })
+            .unwrap();
+
+        info!(
+            "pull completed for branch: {}, reset to {}",
+            short_name, remote_oid
+        );
         self.revision_id().await
     }
 

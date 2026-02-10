@@ -1,8 +1,9 @@
 use std::{path::PathBuf, time::Duration};
 
 use clap::Parser;
-use kube::Client;
-use tokio::{fs, time::sleep};
+use kube::{Client, api::DynamicObject};
+use sha2::{Digest, Sha256, digest::Output};
+use tokio::fs;
 use tracing::{debug, error, info, instrument};
 
 mod nix;
@@ -99,6 +100,15 @@ pub async fn run(opts: Opts) -> Result<()> {
     }
 }
 
+fn hash(objects: &[DynamicObject]) -> Result<Output<Sha256>> {
+    let mut hash = Sha256::default();
+    for obj in objects {
+        let bytes = serde_json::to_vec(obj)?;
+        hash.update(&bytes);
+    }
+    Ok(hash.finalize())
+}
+
 #[instrument(skip_all, err(Debug))]
 async fn run_once(ctx: &Ctx) -> Result<()> {
     let head = ctx.repo.pull_latest().await?;
@@ -118,7 +128,7 @@ async fn run_once(ctx: &Ctx) -> Result<()> {
     let built_objects = nix::build_kubenix(&ctx.repo.path, &ctx.opts.kubenix_attrpath).await?;
 
     let plan = if let Some((_, objects)) = state {
-        if built_objects == objects {
+        if hash(&built_objects)? == hash(&objects)? {
             info!("built objects haven't changed");
             ctx.state.set(&head, &built_objects).await?;
             return Ok(());
