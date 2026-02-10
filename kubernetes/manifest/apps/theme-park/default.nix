@@ -114,6 +114,50 @@
         }
       ];
     };
+
+    resources.httpRoutes.theme-park.spec = {
+      parentRefs = [
+        {
+          group = "gateway.networking.k8s.io";
+          kind = "Gateway";
+          name = "shared";
+          namespace = "default";
+        }
+      ];
+      hostnames = [
+        "theme-park.juliamertz.dev"
+      ];
+      rules = [
+        {
+          matches = [
+            {
+              path = {
+                type = "PathPrefix";
+                value = "/";
+              };
+            }
+          ];
+          backendRefs = [
+            {
+              group = "";
+              kind = "Service";
+              name = "theme-park";
+              port = 80;
+              weight = 1;
+            }
+          ];
+        }
+      ];
+    };
+    resources.sanInjections.theme-park.spec = {
+      targetCertificate = {
+        name = "gateway-tls";
+        namespace = "default";
+      };
+      hostnames = [
+        "theme-park.juliamertz.dev"
+      ];
+    };
   };
 
   submodule = {
