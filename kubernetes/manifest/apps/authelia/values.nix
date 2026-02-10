@@ -131,6 +131,24 @@
       enabled = true;
       filename = "/config/notification.txt";
     };
+
+    identity_providers.oidc.clients = [
+      {
+        client_id = "jellyfin";
+        client_name = "Jellyfin";
+        client_secret = "ref+sops://secrets/kubenix.yaml#/authelia/oidc/jellyfin/clientSecretDigest";
+        public = false;
+        authorization_policy = "two_factor";
+        require_pkce = true;
+        pkce_challenge_method = "S256";
+        redirect_uris = ["https://watch.juliamertz.dev.com/sso/OID/redirect/authelia"];
+        scopes = ["openid" "profile" "groups"];
+        response_types = ["code"];
+        grant_types = ["authorization_code"];
+        access_token_signed_response_alg = "none";
+        token_endpoint_auth_method = "client_secret_post";
+      }
+    ];
   };
 
   persistence.enabled = false;
@@ -153,22 +171,4 @@
       }
     ];
   };
-
-  identity_providers.oidc.clients = [
-    {
-      client_id = "jellyfin";
-      client_name = "Jellyfin";
-      client_secret = "ref+sops://secrets/kubenix.yaml#/authelia/oidc/jellyfin/clientSecretDigest";
-      public = false;
-      authorization_policy = "two_factor";
-      require_pkce = true;
-      pkce_challenge_method = "S256";
-      redirect_uris = ["https://watch.juliamertz.dev.com/sso/OID/redirect/authelia"];
-      scopes = ["openid" "profile" "groups"];
-      response_types = ["code"];
-      grant_types = ["authorization_code"];
-      access_token_signed_response_alg = "none";
-      token_endpoint_auth_method = "client_secret_post";
-    }
-  ];
 }
