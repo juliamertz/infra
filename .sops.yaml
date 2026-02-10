@@ -6,6 +6,10 @@ creation_rules:
     key_groups:
       - age:
           - *julia
+  - path_regex: secrets/kubenix.yaml
+    key_groups:
+      - age:
+          - *julia
   - path_regex: secrets/wireguard.yaml
     key_groups:
       - age:

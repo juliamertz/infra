@@ -184,6 +184,7 @@
           pkgs.nix-eval-jobs
           pkgs.awscli
           pkgs.wget
+          pkgs.vals
           k8s-build
           k8s-apply
           k8s-diffcmd
@@ -219,7 +220,8 @@
         paths = [
           controllers
           pkgsTarget.nix
-          pkgs.dockerTools.caCertificates
+          pkgsTarget.vals
+          pkgsTarget.dockerTools.caCertificates
         ];
         pathsToLink = [
           "/bin"

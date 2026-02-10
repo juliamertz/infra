@@ -8,18 +8,22 @@ services:
         value: https://github.com/juliamertz/infra.git
       - name: INTERVAL
         value: "30"
+      - name: SOPS_AGE_KEY_FILE
+        value: /etc/sops/age/keys.txt
+    volumes:
+      - name: sops-age-key
+        secret:
+          secretName: sops-age-key
+    volumeMounts:
+      - name: sops-age-key
+        mountPath: /etc/sops/age
+        readOnly: true
     resources:
       requests:
         cpu: 200m
         memory: 256Mi
       limits:
         cpu: 1000m
-    # volumes:
-    #   - name: nix-store
-    #     mountPath: /nix/store
-    #     storage:
-    #       size: 2Gi
-    #       className: longhorn-local
 
   - cmd: cert-approver
     extraEnv:

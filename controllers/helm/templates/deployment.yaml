@@ -1,21 +1,4 @@
 {{ range $service := $.Values.services }}
-
-{{ if $service.volumes }}
-{{ range $volume := $service.volumes }}
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: {{ $volume.name }}-claim
-spec:
-  accessModes: ['ReadWriteOnce']
-  storageClassName: {{ $volume.storage.className }}
-  resources:
-    requests:
-      storage: {{ $volume.storage.size }}
-{{ end }}
-{{ end }}
-
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -45,14 +28,10 @@ spec:
       terminationGracePeriodSeconds: 15
       imagePullSecrets:
       - name: github-registry
-      {{ if $service.volumes }}
+      {{- if $service.volumes }}
       volumes:
-      {{ range $volume := $service.volumes }}
-        - name: {{ $volume.name }}
-          persistentVolumeClaim:
-            claimName: {{ $volume.name }}-claim
-      {{ end }}
-      {{ end }}
+        {{ $service.volumes | toYaml | nindent 8 }}
+      {{- end }}
       containers:
         - name: infra-controller
           image: {{ $.Values.steiger.infraControllers.image }}
@@ -69,6 +48,10 @@ spec:
             {{- if $service.extraEnv }}
             {{ $service.extraEnv | toYaml | nindent 12 }}
             {{ end }}
+          {{- if $service.volumeMounts }}
+          volumeMounts:
+            {{ $service.volumeMounts | toYaml | nindent 12 }}
+          {{- end }}
           imagePullPolicy: IfNotPresent
           resources:
           {{- if $service.resources }}
@@ -80,12 +63,5 @@ spec:
             limits:
               cpu: 40m
               memory: 80Mi
-          {{ end }}
-          {{ if $service.volumes }}
-          volumeMounts:
-          {{ range $volume := $service.volumes }}
-            - mountPath: {{ $volume.mountPath }}
-              name: {{ $volume.name }}
-          {{ end }}
           {{ end }}
 {{ end }}
