@@ -1,7 +1,7 @@
-use std::io::stdin;
 use std::path::{Path, PathBuf};
 use std::process::Stdio;
 
+use anyhow::anyhow;
 use serde::Deserialize;
 use tokio::fs;
 use tokio::io::{AsyncBufReadExt, AsyncRead, AsyncWriteExt, BufReader};
@@ -28,6 +28,8 @@ pub enum BuildError {
     Json(#[from] serde_json::Error),
     #[error("exited: {0:?}")]
     Exit(std::process::ExitStatus),
+    #[error("{0}")]
+    Anyhow(#[from] anyhow::Error),
 }
 
 #[instrument(err(Debug))]
@@ -67,13 +69,14 @@ pub async fn build(dir: &Path, attrpath: &str) -> Result<PathBuf, BuildError> {
     }
 }
 
-async fn substitute_vars(content: impl AsRef<[u8]>) -> Result<String, anyhow::Error> {
+async fn substitute_vars(working_directory: &Path, content: impl AsRef<[u8]>) -> Result<String, anyhow::Error> {
     let mut root_cmd = tokio::process::Command::new("vals");
     let cmd = root_cmd
+        .current_dir(working_directory)
+        .env("SOPS_AGE_KEY_FILE", "/etc/sops/age/keys.txt")
         .stdin(Stdio::piped())
         .stdout(Stdio::piped())
         .stderr(Stdio::piped())
-        .env("SOPS_AGE_KEY_FILE", "/etc/sops/age/keys.txt")
         .arg("eval")
         .arg("-o")
         .arg("json")
@@ -94,7 +97,8 @@ async fn substitute_vars(content: impl AsRef<[u8]>) -> Result<String, anyhow::Er
         let stdout = String::from_utf8_lossy(&output.stdout);
         Ok(stdout.to_string())
     } else {
-        todo!()
+        let stderr = String::from_utf8_lossy(&output.stderr);
+        Err(anyhow!("vals substitution failed: {stderr}"))
     }
 }
 
@@ -110,6 +114,6 @@ pub async fn build_kubenix(
 ) -> Result<Vec<kube::api::DynamicObject>, BuildError> {
     let out_path = build(dir, attrpath).await?;
     let content = fs::read_to_string(&out_path).await?;
-    let templated = substitute_vars(&content).await.unwrap();
+    let templated = substitute_vars(&dir, &content).await?;
     Ok(serde_json::from_str::<ObjectList>(&templated)?.items)
 }
