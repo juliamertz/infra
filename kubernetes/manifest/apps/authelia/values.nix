@@ -141,7 +141,7 @@
         authorization_policy = "two_factor";
         require_pkce = true;
         pkce_challenge_method = "S256";
-        redirect_uris = ["https://watch.juliamertz.dev.com/sso/OID/redirect/authelia"];
+        redirect_uris = ["https://watch.juliamertz.dev/sso/OID/redirect/authelia"];
         scopes = ["openid" "profile" "groups"];
         response_types = ["code"];
         grant_types = ["authorization_code"];
