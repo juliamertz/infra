@@ -18,6 +18,14 @@
 
     resources.namespaces.authelia = {};
 
+    resources.secrets.authelia-secrets.stringData = {
+      SESSION_SECRET = "ref+sops://secrets/kubenix.yaml#/authelia/sessionSecret";
+      STORAGE_ENCRYPTION_KEY = "ref+sops://secrets/kubenix.yaml#/authelia/storageEncryptionKey";
+      USERS_DATABASE = "ref+sops://secrets/kubenix.yaml#/authelia/usersDatabase";
+      OIDC_HMAC_SECRET = "ref+sops://secrets/kubenix.yaml#/authelia/oidc/secret";
+      OIDC_JWKS_KEY = "ref+sops://secrets/kubenix.yaml#/authelia/oidc/jwksKey";
+    };
+
     resources.referenceGrants.allow-securitypolicy-from-tailscale-agent.spec = {
       from = [
         {

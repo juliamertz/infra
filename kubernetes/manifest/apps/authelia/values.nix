@@ -12,6 +12,12 @@
         memory = "500Mi";
       };
     };
+    env = [
+      {
+        name = "AUTHELIA_IDENTITY_PROVIDERS_OIDC_HMAC_SECRET_FILE";
+        value = "/secrets/authelia-secrets/oidc.hmac.key";
+      }
+    ];
     extraVolumeMounts = [
       {
         name = "users-db";
@@ -132,13 +138,29 @@
       filename = "/config/notification.txt";
     };
 
-    identity_providers.oidc.clients = [
+    identity_providers.oidc = {
+      enabled = true;
+      hmac_secret = {
+        disabled = true;
+      };
+      jwks = [
+        {
+          algorithm = "RS256";
+          use = "sig";
+          key = {
+            disabled = false;
+            secret_name = "authelia-secrets";
+            path = "/secrets/authelia-secrets/oidc.jwks.pem";
+          };
+        }
+      ];
+      clients = [
       {
         client_id = "jellyfin";
         client_name = "Jellyfin";
         client_secret = "ref+sops://secrets/kubenix.yaml#/authelia/oidc/jellyfin/clientSecretDigest";
         public = false;
-        authorization_policy = "two_factor";
+        authorization_policy = "one_factor";
         require_pkce = true;
         pkce_challenge_method = "S256";
         redirect_uris = ["https://watch.juliamertz.dev/sso/OID/redirect/authelia"];
@@ -149,6 +171,7 @@
         token_endpoint_auth_method = "client_secret_post";
       }
     ];
+    };
   };
 
   persistence.enabled = false;
@@ -162,6 +185,14 @@
       {
         key = "STORAGE_ENCRYPTION_KEY";
         path = "storage.encryption.key";
+      }
+      {
+        key = "OIDC_HMAC_SECRET";
+        path = "oidc.hmac.key";
+      }
+      {
+        key = "OIDC_JWKS_KEY";
+        path = "oidc.jwks.pem";
       }
     ];
     authelia-db-app.items = [
