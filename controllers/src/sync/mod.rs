@@ -117,28 +117,38 @@ async fn run_once(ctx: &Ctx) -> Result<()> {
     let span = tracing::info_span!("reconcile", ?head);
     let _guard = span.enter();
 
-    if let Some((curr, _)) = state
-        && curr == head
+    if let Some((ref curr, _)) = state
+        && *curr == head
     {
-        debug!("already up to date");
+        debug!("already up to date at {head}");
         return Ok(());
     }
 
+    debug!(
+        "revision changed: {} -> {head}",
+        state.as_ref().map(|(id, _)| id.to_string()).unwrap_or_else(|| "none".into())
+    );
+
     info!("building latest revision");
     let built_objects = nix::build_kubenix(&ctx.repo.path, &ctx.opts.kubenix_attrpath).await?;
+    debug!("build produced {} objects", built_objects.len());
 
     let plan = if let Some((_, objects)) = state {
-        if hash(&built_objects)? == hash(&objects)? {
-            info!("built objects haven't changed");
+        let old_hash = hash(&objects)?;
+        let new_hash = hash(&built_objects)?;
+        debug!("old hash: {old_hash:x}, new hash: {new_hash:x}");
+        if old_hash == new_hash {
+            debug!("object hashes match, skipping reconcile");
             ctx.state.set(&head, &built_objects).await?;
             return Ok(());
         }
-        // TODO: needless clone
         reconcile::Plan::new(objects, built_objects.clone())
     } else {
+        debug!("no previous state, performing initial sync");
         reconcile::Plan::new(vec![], built_objects.clone())
     };
 
+    info!("applying {} actions", plan.actions.len());
     let kube = ctx.kube.clone();
     if let Err(errors) = plan.apply(kube).await {
         error!(
@@ -147,7 +157,7 @@ async fn run_once(ctx: &Ctx) -> Result<()> {
             plan.actions.len()
         );
     } else {
-        info!("succesfully applied revision");
+        info!("successfully applied revision {head}");
     }
 
     ctx.state.set(&head, &built_objects).await?;
