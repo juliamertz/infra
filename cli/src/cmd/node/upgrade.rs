@@ -62,6 +62,8 @@ pub async fn do_upgrade(
     image: &talos::Image,
     params: &talos::UpgradeParams,
 ) -> Result<()> {
+    // TODO: check current image of member, if it's the same we can just return
+
     let nodes = Api::<Node>::all(ctx.kube.clone());
     let name = member.hostname();
     let ip = member

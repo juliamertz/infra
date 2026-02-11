@@ -1,6 +1,6 @@
-use std::{cmp::Ordering, net::Ipv4Addr, path::PathBuf, process::Stdio};
+use std::{borrow::Cow, cmp::Ordering, net::Ipv4Addr, path::PathBuf, process::Stdio};
 
-use anyhow::{Context, Result};
+use anyhow::{Context, Result, anyhow};
 use futures::StreamExt;
 use reqwest::{Body, Client};
 use serde::{Deserialize, de::DeserializeOwned};
@@ -61,11 +61,7 @@ impl TalosFactory {
         Ok(parsed.pop().expect("atleast one version").to_string())
     }
 
-    pub async fn get_image(
-        &self,
-        version: impl AsRef<str>,
-        customization: impl Into<Body>,
-    ) -> Result<Image> {
+    pub async fn get_image(&self, version: &str, customization: impl Into<Body>) -> Result<Image> {
         let schematic: SchematicsResponse = self
             .http
             .post(self.endpoint("/schematics"))
@@ -77,7 +73,20 @@ impl TalosFactory {
             .await?;
 
         let id = schematic.id;
-        let version = version.as_ref();
+        let version = if version.starts_with("v") {
+            Cow::Borrowed(version)
+        } else {
+            if version
+                .chars()
+                .next()
+                .map(|char| char.is_ascii_digit())
+                .unwrap_or_default()
+            {
+                Cow::Owned(format!("v{version}"))
+            } else {
+                return Err(anyhow!("invalid version string"));
+            }
+        };
         let tag = format!("factory.talos.dev/hcloud-installer/{id}:{version}");
 
         Ok(Image {
@@ -89,12 +98,11 @@ impl TalosFactory {
 
     pub async fn download_image(
         &self,
-        version: impl AsRef<str>,
+        version: &str,
         customization: impl Into<Body>,
     ) -> Result<PathBuf> {
         let image_meta = self.get_image(&version, customization).await?;
         let image_id = std::str::from_utf8(&image_meta.id)?;
-        let version = version.as_ref();
         let url = self.endpoint(format!("/image/{image_id}/{version}/hcloud-amd64.raw.xz"));
 
         let out_path = std::env::temp_dir().join("talos-hcloud.raw.xz");
