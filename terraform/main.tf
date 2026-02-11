@@ -20,7 +20,7 @@ locals {
 module "production_k8s" {
   source = "./modules/hcloud/talos_cluster"
 
-  talos_version      = "1.11.1"
+  talos_version      = "1.12.3"
   kubernetes_version = "1.34.1"
 
   hcloud_token = var.production_hcloud_token
