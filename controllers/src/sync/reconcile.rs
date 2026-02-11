@@ -7,7 +7,7 @@ use kube::api::{
 use kube::core::Status;
 use kube::core::response::StatusSummary;
 use kube::discovery::{Discovery, Scope};
-use tracing::{debug_span, error, warn};
+use tracing::{debug, debug_span, error, warn};
 
 use crate::sync::MANAGER_NAME;
 
@@ -131,6 +131,7 @@ impl Action {
 
         match self {
             Action::Create(_) => {
+                debug!("creating");
                 api.patch(
                     &name,
                     &PatchParams::apply(MANAGER_NAME).force(),
@@ -140,6 +141,7 @@ impl Action {
             }
             Action::Delete(_) => {
                 let params = DeleteParams::default();
+                debug!("deleting");
                 let result = api.delete(&name, &params).await?;
 
                 if let Some(
