@@ -32,7 +32,7 @@
     ./apps/grafana
     ./apps/headscale
     ./apps/tailscale-agent
-    ./apps/victoria-metrics
+    # ./apps/victoria-metrics
     # ./apps/valheim-server
   ];
 in {

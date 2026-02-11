@@ -56,7 +56,20 @@ in {
       values = {
         remoteWrite = [{url = "http://victoria-logs-server:9428";}];
         collector = {
-          # fullnameOverride = "victoria-logs-collector";
+          tolerations = [
+            {
+              key = "node.kubernetes.io/role";
+              operator = "Equal";
+              value = "gameserver-node";
+              effect = "NoExecute";
+            }
+            {
+              key = "node.kubernetes.io/role";
+              operator = "Equal";
+              value = "autoscaler-node";
+              effect = "NoExecute";
+            }
+          ];
         };
       };
     };
