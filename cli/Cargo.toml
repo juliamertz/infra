@@ -8,20 +8,21 @@ name = "infra"
 path = "src/main.rs"
 
 [dependencies]
-anyhow = "1"
-clap = { version = "4", features = ["derive", "env"] }
+common = { workspace = true }
+anyhow = { workspace = true }
+clap = { workspace = true }
 reqwest = { version = "0.13", features = ["json", "stream"] }
-serde = { version = "1", features = ["derive"] }
-serde_json = "1"
-tokio = { version = "1.48.0", features = ["full"] }
+serde = { workspace = true }
+serde_json = { workspace = true }
+tokio = { workspace = true }
 version-compare = "0.2.1"
-kube = { version = "3", features = ["runtime", "derive", "client"] }
-k8s-openapi = { version = "0.27", features = ["v1_34", "schemars"] }
-k8s-openapi-ext = { version = "0.27" }
+kube = { workspace = true }
+k8s-openapi = { workspace = true }
+k8s-openapi-ext = { workspace = true }
 tonic = "0.14"
 serde_yaml = "0.9"
-tracing = "0.1"
-tracing-subscriber = { version = "0.3" }
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true }
 schemars = "1.1"
 chrono = "0.4"
 hcloud = "0.25"

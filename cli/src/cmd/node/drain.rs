@@ -1,25 +1,11 @@
 use std::process::Stdio;
 
 use anyhow::Result;
-use tokio::io::{AsyncBufReadExt, AsyncRead, BufReader};
+use common::proxy_stdio;
 use tokio::process::Command;
-use tracing::debug;
 
 use crate::Context;
 use crate::talos::Member;
-
-fn proxy_stdio<R>(reader: R)
-where
-    R: AsyncRead + Unpin + Send + 'static,
-{
-    let mut lines = BufReader::new(reader).lines();
-
-    tokio::spawn(async move {
-        while let Ok(Some(line)) = lines.next_line().await {
-            debug!("{line}")
-        }
-    });
-}
 
 pub async fn handle(_ctx: Context, member: &Member) -> Result<()> {
     let mut child = Command::new("kubectl")

@@ -19,6 +19,7 @@ craneLib.buildPackage rec {
       ../Cargo.lock
       ../cli/Cargo.toml
       ./Cargo.toml
+      ../common
       ./src
     ];
   };

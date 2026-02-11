@@ -2,23 +2,11 @@ use std::path::{Path, PathBuf};
 use std::process::Stdio;
 
 use anyhow::anyhow;
+use common::proxy_stdio;
 use serde::Deserialize;
 use tokio::fs;
-use tokio::io::{AsyncBufReadExt, AsyncRead, AsyncWriteExt, BufReader};
+use tokio::io::AsyncWriteExt;
 use tracing::{debug, info, instrument};
-
-fn proxy_stdio<R>(reader: R)
-where
-    R: AsyncRead + Unpin + Send + 'static,
-{
-    let mut lines = BufReader::new(reader).lines();
-
-    tokio::spawn(async move {
-        while let Ok(Some(line)) = lines.next_line().await {
-            debug!("{line}")
-        }
-    });
-}
 
 #[derive(Debug, thiserror::Error)]
 pub enum BuildError {
@@ -53,10 +41,8 @@ pub async fn build(dir: &Path, attrpath: &str) -> Result<PathBuf, BuildError> {
 
     let mut child = cmd.spawn()?;
 
-    let stdout = child.stdout.take().unwrap();
-    let stderr = child.stderr.take().unwrap();
-    proxy_stdio(stdout);
-    proxy_stdio(stderr);
+    proxy_stdio(child.stdout.take().unwrap());
+    proxy_stdio(child.stderr.take().unwrap());
 
     let status = child.wait().await?;
 
@@ -69,7 +55,10 @@ pub async fn build(dir: &Path, attrpath: &str) -> Result<PathBuf, BuildError> {
     }
 }
 
-async fn substitute_vars(working_directory: &Path, content: impl AsRef<[u8]>) -> Result<String, anyhow::Error> {
+async fn substitute_vars(
+    working_directory: &Path,
+    content: impl AsRef<[u8]>,
+) -> Result<String, anyhow::Error> {
     let mut root_cmd = tokio::process::Command::new("vals");
     let cmd = root_cmd
         .current_dir(working_directory)
