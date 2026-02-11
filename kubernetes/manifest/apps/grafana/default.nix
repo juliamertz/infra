@@ -222,7 +222,7 @@
       interval = "5m";
       chart.spec = {
         chart = "loki-stack";
-        version = "2.10.2";
+        version = "2.10.3";
         sourceRef = {
           kind = "HelmRepository";
           name = "grafana";
