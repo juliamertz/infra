@@ -162,13 +162,13 @@
         ${lib.getExe pkgs.colordiff} --nobanner -N -u -I ' kubenix/' -I ' generation: ' "$@"
       '';
       k8s-build = pkgs.writeShellScriptBin "k8s-build" ''
-        nix build .#manifest
+        nix build .#manifest && cat result | vals eval -f - > manifest.json
       '';
       k8s-apply = pkgs.writeShellScriptBin "k8s-apply" ''
-        k8s-build && ${lib.getExe pkgs.kubectl} apply --server-side --force-conflicts -f result
+        k8s-build && ${lib.getExe pkgs.kubectl} apply --server-side --force-conflicts -f manifest.json
       '';
       k8s-diffcmd = pkgs.writeShellScriptBin "k8s-diff" ''
-        k8s-build && KUBECTL_EXTERNAL_DIFF='${k8s-diff}' ${lib.getExe pkgs.kubectl} diff --server-side --force-conflicts -f result
+        k8s-build && KUBECTL_EXTERNAL_DIFF='${k8s-diff}' ${lib.getExe pkgs.kubectl} diff --server-side --force-conflicts -f manifest.json
       '';
     in {
       default = craneLib.devShell {
