@@ -68,21 +68,21 @@
         grafana = {
           resources = {
             requests = {
-              cpu = "25m";
-              memory = "200Mi";
+              cpu = "50m";
+              memory = "256Mi";
             };
             limits = {
-              cpu = "100m";
+              cpu = "250m";
               memory = "512Mi";
             };
           };
           sidecar.resources = {
             requests = {
-              cpu = "10m";
+              cpu = "25m";
               memory = "128Mi";
             };
             limits = {
-              cpu = "50m";
+              cpu = "100m";
               memory = "256Mi";
             };
           };
