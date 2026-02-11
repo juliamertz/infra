@@ -4,7 +4,27 @@ use gix::ObjectId;
 use tokio::fs;
 use tracing::{debug, info, instrument};
 
-use super::Result;
+#[derive(Debug, thiserror::Error)]
+pub enum Error {
+    #[error("i/o error: {0}")]
+    Io(#[from] std::io::Error),
+    #[error("git error: {0}")]
+    Git(#[from] gix::Error),
+    #[error("clone error: {0}")]
+    Clone(#[from] gix::clone::Error),
+    #[error("fetch error: {0}")]
+    Fetch(#[from] gix::clone::fetch::Error),
+    #[error("checkout error: {0}")]
+    Checkout(#[from] gix::clone::checkout::main_worktree::Error),
+    #[error("failed to peel reference: {0}")]
+    Peel(#[from] gix::reference::peel::Error),
+    #[error("failed find reference: {0}")]
+    FindReference(#[from] gix::reference::find::existing::Error),
+    #[error("failed to parse git URL: {0}")]
+    ParseURL(#[from] gix::url::parse::Error),
+}
+
+pub type Result<T, E = Error> = core::result::Result<T, E>;
 
 #[derive(Debug)]
 pub struct Repo {

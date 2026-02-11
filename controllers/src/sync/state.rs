@@ -7,6 +7,8 @@ use kube::Client;
 use kube::api::{Api, DynamicObject, Patch, PatchParams};
 use tracing::instrument;
 
+use crate::sync::MANAGER_NAME;
+
 use super::{Error, Result};
 
 pub struct State {
@@ -56,7 +58,7 @@ impl State {
             .data([("state", serde_json::to_string(state)?)])
             .annotations([(Self::REV_ANNOTATION, rev.to_string())]);
 
-        let patch_params = PatchParams::apply("sync-controller");
+        let patch_params = PatchParams::apply(MANAGER_NAME);
         self.configmaps
             .patch(Self::CONFIGMAP_NAME, &patch_params, &Patch::Apply(patch))
             .await?;

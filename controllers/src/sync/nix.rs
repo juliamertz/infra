@@ -1,29 +1,33 @@
 use std::path::{Path, PathBuf};
 use std::process::Stdio;
 
-use anyhow::anyhow;
 use common::proxy_stdio;
+use kube::api::DynamicObject;
 use serde::Deserialize;
 use tokio::fs;
-use tokio::io::AsyncWriteExt;
-use tracing::{debug, info, instrument};
+use tokio::process::Command;
+use tracing::{info, instrument};
+
+use crate::sync::vals;
 
 #[derive(Debug, thiserror::Error)]
 pub enum BuildError {
+    #[error("vals error: {0}")]
+    Vals(#[from] vals::Error),
     #[error("i/o error: {0}")]
     Io(#[from] std::io::Error),
     #[error("json error: {0}")]
     Json(#[from] serde_json::Error),
     #[error("exited: {0:?}")]
     Exit(std::process::ExitStatus),
-    #[error("{0}")]
-    Anyhow(#[from] anyhow::Error),
 }
 
+pub type BuildResult<T> = core::result::Result<T, BuildError>;
+
 #[instrument(err(Debug))]
-pub async fn build(dir: &Path, attrpath: &str) -> Result<PathBuf, BuildError> {
+pub async fn build(dir: &Path, attrpath: &str) -> BuildResult<PathBuf> {
     info!("starting nix build");
-    let mut root_cmd = tokio::process::Command::new("nix");
+    let mut root_cmd = Command::new("nix");
     let cmd = root_cmd
         .stdout(Stdio::piped())
         .stderr(Stdio::piped())
@@ -40,12 +44,10 @@ pub async fn build(dir: &Path, attrpath: &str) -> Result<PathBuf, BuildError> {
     }
 
     let mut child = cmd.spawn()?;
-
     proxy_stdio(child.stdout.take().unwrap());
     proxy_stdio(child.stderr.take().unwrap());
 
     let status = child.wait().await?;
-
     if status.success() {
         let out_path = fs::read_link(dir.join("result")).await?;
         info!({ ?out_path }, "build successful");
@@ -55,54 +57,18 @@ pub async fn build(dir: &Path, attrpath: &str) -> Result<PathBuf, BuildError> {
     }
 }
 
-async fn substitute_vars(
-    working_directory: &Path,
-    content: impl AsRef<[u8]>,
-) -> Result<String, anyhow::Error> {
-    let mut root_cmd = tokio::process::Command::new("vals");
-    let cmd = root_cmd
-        .current_dir(working_directory)
-        .env("SOPS_AGE_KEY_FILE", "/etc/sops/age/keys.txt")
-        .stdin(Stdio::piped())
-        .stdout(Stdio::piped())
-        .stderr(Stdio::piped())
-        .arg("eval")
-        .arg("-o")
-        .arg("json")
-        .arg("-f")
-        .arg("-");
-
-    debug!("spawning vals for sops substitution");
-
-    let mut child = cmd.spawn()?;
-    let mut stdin = child.stdin.take().unwrap();
-    stdin.write_all(content.as_ref()).await?;
-    stdin.flush().await?;
-    drop(stdin);
-
-    let output = child.wait_with_output().await?;
-
-    if output.status.success() {
-        let stdout = String::from_utf8_lossy(&output.stdout);
-        Ok(stdout.to_string())
-    } else {
-        let stderr = String::from_utf8_lossy(&output.stderr);
-        Err(anyhow!("vals substitution failed: {stderr}"))
-    }
-}
-
 #[derive(Debug, Deserialize)]
 struct ObjectList {
-    items: Vec<kube::api::DynamicObject>,
+    items: Vec<DynamicObject>,
 }
 
 #[instrument(err(Debug))]
 pub async fn build_kubenix(
     dir: &Path,
     attrpath: &str,
-) -> Result<Vec<kube::api::DynamicObject>, BuildError> {
+) -> BuildResult<Vec<DynamicObject>> {
     let out_path = build(dir, attrpath).await?;
     let content = fs::read_to_string(&out_path).await?;
-    let templated = substitute_vars(&dir, &content).await?;
+    let templated = vals::eval(&dir, &content).await?;
     Ok(serde_json::from_str::<ObjectList>(&templated)?.items)
 }

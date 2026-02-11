@@ -10,9 +10,12 @@ mod nix;
 mod reconcile;
 mod repo;
 mod state;
+mod vals;
 
 use repo::Repo;
 use state::State;
+
+pub const MANAGER_NAME: &str = "sync-controller";
 
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
@@ -23,19 +26,7 @@ pub enum Error {
     #[error("kube error: {0}")]
     Kube(#[from] kube::Error),
     #[error("git error: {0}")]
-    Git(#[from] gix::Error),
-    #[error("clone error: {0}")]
-    Clone(#[from] gix::clone::Error),
-    #[error("fetch error: {0}")]
-    Fetch(#[from] gix::clone::fetch::Error),
-    #[error("checkout error: {0}")]
-    Checkout(#[from] gix::clone::checkout::main_worktree::Error),
-    #[error("failed to peel reference: {0}")]
-    Peel(#[from] gix::reference::peel::Error),
-    #[error("failed find reference: {0}")]
-    FindReference(#[from] gix::reference::find::existing::Error),
-    #[error("failed to parse git URL: {0}")]
-    ParseURL(#[from] gix::url::parse::Error),
+    Repo(#[from] repo::Error),
     #[error("nix build error: {0}")]
     Nixbuild(#[from] nix::BuildError),
     #[error("reconcile error: {0}")]
@@ -118,19 +109,24 @@ async fn run_once(ctx: &Ctx) -> Result<()> {
     let _guard = span.enter();
 
     if let Some((ref curr, _)) = state
-        && *curr == head
+        && curr == &head
     {
         debug!("already up to date at {head}");
         return Ok(());
     }
 
-    debug!(
+    info!(
         "revision changed: {} -> {head}",
-        state.as_ref().map(|(id, _)| id.to_string()).unwrap_or_else(|| "none".into())
+        state
+            .as_ref()
+            .map(|(id, _)| id.to_string())
+            .unwrap_or_else(|| "none".into())
     );
 
     info!("building latest revision");
+
     let built_objects = nix::build_kubenix(&ctx.repo.path, &ctx.opts.kubenix_attrpath).await?;
+
     debug!("build produced {} objects", built_objects.len());
 
     let plan = if let Some((_, objects)) = state {

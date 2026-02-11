@@ -7,7 +7,9 @@ use kube::api::{
 use kube::core::Status;
 use kube::core::response::StatusSummary;
 use kube::discovery::{Discovery, Scope};
-use tracing::error;
+use tracing::{debug_span, error, warn};
+
+use crate::sync::MANAGER_NAME;
 
 fn namespace_or_default(object: &DynamicObject) -> &str {
     object
@@ -40,8 +42,19 @@ pub enum Error {
 
 type Result<T, E = Error> = std::result::Result<T, E>;
 
-#[derive(Debug, Clone)]
+#[derive(Clone)]
 pub struct Resource(pub DynamicObject);
+
+impl std::fmt::Debug for Resource {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let kind = self
+            .types
+            .as_ref()
+            .map(|types| types.kind.as_str())
+            .unwrap_or("unknown");
+        f.debug_tuple("Resource").field(&kind).finish()
+    }
+}
 
 impl Deref for Resource {
     type Target = DynamicObject;
@@ -112,25 +125,21 @@ impl Action {
             Api::namespaced_with(client.clone(), namespace, &api_resource)
         };
 
+        let obj = resource.deref();
+        let span = debug_span!("running action", action = ?self, name = fullname(obj));
+        let _guard = span.enter();
+
         match self {
             Action::Create(_) => {
-                let obj = resource.deref();
-
-                tracing::debug!({ name = fullname(obj) }, "applying");
-
                 api.patch(
                     &name,
-                    &PatchParams::apply("sync-controller").force(),
+                    &PatchParams::apply(MANAGER_NAME).force(),
                     &Patch::Apply(obj),
                 )
                 .await?;
             }
             Action::Delete(_) => {
-                let obj = resource.deref();
                 let params = DeleteParams::default();
-
-                tracing::debug!({ name = fullname(obj) }, "deleting");
-
                 let result = api.delete(&name, &params).await?;
 
                 if let Some(
@@ -140,7 +149,10 @@ impl Action {
                     },
                 ) = result.right()
                 {
-                    tracing::error!(
+                    if status.is_not_found() {
+                        warn!("resource not found, skipping deletion");
+                    }
+                    error!(
                         { e = &Error::Status(status) as &dyn std::error::Error },
                         "error deleting resource"
                     );
