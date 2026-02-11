@@ -11,6 +11,7 @@
     ./api-server.nix
     ./barman.nix
     ./identities.nix
+    ./github-registry.nix
     ./base/cert-manager
     ./base/cloudnative-pg
     ./base/dragonfly-operator

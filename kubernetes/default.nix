@@ -7,11 +7,7 @@
   inherit (pkgs.stdenv.hostPlatform) system;
 
   output = kubenix.evalModules.${system} {
-    module = {kubenix, ...}: {
-      imports = [
-        ./manifest
-      ];
-    };
+    module = {...}: {imports = [./modules];};
     specialArgs = {
       util = import ./util.nix {inherit pkgs lib;};
       crds = import ./types;
