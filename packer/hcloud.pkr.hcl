@@ -38,8 +38,9 @@ variable "server_location" {
 }
 
 locals {
-  image_arm = var.image_url_arm != null ? var.image_url_arm : "https://factory.talos.dev/image/376567988ad370138ad8b2698212367b8edcb69b5fd68c80be1f2ec7d603b4ba/${var.talos_version}/hcloud-arm64.raw.xz"
-  image_x86 = var.image_url_x86 != null ? var.image_url_x86 : "https://factory.talos.dev/image/376567988ad370138ad8b2698212367b8edcb69b5fd68c80be1f2ec7d603b4ba/${var.talos_version}/hcloud-amd64.raw.xz"
+  schematic = "613e1592b2da41ae5e265e8789429f22e121aab91cb4deb6bc3c0b6262961245"
+  image_arm = var.image_url_arm != null ? var.image_url_arm : "https://factory.talos.dev/image/${local.schematic}/${var.talos_version}/hcloud-arm64.raw.xz"
+  image_x86 = var.image_url_x86 != null ? var.image_url_x86 : "https://factory.talos.dev/image/${local.schematic}/${var.talos_version}/hcloud-amd64.raw.xz"
 
   download_image = "wget --timeout=5 --waitretry=5 --tries=5 --retry-connrefused --inet4-only -O /tmp/talos.raw.xz "
 
