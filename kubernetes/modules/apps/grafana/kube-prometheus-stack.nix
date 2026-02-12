@@ -37,12 +37,25 @@
           };
           adminPassword = "";
           adminUser = "";
+          plugins = [
+            "victoriametrics-logs-datasource"
+          ];
           additionalDataSources = [
             {
               name = "Loki";
               type = "loki";
               access = "proxy";
               url = "http://loki-stack:3100";
+              jsonData.maxLines = 1000;
+              version = 1;
+              editable = true;
+              isDefault = false;
+            }
+            {
+              name = "VictoriaLogs";
+              type = "victoriametrics-logs-datasource";
+              access = "proxy";
+              url = "http://victoria-logs-server.victoria-metrics:9428";
               jsonData.maxLines = 1000;
               version = 1;
               editable = true;

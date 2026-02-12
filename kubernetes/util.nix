@@ -11,6 +11,8 @@
   in
     builtins.readFile json |> builtins.fromJSON;
 
+  loadYAML = path: builtins.readFile path |> fromYAML;
+
   fetchYAML = {
     url,
     sha256 ? "",
@@ -29,4 +31,4 @@
       inherit name;
     };
   };
-in {inherit fromYAML fetchYAML isCrd configMapValueRef;}
+in {inherit fromYAML loadYAML fetchYAML isCrd configMapValueRef;}

@@ -2,20 +2,28 @@
   config,
   kubenix,
   crds,
+  util,
+  lib,
   ...
-}: let
-  sourceRef = {
-    kind = "HelmRepository";
-    name = "victoria-metrics";
-  };
-in {
+}: {
   imports = with kubenix.modules; [
     submodule
     k8s
     crds
   ];
 
-  kubernetes = {
+  kubernetes = let
+    vectorChart = {
+      spec = {
+        chart = "vector";
+        version = "0.50.0";
+        sourceRef = {
+          kind = "HelmRepository";
+          name = "vector";
+        };
+      };
+    };
+  in {
     namespace = "victoria-metrics";
 
     resources.namespaces.victoria-metrics.metadata.labels = {
@@ -24,20 +32,25 @@ in {
       "pod-security.kubernetes.io/warn" = "privileged";
     };
 
-    resources.helmRepositories.${sourceRef.name}.spec = {
+    resources.helmRepositories.victoria-metrics.spec = {
       url = "https://victoriametrics.github.io/helm-charts/";
+    };
+    resources.helmRepositories.vector.spec = {
+      url = "https://helm.vector.dev";
     };
 
     resources.helmReleases.victoria-logs.spec = {
       chart.spec = {
         chart = "victoria-logs-single";
         version = "0.11.26";
-        inherit sourceRef;
+        sourceRef = {
+          kind = "HelmRepository";
+          name = "victoria-metrics";
+        };
       };
       values = {
         server = {
           fullnameOverride = "victoria-logs-server";
-          # retentionPeriod = "14d";
           retentionDiskSpaceUsage = "5GiB";
           persistentVolume = {
             size = "5Gi";
@@ -47,30 +60,19 @@ in {
       };
     };
 
-    resources.helmReleases.victoria-logs-collector.spec = {
-      chart.spec = {
-        chart = "victoria-logs-collector";
-        version = "0.2.9";
-        inherit sourceRef;
-      };
+    resources.helmReleases.vector.spec = {
+      chart = vectorChart;
       values = {
-        remoteWrite = [{url = "http://victoria-logs-server:9428";}];
-        collector = {
-          tolerations = [
-            {
-              key = "node.kubernetes.io/role";
-              operator = "Equal";
-              value = "gameserver-node";
-              effect = "NoExecute";
-            }
-            {
-              key = "node.kubernetes.io/role";
-              operator = "Equal";
-              value = "autoscaler-node";
-              effect = "NoExecute";
-            }
-          ];
-        };
+        role = "Aggregator";
+        customConfig = lib.importTOML ./aggregator.toml;
+      };
+    };
+
+    resources.helmReleases.vector-agent.spec = {
+      chart = vectorChart;
+      values = {
+        role = "Agent";
+        customConfig = lib.importTOML ./agent.toml;
       };
     };
   };
