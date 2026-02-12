@@ -107,28 +107,6 @@
             {
               path = {
                 type = "PathPrefix";
-                value = "/auth/authorize";
-              };
-            }
-          ];
-          filters = [
-            {
-              type = "RequestRedirect";
-              requestRedirect = {
-                path = {
-                  type = "ReplaceFullPath";
-                  replaceFullPath = "/auth/oidc/welcome";
-                };
-                statusCode = 302;
-              };
-            }
-          ];
-        }
-        {
-          matches = [
-            {
-              path = {
-                type = "PathPrefix";
                 value = "/";
               };
             }
