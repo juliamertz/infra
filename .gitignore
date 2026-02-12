@@ -14,3 +14,4 @@ target
 .awsrc
 .DS_Store
 .env
+etcd.backup
