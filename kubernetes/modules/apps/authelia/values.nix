@@ -154,23 +154,41 @@
           };
         }
       ];
-      clients = [
-      {
-        client_id = "jellyfin";
-        client_name = "Jellyfin";
-        client_secret = "ref+sops://secrets/kubenix.yaml#/authelia/oidc/jellyfin/clientSecretDigest";
-        public = false;
-        authorization_policy = "one_factor";
-        require_pkce = true;
-        pkce_challenge_method = "S256";
-        redirect_uris = ["https://watch.juliamertz.dev/sso/OID/redirect/authelia"];
-        scopes = ["openid" "profile" "groups"];
-        response_types = ["code"];
-        grant_types = ["authorization_code"];
-        access_token_signed_response_alg = "none";
-        token_endpoint_auth_method = "client_secret_post";
-      }
-    ];
+      clients = let
+        mkClient = {
+          id,
+          name,
+          secret,
+          redirectUri,
+        }: {
+          client_id = id;
+          client_name = name;
+          client_secret = secret;
+          public = false;
+          authorization_policy = "one_factor";
+          require_pkce = true;
+          pkce_challenge_method = "S256";
+          redirect_uris = [redirectUri];
+          scopes = ["openid" "profile" "groups"];
+          response_types = ["code"];
+          grant_types = ["authorization_code"];
+          access_token_signed_response_alg = "none";
+          token_endpoint_auth_method = "client_secret_post";
+        };
+      in [
+        (mkClient {
+          id = "jellyfin";
+          name = "Jellyfin";
+          secret = "ref+sops://secrets/kubenix.yaml#/authelia/oidc/jellyfin/clientSecretDigest";
+          redirectUri = "https://watch.juliamertz.dev/sso/OID/redirect/authelia";
+        })
+        (mkClient {
+          id = "home-assistant";
+          name = "Home Assistant";
+          secret = "ref+sops://secrets/kubenix.yaml#/authelia/oidc/homeAssistant/clientSecretDigest";
+          redirectUri = "https://hass.juliamertz.dev/auth/oidc/callback";
+        })
+      ];
     };
   };
 
