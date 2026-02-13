@@ -3,6 +3,8 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   name: infra-controller-admin
+  labels:
+    app.kubernetes.io/part-of: infra
 rules:
   - apiGroups:
       - '*'
@@ -16,6 +18,8 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   name: infra-controller
+  labels:
+    app.kubernetes.io/part-of: infra
 rules:
   - apiGroups:
       - ''

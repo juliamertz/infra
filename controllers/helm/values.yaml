@@ -11,7 +11,7 @@ services:
       - name: SOPS_AGE_KEY_FILE
         value: /etc/sops/age/keys.txt
     volumeClaims:
-      - name: nix-store
+      - name: nix
         accessModes: [ReadWriteOnce]
         storage:
           size: 1Gi
@@ -20,10 +20,15 @@ services:
       - name: sops-age-key
         secret:
           secretName: sops-age-key
+      - name: nix
+        persistentVolumeClaim:
+          claimName: nix
     volumeMounts:
       - name: sops-age-key
         mountPath: /etc/sops/age
         readOnly: true
+      - name: nix
+        mountPath: /builder/nix
     resources:
       requests:
         cpu: 200m

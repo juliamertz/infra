@@ -9,6 +9,6 @@ deploy:
   infra-controllers:
     type: helm
     path: controllers/helm
-    namespace: kube-system
+    namespace: infra
     valuesFiles:
       - controllers/helm/values.yaml

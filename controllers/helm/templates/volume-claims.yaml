@@ -1,20 +1,20 @@
 {{ range $service := $.Values.services }}
 {{ if $service.volumeClaims }}
 {{ range $claim := $service.volumeClaims }}
-{{ with $claim }}
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
+  name: {{ $claim.name }}
   labels:
-  name: {{ .name }}
+    app.kubernetes.io/name: {{ $service.cmd }}-claim-{{ $claim.name }}
+    app.kubernetes.io/part-of: infra
 spec:
   accessModes:
-    {{ .accessModes | toYaml | nindent 4 }}
+    {{ $claim.accessModes | toYaml | nindent 4 }}
   resources:
     requests:
-      storage: {{ .storage.size }}
-  storageClassName: {{ .storage.className }}
-{{ end }}
+      storage: {{ $claim.storage.size }}
+  storageClassName: {{ $claim.storage.className }}
 {{ end }}
 {{ end }}
 {{ end }}
