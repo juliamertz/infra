@@ -83,10 +83,27 @@ impl From<DynamicObject> for Resource {
     }
 }
 
-#[derive(Debug)]
+impl Resource {
+    fn kind(&self) -> &str {
+        self.types
+            .as_ref()
+            .map(|types| types.kind.as_str())
+            .unwrap_or("unknown")
+    }
+}
+
 pub enum Action {
     Create(Resource),
     Delete(Resource),
+}
+
+impl std::fmt::Debug for Action {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Create(resource) => f.debug_tuple("Create").field(&resource.kind()).finish(),
+            Self::Delete(resource) => f.debug_tuple("Delete").field(&resource.kind()).finish(),
+        }
+    }
 }
 
 impl Action {
@@ -126,12 +143,13 @@ impl Action {
         };
 
         let obj = resource.deref();
-        let span = debug_span!("running action", action = ?self, name = fullname(obj));
+        let span = debug_span!("reconcile", action = ?self, name = fullname(obj));
         let _guard = span.enter();
+
+        debug!("running action");
 
         match self {
             Action::Create(_) => {
-                debug!("creating");
                 api.patch(
                     &name,
                     &PatchParams::apply(MANAGER_NAME).force(),
@@ -141,7 +159,6 @@ impl Action {
             }
             Action::Delete(_) => {
                 let params = DeleteParams::default();
-                debug!("deleting");
                 let result = api.delete(&name, &params).await?;
 
                 if let Some(
