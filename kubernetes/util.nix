@@ -1,4 +1,5 @@
 {
+  kubenix,
   pkgs,
   lib,
   ...
@@ -31,4 +32,24 @@
       inherit name;
     };
   };
-in {inherit fromYAML loadYAML fetchYAML isCrd configMapValueRef;}
+
+  util = {inherit fromYAML loadYAML fetchYAML isCrd configMapValueRef;};
+
+  evalKubenix = imports: let
+    inherit (pkgs.stdenv.hostPlatform) system;
+    output = kubenix.evalModules.${system} {
+      module = {...}: {inherit imports;};
+      specialArgs = {
+        inherit util;
+        crds = import ./types;
+      };
+    };
+  in
+    output.config.kubernetes.result
+    // {
+      passthru = {
+        module = output;
+      };
+    };
+in
+  util // {inherit evalKubenix;}

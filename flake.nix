@@ -46,99 +46,59 @@
           inherit overlays;
           config.allowUnfree = true;
         }));
-
-    mkTargetFromEnv = name: let
-      targetEnv = key: builtins.getEnv "NIXOS_HOST_${lib.toUpper name}_${lib.toUpper key}";
-    in {
-      targetHost = targetEnv "ip";
-      targetUser = targetEnv "ssh_user";
-      targetPort = targetEnv "ssh_port" |> lib.strings.toIntBase10;
-    };
   in {
-    packages = forAllSystems (pkgs: rec {
-      k8s = import ./kubernetes {inherit pkgs kubenix;};
-      manifest = k8s.config.kubernetes.result;
-
-      renovateConfig = let
-        helmRepos =
-          k8s.config.kubernetes.generated.items
-          |> builtins.filter (i: i.kind == "HelmRepository")
-          |> map (i: {
-            name = i.metadata.name;
-            url = i.spec.url;
-            isOci = (i.spec.type or null) == "oci";
-          });
-
-        mkMatchString = name: "chart\\s*=\\s*\"(?<depName>[^\"]+)\";\\s*version\\s*=\\s*\"(?<currentValue>[^\"]+)\";\\s*sourceRef\\s*=\\s*\\{[^}]*name\\s*=\\s*\"${name}\"";
-
-        mkManager = repo:
-          if repo.isOci
-          then {
-            customType = "regex";
-            managerFilePatterns = ["/^.*\\.nix$/"];
-            matchStrings = [(mkMatchString repo.name)];
-            datasourceTemplate = "docker";
-            packageNameTemplate = "${builtins.replaceStrings ["oci://"] [""] repo.url}/{{depName}}";
-          }
-          else {
-            customType = "regex";
-            managerFilePatterns = ["/^.*\\.nix$/"];
-            matchStrings = [(mkMatchString repo.name)];
-            datasourceTemplate = "helm";
-            registryUrlTemplate = repo.url;
-          };
-      in
-        {
-          "$schema" = "https://docs.renovatebot.com/renovate-schema.json";
-          extends = [
-            "config:recommended"
-          ];
-          kubernetes = {
-            managerFilePatterns = [
-              "/(^|/)kustomization\\.ya?ml$/"
-            ];
-            pinDigests = true;
-          };
-          flux = {
-            managerFilePatterns = [
-              "/k8s/.+\\.yaml$/"
-            ];
-          };
-          customManagers = map mkManager helmRepos;
-        }
-        |> builtins.toJSON
-        |> (text: pkgs.writeText "renovate" text);
+    packages = forAllSystems ({
+      pkgs,
+      lib,
+      stdenv,
+      ...
+    }: let
+      kubelib = import ./kubernetes/util.nix {inherit pkgs lib kubenix;};
+      packages = self.packages.${stdenv.hostPlatform.system};
+    in {
+      manifest = kubelib.evalKubenix [./kubernetes/modules];
+      manifest-vm = kubelib.evalKubenix [./kubernetes/modules/apps/victoria-metrics];
+      renovateConfig = pkgs.callPackage ./renovate.nix {inherit packages;};
     });
 
-    colmenaHive = colmena.lib.makeHive {
-      meta = {
-        nixpkgs = import inputs.nixpkgs {
-          system = "x86_64-linux";
-          overlays = [];
+    colmenaHive = let
+      mkTargetFromEnv = name: let
+        targetEnv = key: builtins.getEnv "NIXOS_HOST_${lib.toUpper name}_${lib.toUpper key}";
+      in {
+        targetHost = targetEnv "ip";
+        targetUser = targetEnv "ssh_user";
+        targetPort = targetEnv "ssh_port" |> lib.strings.toIntBase10;
+      };
+    in
+      colmena.lib.makeHive {
+        meta = {
+          nixpkgs = import inputs.nixpkgs {
+            system = "x86_64-linux";
+            overlays = [];
+          };
+          specialArgs = {
+            inherit inputs;
+          };
         };
-        specialArgs = {
-          inherit inputs;
+
+        defaults = import ./hive/defaults.nix inputs;
+
+        bastion = {...}: {
+          imports = [./hive/bastion];
+          deployment = mkTargetFromEnv "bastion";
+        };
+
+        topdog = {...}: {
+          imports = [./hive/topdog];
+          deployment = mkTargetFromEnv "topdog";
+        };
+
+        cube = {...}: {
+          imports = [./hive/cube];
+          deployment = mkTargetFromEnv "cube";
+          nixpkgs.system = "aarch64-linux";
         };
       };
-
-      defaults = import ./hive/defaults.nix inputs;
-
-      bastion = {...}: {
-        imports = [./hive/bastion];
-        deployment = mkTargetFromEnv "bastion";
-      };
-
-      topdog = {...}: {
-        imports = [./hive/topdog];
-        deployment = mkTargetFromEnv "topdog";
-      };
-
-      cube = {...}: {
-        imports = [./hive/cube];
-        deployment = mkTargetFromEnv "cube";
-        nixpkgs.system = "aarch64-linux";
-      };
-    };
 
     devShells = forAllSystems (pkgs: let
       inherit (pkgs.stdenv.hostPlatform) system;
@@ -170,6 +130,10 @@
       k8s-diffcmd = pkgs.writeShellScriptBin "k8s-diff" ''
         k8s-build && KUBECTL_EXTERNAL_DIFF='${k8s-diff}' ${lib.getExe pkgs.kubectl} diff --server-side --force-conflicts -f manifest.json
       '';
+
+      renovate-sync = pkgs.writeShellScriptBin "renovate-sync" ''
+        ${lib.getExe pkgs.jq} . ${self.packages.${system}.renovateConfig} > renovate.json
+      '';
     in {
       default = craneLib.devShell {
         packages = [
@@ -188,6 +152,7 @@
           k8s-build
           k8s-apply
           k8s-diffcmd
+          renovate-sync
           colmena.packages.${system}.colmena
           steiger.packages.${system}.default
           hcloud-upload-image
