@@ -27,19 +27,14 @@ pub type BuildResult<T> = core::result::Result<T, BuildError>;
 #[instrument(err(Debug))]
 pub async fn build(dir: &Path, attrpath: &str) -> BuildResult<PathBuf> {
     info!("starting nix build");
-    let nix_path = "/builder/nix";
     let mut root_cmd = Command::new("nix");
     let cmd = root_cmd
         .stdout(Stdio::piped())
         .stderr(Stdio::piped())
         .current_dir(dir)
-        .env("NIX_CONFIG", "build-users-group = ")
+        .env("NIX_CONFIG", include_str!("nix.conf"))
         .arg("--eval-store")
         .arg("/builder/nix/store")
-        .arg("--store")
-        .arg(format!(
-            "local?store={nix_path}/store&state={nix_path}/state&log={nix_path}/log"
-        ))
         .arg("--extra-experimental-features")
         .arg("nix-command flakes pipe-operators")
         .arg("build")
