@@ -20,6 +20,7 @@
       "pod-security.kubernetes.io/audit-version" = "latest";
       "pod-security.kubernetes.io/enforce-version" = "latest";
       "pod-security.kubernetes.io/warn-version" = "latest";
+      "vector.dev/exclude" = "true";
     };
 
     resources.headscaleUsers.kubernetes.spec = {

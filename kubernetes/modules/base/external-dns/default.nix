@@ -13,7 +13,9 @@
   kubernetes = {
     namespace = "external-dns";
 
-    resources.namespaces.external-dns = {};
+    resources.namespaces.external-dns.metadata.labels = {
+      "vector.dev/exclude" = "true";
+    };
 
     resources.helmRepositories.external-dns.spec = {
       url = "https://kubernetes-sigs.github.io/external-dns/";

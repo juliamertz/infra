@@ -16,6 +16,7 @@
     resources.namespaces.theme-park.metadata.labels = {
       "pod-security.kubernetes.io/warn" = "baseline";
       "pod-security.kubernetes.io/warn-version" = "latest";
+      "vector.dev/exclude" = "true";
     };
 
     resources.configMaps.theme-park-nginx.data = {

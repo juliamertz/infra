@@ -25,7 +25,9 @@
     in
       manifests |> builtins.filter util.isCrd;
 
-    resources.namespaces.cnpg-system = {};
+    resources.namespaces.cnpg-system.metadata.labels = {
+      "vector.dev/exclude" = "true";
+    };
 
     resources.helmRepositories.cloudnative-pg.spec = {
       url = "https://cloudnative-pg.github.io/charts";

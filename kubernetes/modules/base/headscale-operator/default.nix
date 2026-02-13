@@ -13,7 +13,9 @@
   kubernetes = {
     namespace = "headscale-operator";
 
-    resources.namespaces.headscale-operator = {};
+    resources.namespaces.headscale-operator.metadata.labels = {
+      "vector.dev/exclude" = "true";
+    };
 
     resources.helmRepositories.headscale-operator.spec = {
       url = "https://charts.juliamertz.dev";

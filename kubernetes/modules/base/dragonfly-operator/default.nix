@@ -13,7 +13,9 @@
   kubernetes = {
     namespace = "dragonfly-operator";
 
-    resources.namespaces.dragonfly-operator = {};
+    resources.namespaces.dragonfly-operator.metadata.labels = {
+      "vector.dev/exclude" = "true";
+    };
 
     resources.helmRepositories.dragonfly.spec = {
       type = "oci";
