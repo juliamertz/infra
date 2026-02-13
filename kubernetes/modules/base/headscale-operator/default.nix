@@ -22,7 +22,7 @@
     resources.helmReleases.headscale-operator.spec = {
       chart.spec = {
         chart = "headscale-operator";
-        version = "v0.0.3";
+        version = "v0.0.4";
         sourceRef = {
           kind = "HelmRepository";
           name = "headscale-operator";
