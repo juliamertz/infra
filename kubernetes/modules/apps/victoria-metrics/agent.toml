@@ -33,4 +33,4 @@ address = "0.0.0.0:9090"
 [sinks.vector]
 type = "vector"
 inputs = ["kubernetes_logs"]
-address = "vector:6000"
+address = "vector-aggregator:6000"

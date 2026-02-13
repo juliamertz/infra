@@ -19,7 +19,7 @@ version = "2"
 type = "remap"
 inputs = ["vector"]
 source = '''
-._msg = encode_json(.)
+._msg = .message
 '''
 
 [sinks.prom_exporter]

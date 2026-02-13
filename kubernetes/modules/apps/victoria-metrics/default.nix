@@ -60,11 +60,22 @@
       };
     };
 
-    resources.helmReleases.vector.spec = {
+    resources.helmReleases.vector-aggregator.spec = {
       chart = vectorChart;
       values = {
-        role = "Aggregator";
+        role = "Stateless-Aggregator";
+        replicas = 3;
         customConfig = lib.importTOML ./aggregator.toml;
+        resources = {
+          requests = {
+            memory = "64Mi";
+            cpu = "50m";
+          };
+          limits = {
+            memory = "128Mi";
+            cpu = "100m";
+          };
+        };
       };
     };
 
@@ -73,6 +84,16 @@
       values = {
         role = "Agent";
         customConfig = lib.importTOML ./agent.toml;
+        resources = {
+          requests = {
+            memory = "64Mi";
+            cpu = "50m";
+          };
+          limits = {
+            memory = "128Mi";
+            cpu = "100m";
+          };
+        };
       };
     };
   };
