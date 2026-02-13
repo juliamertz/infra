@@ -51,7 +51,7 @@
       };
       values = {
         server = {
-          fullnameOverride = "victoria-logs-server";
+          fullnameOverride = "victoria-logs";
           retentionDiskSpaceUsage = "5GiB";
           persistentVolume = {
             size = "5Gi";

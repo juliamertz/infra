@@ -55,7 +55,7 @@
               name = "VictoriaLogs";
               type = "victoriametrics-logs-datasource";
               access = "proxy";
-              url = "http://victoria-logs-server.victoria-metrics:9428";
+              url = "http://victoria-logs.victoria-metrics:9428";
               jsonData.maxLines = 1000;
               version = 1;
               editable = true;
