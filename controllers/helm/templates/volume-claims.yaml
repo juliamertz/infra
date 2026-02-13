@@ -1,0 +1,21 @@
+{{ range $service := $.Values.services }}
+{{ if $service.volumeClaims }}
+{{ range $claim := $service.volumeClaims }}
+{{ with $claim }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  labels:
+  name: {{ .name }}
+spec:
+  accessModes:
+    {{ .accessModes | toYaml | nindent 4 }}
+  resources:
+    requests:
+      storage: {{ .storage.size }}
+  storageClassName: {{ .storage.className }}
+{{ end }}
+{{ end }}
+{{ end }}
+{{ end }}
+
