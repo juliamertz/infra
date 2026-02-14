@@ -1,5 +1,13 @@
 use anyhow::{Context, Result};
-use std::ffi::OsStr;
+use jiff::{Timestamp, Unit};
+use k8s_openapi_ext::{
+    PodGetExt,
+    corev1::{ContainerStateRunning, ContainerStatus, Pod},
+};
+use kube::{Api, Client, ResourceExt, api::ListParams};
+use std::{ffi::OsStr, time::Duration};
+use tokio::time::sleep;
+use tracing::{debug, info, instrument};
 
 pub trait CommandExt {
     fn bool_flag<S: AsRef<OsStr>>(&mut self, flag: S, cond: bool) -> &mut Self;
@@ -36,9 +44,71 @@ impl DurationExt for std::time::Duration {
     }
 }
 
+pub trait PodExt {
+    fn is_healthy(&self) -> bool;
+}
+
+impl PodExt for k8s_openapi::api::core::v1::Pod {
+    #[instrument(skip(self), fields(name = self.name_any()))]
+    fn is_healthy(&self) -> bool {
+        let Some(status) = self.status.as_ref() else {
+            return false;
+        };
+
+        let running_healthy = |state: &ContainerStateRunning| {
+            state.started_at.as_ref().map(|started_at| {
+                let now = Timestamp::now();
+                now.since((Unit::Second, started_at.0))
+                    .map(|span| span.get_seconds() > 15)
+                    .unwrap_or(false)
+            })
+        };
+
+        let container_ready = |status: &ContainerStatus| {
+            let Some(state) = status.state.as_ref() else {
+                return false;
+            };
+
+            if state
+                .terminated
+                .as_ref()
+                .map(|terminated| terminated.reason == Some("Completed".into()))
+                .unwrap_or_default()
+            {
+                return true;
+            }
+
+            let started = status.started == Some(true);
+            let not_terminated = state.terminated.is_none();
+            let not_waiting = state.waiting.is_none();
+            let settled = state
+                .running
+                .as_ref()
+                .map(running_healthy)
+                .flatten()
+                .unwrap_or_default();
+
+            let ready = status.ready && started && not_terminated && not_waiting && settled;
+
+            if !ready {
+                tracing::warn!({ status.ready, started, not_terminated, not_waiting, settled }, "not ready");
+            }
+
+            ready
+        };
+
+        status
+            .container_statuses
+            .as_ref()
+            .map(|statuses| statuses.iter().all(container_ready))
+            .unwrap_or_default()
+    }
+}
+
 pub trait NodeApiExt {
     async fn is_ready(&self, name: &str) -> Result<bool>;
     async fn is_cordoned(&self, name: &str) -> Result<bool>;
+    async fn wait_until_healthy(&self, client: Client, name: &str) -> Result<bool>;
 }
 
 impl NodeApiExt for kube::Api<k8s_openapi::api::core::v1::Node> {
@@ -66,5 +136,38 @@ impl NodeApiExt for kube::Api<k8s_openapi::api::core::v1::Node> {
         Ok(taints.into_iter().any(|taint| {
             taint.key == "node.kubernetes.io/unschedulable" && taint.effect == "NoSchedule"
         }))
+    }
+
+    /// Make sure all scheduled workloads are running
+    #[instrument(skip(self, client), err(Debug))]
+    async fn wait_until_healthy(&self, client: Client, name: &str) -> Result<bool> {
+        let pods = Api::<Pod>::all(client);
+        let list_params = ListParams {
+            field_selector: Some(format!("spec.nodeName={name}")),
+            ..Default::default()
+        };
+
+        let interval = Duration::from_secs(5);
+
+        loop {
+            let list = pods.list(&list_params).await?;
+            let count = list.items.len();
+
+            info!("{count} pods scheduled on {name}");
+
+            let healthy_pods = list.items.iter().filter(|pod| pod.is_healthy());
+            let healthy_count = healthy_pods.count();
+
+            if healthy_count == count {
+                return Ok(true);
+            }
+
+            info!(
+                "{} out of {count} workloads not ready yet",
+                count - healthy_count
+            );
+
+            sleep(interval).await;
+        }
     }
 }
