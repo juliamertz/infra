@@ -85,34 +85,6 @@
       hostnames = ["charts.juliamertz.dev"];
       rules = [
         {
-          filters = [
-            {
-              type = "RequestRedirect";
-              requestRedirect = {
-                path = {
-                  type = "ReplaceFullPath";
-                  replaceFullPath = "/";
-                };
-                statusCode = 302;
-              };
-            }
-          ];
-          matches = [
-            {
-              path = {
-                type = "PathPrefix";
-                value = "/api";
-              };
-            }
-            {
-              path = {
-                type = "PathPrefix";
-                value = "/info";
-              };
-            }
-          ];
-        }
-        {
           backendRefs = [
             {
               name = "chartmuseum";
@@ -120,8 +92,12 @@
             }
           ];
           matches = [
-            {method = "GET";}
-            {method = "HEAD";}
+            {
+              path = {
+                type = "PathPrefix";
+                value = "/";
+              };
+            }
           ];
         }
       ];
