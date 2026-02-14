@@ -3,7 +3,7 @@ use std::process::Stdio;
 
 use common::proxy_stdio;
 use kube::api::DynamicObject;
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use tokio::fs;
 use tokio::process::Command;
 use tracing::{info, instrument};
@@ -18,11 +18,43 @@ pub enum BuildError {
     Io(#[from] std::io::Error),
     #[error("json error: {0}")]
     Json(#[from] serde_json::Error),
+    #[error("invalid utf8: {0}")]
+    FromUtf8(#[from] std::str::Utf8Error),
     #[error("exited: {0:?}")]
     Exit(std::process::ExitStatus),
 }
 
 pub type BuildResult<T> = core::result::Result<T, BuildError>;
+
+struct NixConfig {
+    build_users_group: String,
+    extra_experimental_features: Vec<String>,
+}
+
+impl std::fmt::Display for NixConfig {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_fmt(format_args!(
+            "build-users-group = {}\n",
+            self.build_users_group
+        ))?;
+        f.write_fmt(format_args!(
+            "extra-experimental-features = {}\n",
+            self.extra_experimental_features.join(" ")
+        ))
+    }
+}
+
+impl Default for NixConfig {
+    fn default() -> Self {
+        Self {
+            build_users_group: "".into(),
+            extra_experimental_features: ["nix-command", "flakes", "pipe-operators"]
+                .into_iter()
+                .map(Into::into)
+                .collect(),
+        }
+    }
+}
 
 #[instrument(err(Debug))]
 pub async fn build(dir: &Path, attrpath: &str) -> BuildResult<PathBuf> {
@@ -32,11 +64,7 @@ pub async fn build(dir: &Path, attrpath: &str) -> BuildResult<PathBuf> {
         .stdout(Stdio::piped())
         .stderr(Stdio::piped())
         .current_dir(dir)
-        .env("NIX_CONFIG", include_str!("nix.conf"))
-        .arg("--eval-store")
-        .arg("/builder/nix/store")
-        .arg("--extra-experimental-features")
-        .arg("nix-command flakes pipe-operators")
+        .env("NIX_CONFIG", NixConfig::default().to_string())
         .arg("build")
         .arg(attrpath);
 
@@ -49,13 +77,13 @@ pub async fn build(dir: &Path, attrpath: &str) -> BuildResult<PathBuf> {
     proxy_stdio(child.stdout.take().unwrap());
     proxy_stdio(child.stderr.take().unwrap());
 
-    let status = child.wait().await?;
-    if status.success() {
+    let output = child.wait_with_output().await?;
+    if output.status.success() {
         let out_path = fs::read_link(dir.join("result")).await?;
         info!({ ?out_path }, "build successful");
         Ok(out_path)
     } else {
-        Err(BuildError::Exit(status))
+        Err(BuildError::Exit(output.status))
     }
 }
 
