@@ -47,6 +47,7 @@
             STORAGE_AMAZON_PREFIX = "";
             DISABLE_STATEFILES = true;
             DISABLE_API = false;
+            AUTH_ANONYMOUS_GET = true;
             ALLOW_OVERWRITE = true;
             DELETE = true;
             CHART_URL = "";
