@@ -43,6 +43,7 @@
           "merlijnvoncken.nl"
           "merlijnvoncken.com"
           "vertrouwdbouwen.com"
+          "thenewnorm.nl"
           "valnetten.nl"
         ];
         sources = [
