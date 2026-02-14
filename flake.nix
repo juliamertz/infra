@@ -58,6 +58,7 @@
     in {
       manifest = kubelib.evalKubenix [./kubernetes/modules];
       manifest-vm = kubelib.evalKubenix [./kubernetes/modules/apps/victoria-metrics];
+      manifest-mc = kubelib.evalKubenix [./kubernetes/modules/apps/minecraft-server];
       renovateConfig = pkgs.callPackage ./renovate.nix {inherit packages;};
     });
 
