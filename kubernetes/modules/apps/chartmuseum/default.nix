@@ -21,8 +21,10 @@
     };
 
     resources.secrets.s3-credentials.stringData = lib.mapAttrs (_: path: "ref+sops://secrets/kubenix.yaml#${path}") {
-      keyId = "/s3/bucket/charts/keyId";
-      secretKey = "/s3/bucket/charts/secretKey";
+      keyId = "/chartmuseum/bucket/keyId";
+      secretKey = "/chartmuseum/bucket/secretKey";
+      basicAuthUser = "/chartmuseum/basicAuth/user";
+      basicAuthPassword = "/chartmuseum/basicAuth/password";
     };
 
     resources.helmReleases.chartmuseum.spec = {
@@ -54,6 +56,8 @@
           existingSecretMappings = {
             AWS_ACCESS_KEY_ID = "keyId";
             AWS_SECRET_ACCESS_KEY = "secretKey";
+            BASIC_AUTH_USER = "basicAuthUser";
+            BASIC_AUTH_PASS = "basicAuthPassword";
           };
         };
         resources = {
