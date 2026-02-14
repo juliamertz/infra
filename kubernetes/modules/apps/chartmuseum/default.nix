@@ -2,6 +2,7 @@
   config,
   kubenix,
   crds,
+  lib,
   ...
 }: {
   imports = with kubenix.modules; [
@@ -17,6 +18,11 @@
 
     resources.helmRepositories.chartmuseum.spec = {
       url = "https://chartmuseum.github.io/charts";
+    };
+
+    resources.secrets.s3-credentials.stringData = lib.mapAttrs (_: path: "ref+sops://secrets/kubenix.yaml#${path}") {
+      keyId = "/s3/bucket/charts/keyId";
+      secretKey = "/s3/bucket/charts/secretKey";
     };
 
     resources.helmReleases.chartmuseum.spec = {
