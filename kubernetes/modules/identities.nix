@@ -83,6 +83,11 @@
         resources = ["pods" "nodes"];
         verbs = ["get" "list"];
       }
+      {
+        apiGroups = ["networking.k8s.io"];
+        resources = ["networkpolicies"];
+        verbs = ["get" "list" "watch" "create" "update" "patch" "delete"];
+      }
     ];
 
     resources.roleBindings.deploy-sa-binding = {
