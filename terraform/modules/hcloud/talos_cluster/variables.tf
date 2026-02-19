@@ -63,13 +63,8 @@ variable "output_mode_config_cluster_endpoint" {
 }
 
 # Firewall
-variable "firewall_use_current_ip" {
-  type        = bool
-  default     = false
-  description = <<EOF
-    If true, the current IP address will be used as the source for the firewall rules.
-    ATTENTION: to determine the current IP, a request to a public service (https://ipv4.icanhazip.com) is made.
-  EOF
+variable "firewall_allowed_ip" {
+  type        = string
 }
 
 variable "extra_firewall_rules" {
