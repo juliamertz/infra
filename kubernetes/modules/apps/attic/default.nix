@@ -4,7 +4,10 @@
   crds,
   ...
 }: let
-  image = "ghcr.io/zhaofengli/attic:9736e87439be1b5d40cad1dff004e1d845f8b9e7";
+  # image = "ghcr.io/zhaofengli/attic:9736e87439be1b5d40cad1dff004e1d845f8b9e7";
+
+  # fork with split internal and public-endpoint
+  image =  "ghcr.io/covert8/attic:88662706f8e33ecd36beb77e2086b0811d3507aa";
 
   securityContext = {
     allowPrivilegeEscalation = false;
@@ -89,6 +92,7 @@ in {
         [storage]
         type = "s3"
         endpoint = "http://garage.garage:3900"
+        public-endpoint = "https://s3.juliamertz.dev"
         region = "garage"
         bucket = "attic-cache"
         force_path_style = true
