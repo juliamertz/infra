@@ -58,7 +58,7 @@
             memory = "512Mi";
           };
           limits = {
-            cpu = "100m";
+            cpu = "1000m";
             memory = "512Mi";
           };
         };
