@@ -48,7 +48,7 @@
           };
           data = {
             storageClass = "longhorn-local";
-            size = "1Gi";
+            size = "5Gi";
             hostPath = "/var/lib/garage/data";
           };
         };
