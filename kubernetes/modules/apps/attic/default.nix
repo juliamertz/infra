@@ -3,7 +3,61 @@
   kubenix,
   crds,
   ...
-}: {
+}: let
+  image = "ghcr.io/zhaofengli/attic:9736e87439be1b5d40cad1dff004e1d845f8b9e7";
+
+  securityContext = {
+    allowPrivilegeEscalation = false;
+    capabilities.drop = ["ALL"];
+    seccompProfile.type = "RuntimeDefault";
+  };
+
+  env = [
+    {
+      name = "RUST_LOG";
+      value = "debug";
+    }
+    {
+      name = "ATTIC_SERVER_DATABASE_URL";
+      valueFrom.secretKeyRef = {
+        name = "attic-db-app";
+        key = "uri";
+      };
+    }
+    {
+      name = "ATTIC_SERVER_TOKEN_HS256_SECRET_BASE64";
+      valueFrom.secretKeyRef = {
+        name = "attic-token";
+        key = "token";
+      };
+    }
+    {
+      name = "AWS_ACCESS_KEY_ID";
+      valueFrom.secretKeyRef = {
+        name = "storage-credentials";
+        key = "accessKey";
+      };
+    }
+    {
+      name = "AWS_SECRET_ACCESS_KEY";
+      valueFrom.secretKeyRef = {
+        name = "storage-credentials";
+        key = "secretKey";
+      };
+    }
+  ];
+
+  configVolume = {
+    name = "config";
+    configMap.name = "attic-config";
+  };
+
+  configMount = {
+    name = "config";
+    mountPath = "/attic/server.toml";
+    subPath = "server.toml";
+  };
+in {
   imports = with kubenix.modules; [
     submodule
     k8s
@@ -53,83 +107,38 @@
     resources.deployments.attic = {
       metadata.labels.app = "attic";
       spec = {
-        replicas = 2;
-        strategy = {
-          type = "RollingUpdate";
-          rollingUpdate = {
-            maxUnavailable = 1;
-            maxSurge = 1;
-          };
-        };
         selector.matchLabels.app = "attic";
         template = {
           metadata.labels.app = "attic";
           spec = {
+            initContainers = [
+              {
+                name = "migrations";
+                inherit image securityContext env;
+                command = ["atticd" "-f" "/attic/server.toml" "--mode" "db-migrations"];
+                volumeMounts = [configMount];
+              }
+            ];
             containers = [
               {
                 name = "attic";
-                image = "ghcr.io/zhaofengli/attic:9736e87439be1b5d40cad1dff004e1d845f8b9e7";
-                command = ["atticd" "-f" "/attic/server.toml"];
-                securityContext = {
-                  allowPrivilegeEscalation = false;
-                  capabilities.drop = ["ALL"];
-                  seccompProfile.type = "RuntimeDefault";
-                };
+                inherit image securityContext env;
+                command = ["atticd" "-f" "/attic/server.toml" "--mode" "api-server"];
                 ports = [
                   {
                     containerPort = 8080;
                     name = "http";
                   }
                 ];
-                env = [
-                  {
-                    name = "RUST_LOG";
-                    value = "debug";
-                  }
-                  {
-                    name = "ATTIC_SERVER_DATABASE_URL";
-                    valueFrom.secretKeyRef = {
-                      name = "attic-db-app";
-                      key = "uri";
-                    };
-                  }
-                  {
-                    name = "ATTIC_SERVER_TOKEN_HS256_SECRET_BASE64";
-                    valueFrom.secretKeyRef = {
-                      name = "attic-token";
-                      key = "token";
-                    };
-                  }
-                  {
-                    name = "AWS_ACCESS_KEY_ID";
-                    valueFrom.secretKeyRef = {
-                      name = "storage-credentials";
-                      key = "accessKey";
-                    };
-                  }
-                  {
-                    name = "AWS_SECRET_ACCESS_KEY";
-                    valueFrom.secretKeyRef = {
-                      name = "storage-credentials";
-                      key = "secretKey";
-                    };
-                  }
-                ];
-                volumeMounts = [
-                  {
-                    name = "config";
-                    mountPath = "/attic/server.toml";
-                    subPath = "server.toml";
-                  }
-                ];
+                volumeMounts = [configMount];
                 resources = {
                   requests = {
-                    cpu = "200m";
-                    memory = "300M";
+                    cpu = "250m";
+                    memory = "200Mi";
                   };
                   limits = {
-                    cpu = "750m";
-                    memory = "1Gi";
+                    cpu = "500m";
+                    memory = "750Mi";
                   };
                 };
                 livenessProbe = {
@@ -152,15 +161,74 @@
                 };
               }
             ];
-            volumes = [
-              {
-                name = "config";
-                configMap.name = "attic-config";
-              }
-            ];
+            volumes = [configVolume];
           };
         };
       };
+    };
+
+    resources.deployments.attic-gc = {
+      metadata.labels.app = "attic-gc";
+      spec = {
+        replicas = 1;
+        selector.matchLabels.app = "attic-gc";
+        template = {
+          metadata.labels.app = "attic-gc";
+          spec = {
+            containers = [
+              {
+                name = "attic-gc";
+                inherit image securityContext env;
+                command = ["atticd" "-f" "/attic/server.toml" "--mode" "garbage-collector"];
+                volumeMounts = [configMount];
+                resources = {
+                  requests = {
+                    cpu = "10m";
+                    memory = "32Mi";
+                  };
+                  limits = {
+                    cpu = "200m";
+                    memory = "128Mi";
+                  };
+                };
+              }
+            ];
+            volumes = [configVolume];
+          };
+        };
+      };
+    };
+
+    resources.horizontalPodAutoscalers.attic.spec = {
+      scaleTargetRef = {
+        apiVersion = "apps/v1";
+        kind = "Deployment";
+        name = "attic";
+      };
+      minReplicas = 1;
+      maxReplicas = 5;
+      metrics = [
+        {
+          type = "Resource";
+          resource = {
+            name = "cpu";
+            target = {
+              type = "Utilization";
+              averageUtilization = 70;
+            };
+          };
+        }
+        {
+          type = "Resource";
+          resource = {
+            name = "memory";
+            target = {
+              type = "Utilization";
+              averageUtilization = 60;
+            };
+          };
+        }
+      ];
     };
 
     resources.services.attic.spec = {
