@@ -103,8 +103,8 @@ module "juliamertz-dev-email" {
 
 module "vertrouwdbouwen-resend" {
   source     = "./modules/cloudflare/resend"
-  domain     = "vertrouwdbouwen.com"
-  domain_key = "p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDHX1kTLc0k7CPGDU3L/e8/CA5RZDDDFGgOUbfasM9FLAzhAmAslVDIu4U/oYpEuKtiPZw9bojMKZHLH94z8YecNhTjXwu6Qxx2B/YHGBcn/mF1Pg21cA3sh2/L9XbNlOIC4eJsF7g/6aA4HJL2dpp2zQ4RsnrFkF3hAUdwGF8aNwIDAQAB"
+  domain     = "thenewnorm.nl"
+  domain_key = "p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC5+/c8IPqCrLCNpgadzdNcEqONKE12s7IUHS4FVJHmlZxrhLvKgajdODREbmLmyGoXInxExEmXbeo/8HBSbPc+AvxrnZD4eua2N5zEZRwEVT+WNX11Wb7cJowyahNNX2UBYKiJRUp2JF3HX4rB0yUoZbmV/qQWPSC0mxe0j4veIwIDAQAB"
 
   zone_id = var.vertrouwdbouwen_com_zone_id
   providers = {
