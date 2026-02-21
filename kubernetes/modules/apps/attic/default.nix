@@ -228,7 +228,7 @@ in {
             name = "memory";
             target = {
               type = "Utilization";
-              averageUtilization = 60;
+              averageUtilization = 80;
             };
           };
         }
