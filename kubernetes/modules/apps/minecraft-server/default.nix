@@ -44,8 +44,8 @@
           eula = "true";
           version = "1.21.1";
           difficulty = "normal";
-          whitelist = ["Djulia_" "guitesnuit"];
-          ops = ["Djulia_"];
+          # whitelist = ["Djulia_" "guitesnuit"];
+          # ops = ["Djulia_"];
         };
       };
     };
