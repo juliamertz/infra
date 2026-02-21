@@ -34,8 +34,6 @@ module "production_k8s" {
   control_plane_server_type    = "cax11"
   control_plane_allow_schedule = true
 
-  firewall_allowed_ip = var.home_ip
-
   control_plane_nodes = [
     { type = "cx33" },
     { type = "cx33" },

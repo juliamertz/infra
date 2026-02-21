@@ -18,7 +18,6 @@ variable "flake_path" {
 
 variable "development_hcloud_token" {}
 variable "production_hcloud_token" {}
-variable "home_ip" {}
 
 variable "cloudflare_token" {}
 

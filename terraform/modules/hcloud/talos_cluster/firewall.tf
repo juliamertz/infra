@@ -5,14 +5,14 @@ locals {
       direction   = "in"
       protocol    = "tcp"
       port        = "6443"
-      source_ips  = [var.firewall_allowed_ip]
+      source_ips  = ["0.0.0.0/0", "::/0"]
     },
     {
       description = "Allow Incoming Requests to Talos API Server"
       direction   = "in"
       protocol    = "tcp"
       port        = "50000"
-      source_ips  = [var.firewall_allowed_ip]
+      source_ips  = ["0.0.0.0/0", "::/0"]
     },
     {
       description = "Allow Incoming Requests to Headscale API Server"
