@@ -25,6 +25,6 @@ chrono = "0.4"
 humantime = "2"
 ipnet = "2"
 async-trait = "0.1"
-gix = { version = "0.79.0", features = ["worktree-mutation", "blocking-network-client", "blocking-http-transport-reqwest-rust-tls"] }
+gix = { version = "0.80.0", features = ["worktree-mutation", "blocking-network-client", "blocking-http-transport-reqwest-rust-tls"] }
 sha2 = "0.10.9"
 schemars = "1"
