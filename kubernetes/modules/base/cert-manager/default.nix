@@ -22,7 +22,7 @@
     resources.helmReleases.cert-manager.spec = {
       chart.spec = {
         chart = "cert-manager";
-        version = "v1.19.3";
+        version = "v1.19.4";
         sourceRef = {
           kind = "HelmRepository";
           name = "jetstack";
