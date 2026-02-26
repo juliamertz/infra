@@ -62,7 +62,7 @@ resource "helm_release" "hcloud_csi" {
 
   repository = "https://charts.hetzner.cloud"
   chart      = "hcloud-csi"
-  version    = "2.19.1"
+  version    = "2.20.0"
 
   values = [yamlencode({
     storageClasses = [{
