@@ -9,7 +9,7 @@
       interval = "5m";
       chart.spec = {
         chart = "kube-prometheus-stack";
-        version = "82.3.0";
+        version = "82.4.3";
         sourceRef = {
           kind = "HelmRepository";
           name = "prometheus-community";
