@@ -5,9 +5,8 @@
   ...
 }: let
   # image = "ghcr.io/zhaofengli/attic:9736e87439be1b5d40cad1dff004e1d845f8b9e7";
-
   # fork with split internal and public-endpoint
-  image =  "ghcr.io/covert8/attic:88662706f8e33ecd36beb77e2086b0811d3507aa";
+  image = "ghcr.io/covert8/attic:88662706f8e33ecd36beb77e2086b0811d3507aa";
 
   securityContext = {
     allowPrivilegeEscalation = false;
@@ -285,6 +284,26 @@ in {
           };
         }
       ];
+    };
+
+    resources.backendTrafficPolicies.rate-limit.spec = {
+      targetRef = {
+        group = "gateway.networking.k8s.io";
+        kind = "HTTPRoute";
+        name = "attic";
+      };
+      loadBalancer.type = "LeastRequest";
+      rateLimit = {
+        type = "Global";
+        global.rules = [
+          {
+            limit = {
+              requests = 250;
+              unit = "Second";
+            };
+          }
+        ];
+      };
     };
   };
 
