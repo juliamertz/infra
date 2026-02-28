@@ -1,4 +1,5 @@
 {
+  lib,
   config,
   kubenix,
   crds,
@@ -25,6 +26,11 @@
       url = "https://itzg.github.io/minecraft-server-charts";
     };
 
+    resources.secrets.rcon-credentials.stringData = lib.mapAttrs (_: path: "ref+sops://secrets/kubenix.yaml#${path}") {
+      username = "/minecraft/rcon/username";
+      password = "/minecraft/rcon/password";
+    };
+
     resources.helmReleases.minecraft.spec = {
       chart.spec = {
         chart = "minecraft";
@@ -37,15 +43,28 @@
       values = {
         workloadAsStatefulSet = true;
         strategyType = "OnDelete";
-        # nodeSelector = {
-        #   "hcloud/node-group" = "gameserver-node";
-        # };
+        nodeSelector = {
+          # "hcloud/node-group" = "gameserver-node";
+          "kubernetes.io/hostname" = "control-plane-2";
+        };
         minecraftServer = {
           eula = "true";
-          version = "1.21.1";
+          version = "1.21.11";
           difficulty = "normal";
-          # whitelist = ["Djulia_" "guitesnuit"];
-          # ops = ["Djulia_"];
+          whitelist = ["Djulia_" "guitesnuit"] |> lib.concatStringsSep ",";
+          ops = "Djulia_";
+        };
+
+        rcon = {
+          enabled = true;
+          port = 25575;
+          existingSecret = "rcon-credentials";
+          secretKey = "password";
+        };
+
+        persistence.dataDir = {
+          enabled = true;
+          existingClaim = "minecraft";
         };
       };
     };
