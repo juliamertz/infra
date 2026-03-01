@@ -4,7 +4,7 @@
     nixpkgs-cross.url = "github:nixos/nixpkgs/90ade7da38aa49c2e2693a04a44662a0e61530e9";
     systems.url = "github:nix-systems/default";
     filter.url = "github:numtide/nix-filter";
-    steiger.url = "github:brainhivenl/steiger";
+    steiger.url = "github:brainhivenl/steiger/feat/nix-oci-buildtools";
     colmena.url = "github:zhaofengli/colmena";
     kubenix.url = "github:hall/kubenix";
     sops.url = "github:Mic92/sops-nix";
@@ -180,27 +180,21 @@
       controllers = pkgsCross.callPackage ./controllers/package.nix {
         inherit craneLib filter;
       };
+    in {
+      controllers = pkgs.ociTools.buildImage {
+        name = controllers.pname;
+        tag = "latest";
 
-      sysroot = pkgsCross.buildEnv {
-        name = "${controllers.pname}-sysroot";
-        paths = [
-          controllers
+        layers = [
+          pkgsTarget.dockerTools.caCertificates
           pkgsTarget.nix
           pkgsTarget.vals
-          pkgsTarget.dockerTools.caCertificates
+          controllers
         ];
         pathsToLink = [
           "/bin"
           "/etc"
         ];
-      };
-    in {
-      controllers = pkgs.ociTools.buildImage {
-        name = controllers.pname;
-        tag = "latest";
-        created = "now";
-
-        copyToRoot = sysroot;
 
         config.Cmd = ["/bin/${controllers.pname}"];
       };

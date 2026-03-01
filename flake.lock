@@ -69,11 +69,11 @@
     },
     "crane_4": {
       "locked": {
-        "lastModified": 1755537552,
-        "narHash": "sha256-Tg+P8kFIneqnQLT8E0QqlCrldtdLo1n1y619/mxRD44=",
+        "lastModified": 1765739568,
+        "narHash": "sha256-gQYx35Of4UDKUjAYvmxjUEh/DdszYeTtT6MDin4loGE=",
         "owner": "ipetkov",
         "repo": "crane",
-        "rev": "3c40c97e1881fff381e4615e82557b333edf65c4",
+        "rev": "67d2baff0f9f677af35db61b32b5df6863bcc075",
         "type": "github"
       },
       "original": {
@@ -418,22 +418,6 @@
         "type": "github"
       }
     },
-    "nixpkgs-ocitools_2": {
-      "locked": {
-        "lastModified": 1749738911,
-        "narHash": "sha256-XKXtCm32NTGJ4AZRcX9hz8tjcF5bwGiK/9Z3C3OEANs=",
-        "owner": "msanft",
-        "repo": "nixpkgs",
-        "rev": "3a858b3070e928d6eb79e0fcf21d0c16337edbb5",
-        "type": "github"
-      },
-      "original": {
-        "owner": "msanft",
-        "ref": "msanft/oci/refactor",
-        "repo": "nixpkgs",
-        "type": "github"
-      }
-    },
     "nixpkgs_10": {
       "locked": {
         "lastModified": 1770197578,
@@ -468,11 +452,11 @@
     },
     "nixpkgs_12": {
       "locked": {
-        "lastModified": 1755577059,
-        "narHash": "sha256-5hYhxIpco8xR+IpP3uU56+4+Bw7mf7EMyxS/HqUYHQY=",
+        "lastModified": 1770380644,
+        "narHash": "sha256-P7dWMHRUWG5m4G+06jDyThXO7kwSk46C1kgjEWcybkE=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "97eb7ee0da337d385ab015a23e15022c865be75c",
+        "rev": "ae67888ff7ef9dff69b3cf0cc0fbfbcd3a722abe",
         "type": "github"
       },
       "original": {
@@ -742,11 +726,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1755657401,
-        "narHash": "sha256-rPHuWPAcwW63wH1SUtDCqAnf2+60pi/pGMCIhVobzXc=",
+        "lastModified": 1766112155,
+        "narHash": "sha256-N0KUOJSIBw2fFF2ACZhwYX2e0EGaHBVPlJh7bnxcGE4=",
         "owner": "oxalica",
         "repo": "rust-overlay",
-        "rev": "292ca754b0f679b842fbfc4734f017c351f0e9eb",
+        "rev": "2a6db3fc1c27ae77f9caa553d7609b223cb770b5",
         "type": "github"
       },
       "original": {
@@ -857,19 +841,19 @@
       "inputs": {
         "crane": "crane_4",
         "nixpkgs": "nixpkgs_12",
-        "nixpkgs-ocitools": "nixpkgs-ocitools_2",
         "rust-overlay": "rust-overlay_6"
       },
       "locked": {
-        "lastModified": 1759216489,
-        "narHash": "sha256-RxuK2mI2zKMkgxSglkI0UDR5bjNOlaQWbOC7fzXAhkk=",
+        "lastModified": 1772314087,
+        "narHash": "sha256-hqTpUGEEiko4ToCgkMWLy+yW8f89/gvI4LgX6kr3R4o=",
         "owner": "brainhivenl",
         "repo": "steiger",
-        "rev": "e0df4934506c55ecf5bb9af75c182c4a6a38982f",
+        "rev": "07d54bdba7429d52bb9308f7d29b01252f78dadf",
         "type": "github"
       },
       "original": {
         "owner": "brainhivenl",
+        "ref": "feat/nix-oci-buildtools",
         "repo": "steiger",
         "type": "github"
       }
