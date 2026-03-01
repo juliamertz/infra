@@ -117,10 +117,6 @@
     });
 
     steigerImages = steiger.lib.eachCrossSystem (import systems) (localSystem: crossSystem: let
-      pkgs = import nixpkgs {
-        inherit overlays;
-        system = localSystem;
-      };
       pkgsTarget = import nixpkgs-cross {
         inherit overlays;
         system = crossSystem;
@@ -135,7 +131,7 @@
         inherit craneLib filter;
       };
     in {
-      controllers = pkgs.ociTools.buildImage {
+      controllers = pkgsCross.ociTools.buildImage {
         name = controllers.pname;
         tag = "latest";
 

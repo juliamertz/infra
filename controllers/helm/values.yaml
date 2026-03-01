@@ -3,13 +3,19 @@ services:
 
   - cmd: sync
     admin: true
+    logLevel: info
     extraEnv:
       - name: GIT_URL
         value: https://github.com/juliamertz/infra.git
       - name: INTERVAL
-        value: "30"
+        value: "10"
       - name: SOPS_AGE_KEY_FILE
         value: /etc/sops/age/keys.txt
+      - name: GITHUB_PAT
+        valueFrom:
+          secretKeyRef:
+            name: sync-controller-secrets
+            key: github-pat
     volumes:
       - name: sops-age-key
         secret:

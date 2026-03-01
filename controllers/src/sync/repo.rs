@@ -1,6 +1,14 @@
-use std::path::{Path, PathBuf};
+use std::{
+    env,
+    ops::Index,
+    path::{Path, PathBuf},
+    str::FromStr,
+};
 
+use anyhow::Context;
 use gix::ObjectId;
+use reqwest::header::HeaderMap;
+use serde::Deserialize;
 use tokio::fs;
 use tracing::{debug, info, instrument};
 
@@ -22,6 +30,10 @@ pub enum Error {
     FindReference(#[from] gix::reference::find::existing::Error),
     #[error("failed to parse git URL: {0}")]
     ParseURL(#[from] gix::url::parse::Error),
+    #[error("invalid utf8: {0}")]
+    Utf8(#[from] std::str::Utf8Error),
+    #[error("http errorj: {0}")]
+    Http(#[from] reqwest::Error),
 }
 
 pub type Result<T, E = Error> = core::result::Result<T, E>;
@@ -31,6 +43,10 @@ pub struct Repo {
     pub inner: gix::Repository,
     pub reference: String,
     pub path: PathBuf,
+    pub owner: String,
+    pub repo: String,
+    pub branch: String,
+    gh_http: reqwest::Client,
 }
 
 impl Repo {
@@ -61,37 +77,89 @@ impl Repo {
 
     pub async fn open(url: impl AsRef<str>, branch: &str, path: PathBuf) -> Result<Self> {
         let url = gix::url::parse(url.as_ref().into()).expect("invalid git url");
+        let url_path = url.path.to_string();
+        let (owner, repo) = url_path
+            .as_str()
+            .strip_prefix("/")
+            .unwrap_or(&url_path)
+            .strip_suffix(".git")
+            .unwrap_or(&url_path)
+            .split_once("/")
+            .unwrap();
+
         let inner = Self::clone(url.clone(), &path).await?;
         let reference = format!("refs/remotes/origin/{branch}");
+
+        let gh_http = reqwest::Client::builder()
+            .default_headers({
+                let mut headers = HeaderMap::new();
+                let pat = env::var("GITHUB_PAT").expect("GITHUB_PAT environment variable set");
+                headers.insert("Accept", "application/vnd.github+json".parse().unwrap());
+                headers.insert("Authorization", format!("Bearer {pat}",).parse().unwrap());
+                headers.insert("User-Agent", "Infra-App".parse().unwrap());
+                headers.insert("X-GitHub-Api-Version", "2022-11-28".parse().unwrap());
+                headers
+            })
+            .build()?;
+
         Ok(Self {
             inner,
             reference,
             path,
+            branch: branch.to_string(),
+            owner: owner.to_string(),
+            repo: repo.to_string(),
+            gh_http,
         })
     }
 
-    pub async fn pull_latest(&self) -> Result<ObjectId> {
+    pub async fn pull(&self, oid: ObjectId) -> Result<ObjectId> {
         tokio::task::block_in_place(|| {
-            let remote = self.inner.find_remote("origin").unwrap();
-            debug!("fetching from remote");
-            let outcome = remote
-                .connect(gix::remote::Direction::Fetch)
-                .unwrap()
-                .prepare_fetch(gix::progress::Discard, Default::default())
-                .unwrap()
-                .receive(gix::progress::Discard, &Default::default())
-                .unwrap();
-            debug!("fetched {} refs", outcome.ref_map.mappings.len());
-
-            let oid = self
-                .inner
-                .find_reference(&self.reference)?
-                .id()
-                .detach();
+            // let remote = self.inner.find_remote("origin").unwrap();
+            // debug!("fetching from remote");
+            // let outcome = remote
+            //     .connect(gix::remote::Direction::Fetch)
+            //     .unwrap()
+            //     .prepare_fetch(gix::progress::Discard, Default::default())
+            //     .unwrap()
+            //     .receive(gix::progress::Discard, &Default::default())
+            //     .unwrap();
+            // debug!("fetched {} refs", outcome.ref_map.mappings.len());
+            // let oid = self.inner.find_reference(&self.reference)?.id().detach();
 
             self.checkout(oid)?;
             Ok(oid)
         })
+    }
+
+    pub async fn fetch_latest(&self) -> Result<ObjectId> {
+        #[derive(Deserialize)]
+        struct Commit {
+            sha: String,
+        }
+
+        #[derive(Deserialize)]
+        struct Response {
+            commit: Commit,
+        }
+
+        let url = format!(
+            "https://api.github.com/repos/{owner}/{repo}/branches/{branch}",
+            owner = self.owner,
+            repo = self.repo,
+            branch = self.branch,
+        );
+        let response = self
+            .gh_http
+            .get(url)
+            .send()
+            .await?
+            .error_for_status()?
+            .json::<Response>()
+            .await?;
+
+        let id = ObjectId::from_str(&response.commit.sha).unwrap();
+        Ok(id)
     }
 
     fn checkout(&self, oid: ObjectId) -> Result<()> {
@@ -108,12 +176,7 @@ impl Repo {
             }
         }
 
-        let tree = self
-            .inner
-            .find_object(oid)
-            .unwrap()
-            .peel_to_tree()
-            .unwrap();
+        let tree = self.inner.find_object(oid).unwrap().peel_to_tree().unwrap();
         debug!("building index from tree {}", tree.id);
         let mut index =
             gix::index::State::from_tree(&tree.id, &self.inner.objects, Default::default())

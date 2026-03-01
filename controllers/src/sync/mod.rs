@@ -102,7 +102,7 @@ fn hash(objects: &[DynamicObject]) -> Result<Output<Sha256>> {
 
 #[instrument(skip_all, err(Debug))]
 async fn run_once(ctx: &Ctx) -> Result<()> {
-    let head = ctx.repo.pull_latest().await?;
+    let head = ctx.repo.fetch_latest().await?;
     let state = ctx.state.get().await?;
 
     let span = tracing::info_span!("reconcile", ?head);
@@ -122,6 +122,8 @@ async fn run_once(ctx: &Ctx) -> Result<()> {
             .map(|(id, _)| id.to_string())
             .unwrap_or_else(|| "none".into())
     );
+
+    ctx.repo.pull(head).await?;
 
     info!("building latest revision");
 

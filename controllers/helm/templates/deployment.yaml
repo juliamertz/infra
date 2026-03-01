@@ -44,7 +44,7 @@ spec:
             - {{ $service.cmd }}
           env:
             - name: RUST_LOG
-              value: "info,infra_controllers=debug"
+              value: "info,infra_controllers={{ default "debug" $service.logLevel }}"
             {{- if $service.extraEnv }}
             {{ $service.extraEnv | toYaml | nindent 12 }}
             {{ end }}

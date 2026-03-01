@@ -21,6 +21,7 @@ tracing = { workspace = true }
 thiserror = { workspace = true }
 clap = { workspace = true }
 tracing-subscriber = { workspace = true }
+reqwest = { workspace = true }
 chrono = "0.4"
 humantime = "2"
 ipnet = "2"
