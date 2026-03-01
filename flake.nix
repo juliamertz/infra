@@ -5,12 +5,8 @@
     systems.url = "github:nix-systems/default";
     filter.url = "github:numtide/nix-filter";
     steiger.url = "github:brainhivenl/steiger/feat/nix-oci-buildtools";
-    colmena.url = "github:zhaofengli/colmena";
     kubenix.url = "github:hall/kubenix";
     sops.url = "github:Mic92/sops-nix";
-    lightspeed-dhl-adapter.url = "github:juliamertz/lightspeed-dhl-adapter";
-    nix-minecraft.url = "github:juliamertz/nix-minecraft";
-    dotfiles.url = "github:juliamertz/dotfiles";
     crane.url = "github:ipetkov/crane";
     rust-overlay = {
       url = "github:oxalica/rust-overlay";
@@ -25,17 +21,15 @@
     nixpkgs-cross,
     kubenix,
     systems,
-    colmena,
     crane,
     filter,
     rust-overlay,
     ...
-  } @ inputs: let
+  }: let
     inherit (nixpkgs) lib;
     overlays = [
       (import rust-overlay)
-      inputs.nix-minecraft.overlay
-      steiger.overlays.ociTools
+      steiger.overlays.default
     ];
     mkCraneLib = pkgs': (crane.mkLib pkgs').overrideToolchain (p: p.rust-bin.stable."1.90.0".default);
 
@@ -61,45 +55,6 @@
       manifest-mc = kubelib.evalKubenix [./kubernetes/modules/apps/minecraft-server];
       renovateConfig = pkgs.callPackage ./renovate.nix {inherit packages;};
     });
-
-    colmenaHive = let
-      mkTargetFromEnv = name: let
-        targetEnv = key: builtins.getEnv "NIXOS_HOST_${lib.toUpper name}_${lib.toUpper key}";
-      in {
-        targetHost = targetEnv "ip";
-        targetUser = targetEnv "ssh_user";
-        targetPort = targetEnv "ssh_port" |> lib.strings.toIntBase10;
-      };
-    in
-      colmena.lib.makeHive {
-        meta = {
-          nixpkgs = import inputs.nixpkgs {
-            system = "x86_64-linux";
-            overlays = [];
-          };
-          specialArgs = {
-            inherit inputs;
-          };
-        };
-
-        defaults = import ./hive/defaults.nix inputs;
-
-        bastion = {...}: {
-          imports = [./hive/bastion];
-          deployment = mkTargetFromEnv "bastion";
-        };
-
-        topdog = {...}: {
-          imports = [./hive/topdog];
-          deployment = mkTargetFromEnv "topdog";
-        };
-
-        cube = {...}: {
-          imports = [./hive/cube];
-          deployment = mkTargetFromEnv "cube";
-          nixpkgs.system = "aarch64-linux";
-        };
-      };
 
     devShells = forAllSystems (pkgs: let
       inherit (pkgs.stdenv.hostPlatform) system;
@@ -150,12 +105,11 @@
           pkgs.awscli
           pkgs.wget
           pkgs.vals
+          pkgs.steiger
           k8s-build
           k8s-apply
           k8s-diffcmd
           renovate-sync
-          colmena.packages.${system}.colmena
-          steiger.packages.${system}.default
           hcloud-upload-image
           tofu
         ];
