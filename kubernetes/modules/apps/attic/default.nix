@@ -17,7 +17,7 @@
   env = [
     {
       name = "RUST_LOG";
-      value = "debug";
+      value = "info";
     }
     {
       name = "ATTIC_SERVER_DATABASE_URL";
@@ -137,11 +137,11 @@ in {
                 resources = {
                   requests = {
                     cpu = "250m";
-                    memory = "200Mi";
+                    memory = "400Mi";
                   };
                   limits = {
                     cpu = "500m";
-                    memory = "750Mi";
+                    memory = "600Mi";
                   };
                 };
                 livenessProbe = {
@@ -186,8 +186,8 @@ in {
                 volumeMounts = [configMount];
                 resources = {
                   requests = {
-                    cpu = "10m";
-                    memory = "32Mi";
+                    cpu = "50m";
+                    memory = "48Mi";
                   };
                   limits = {
                     cpu = "200m";
@@ -209,7 +209,7 @@ in {
         name = "attic";
       };
       minReplicas = 1;
-      maxReplicas = 5;
+      maxReplicas = 3;
       metrics = [
         {
           type = "Resource";
@@ -227,7 +227,7 @@ in {
             name = "memory";
             target = {
               type = "Utilization";
-              averageUtilization = 80;
+              averageUtilization = 85;
             };
           };
         }
@@ -298,7 +298,7 @@ in {
         global.rules = [
           {
             limit = {
-              requests = 250;
+              requests = 100;
               unit = "Second";
             };
           }
