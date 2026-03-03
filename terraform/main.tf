@@ -55,6 +55,16 @@ module "production_k8s" {
   }
 }
 
+module "twinkle" {
+  source = "./modules/hcloud/nixos_server"
+  name = "twinkle"
+  base_image
+
+  providers = {
+    hcloud = hcloud.development
+  }
+}
+
 resource "cloudflare_dns_record" "records" {
   for_each = module.production_k8s.loadbalancer_target_ips
 

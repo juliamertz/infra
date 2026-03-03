@@ -14,13 +14,13 @@ variable "name" {
 variable "base_image" {
   description = "Server image to use"
   type        = string
-  default     = "ubuntu-20.04"
+  default     = "ubuntu-24.04"
 }
 
 variable "server_type" {
   description = "Type/size of the server"
   type        = string
-  default     = "cx11" # Smallest instance type
+  default     = "cx23" # Smallest instance type
 }
 
 variable "datacenter" {
