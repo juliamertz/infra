@@ -55,16 +55,6 @@ module "production_k8s" {
   }
 }
 
-module "twinkle" {
-  source = "./modules/hcloud/nixos_server"
-  name = "twinkle"
-  base_image
-
-  providers = {
-    hcloud = hcloud.development
-  }
-}
-
 resource "cloudflare_dns_record" "records" {
   for_each = module.production_k8s.loadbalancer_target_ips
 
@@ -115,6 +105,17 @@ module "vertrouwdbouwen-resend" {
   source     = "./modules/cloudflare/resend"
   domain     = "thenewnorm.nl"
   domain_key = "p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC5+/c8IPqCrLCNpgadzdNcEqONKE12s7IUHS4FVJHmlZxrhLvKgajdODREbmLmyGoXInxExEmXbeo/8HBSbPc+AvxrnZD4eua2N5zEZRwEVT+WNX11Wb7cJowyahNNX2UBYKiJRUp2JF3HX4rB0yUoZbmV/qQWPSC0mxe0j4veIwIDAQAB"
+
+  zone_id = var.vertrouwdbouwen_com_zone_id
+  providers = {
+    cloudflare = cloudflare
+  }
+}
+
+module "thenewnorm-google-workspace" {
+  source       = "./modules/cloudflare/google-workspace"
+  domain       = "thenewnorm.nl"
+  verification = "aOyucWyvyUROherG-GOlfnKrqBD47218NiS2FyUQx0s"
 
   zone_id = var.vertrouwdbouwen_com_zone_id
   providers = {
