@@ -49,7 +49,7 @@
         };
         minecraftServer = {
           eula = "true";
-          version = "1.21.11";
+          version = "26.1-pre-1";
           difficulty = "normal";
           whitelist = ["Djulia_" "guitesnuit"] |> lib.concatStringsSep ",";
           ops = "Djulia_";
