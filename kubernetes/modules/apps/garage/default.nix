@@ -88,6 +88,40 @@
       ];
     };
 
+    resources.httpRoutes.thenewnorm-cdn.spec = {
+      parentRefs = [
+        {
+          name = "shared";
+          namespace = "default";
+        }
+      ];
+      hostnames = ["cdn.thenewnorm.nl"];
+      rules = [
+        {
+          matches = [
+            {
+              path = {
+                type = "PathPrefix";
+                value = "/";
+              };
+            }
+          ];
+          filters = [
+            {
+              type = "URLRewrite";
+              urlRewrite.hostname = "thenewnorm-assets.cdn.juliamertz.dev";
+            }
+          ];
+          backendRefs = [
+            {
+              name = "garage";
+              port = 3902;
+            }
+          ];
+        }
+      ];
+    };
+
     resources.httpRoutes.valnetten-web.spec = {
       parentRefs = [
         {
@@ -166,6 +200,7 @@
         "nettenshop.cdn.juliamertz.dev"
         "valnetten.preview.juliamertz.dev"
         "preview.merlijnvoncken.nl"
+        "cdn.thenewnorm.nl"
       ];
     };
 

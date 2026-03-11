@@ -2,6 +2,7 @@
   config,
   kubenix,
   crds,
+  lib,
   ...
 }: {
   imports = with kubenix.modules; [
@@ -10,7 +11,66 @@
     crds
   ];
 
-  config.kubernetes = {
+  options.submodule.args = with lib; {
+    controllerReplicas = mkOption {
+      type = types.int;
+      default = 2;
+    };
+
+    configure = mkEnableOption ''
+      Configure envoy by creating GatewayClass and EnvoyProxy resources
+    '';
+
+    envoy = {
+      replicas = mkOption {
+        type = types.int;
+        default = 3;
+      };
+
+      pdbMinAvailable = mkOption {
+        type = types.int;
+        default = 2;
+      };
+
+      hpa = {
+        maxReplicas = mkOption {
+          type = types.int;
+          default = 9;
+        };
+
+        targetCPU = mkOption {
+          type = types.int;
+          default = 60;
+        };
+      };
+    };
+
+    loadBalancer = {
+      name = mkOption {
+        type = types.str;
+        default = "envoy-gateway-lb";
+      };
+
+      location = mkOption {
+        type = types.str;
+        default = "nbg1";
+      };
+
+      annotations = mkOption {
+        type = types.attrsOf types.str;
+        default = {};
+      };
+    };
+
+    dragonfly.replicas = mkOption {
+      type = types.int;
+      default = 1;
+    };
+  };
+
+  config.kubernetes = let
+    args = config.submodule.args;
+  in {
     namespace = "envoy-gateway-system";
 
     resources.namespaces.envoy-gateway-system = {};
@@ -30,7 +90,7 @@
         };
       };
       values = {
-        deployment.replicas = 2;
+        deployment.replicas = args.controllerReplicas;
         config.envoyGateway = {
           gateway.controllerName = "gateway.envoyproxy.io/gatewayclass-controller";
           provider = {
@@ -49,33 +109,37 @@
       };
     };
 
-    resources.gatewayclasses.envoy.spec = {
-      controllerName = "gateway.envoyproxy.io/gatewayclass-controller";
-      parametersRef = {
-        group = "gateway.envoyproxy.io";
-        kind = "EnvoyProxy";
-        name = "hetzner-proxy-config";
-        namespace = "envoy-gateway-system";
+    resources.gatewayclasses.envoy = lib.mkIf args.configure {
+      spec = {
+        controllerName = "gateway.envoyproxy.io/gatewayclass-controller";
+        parametersRef = {
+          group = "gateway.envoyproxy.io";
+          kind = "EnvoyProxy";
+          name = "hetzner-proxy-config";
+          namespace = "envoy-gateway-system";
+        };
       };
     };
 
-    resources.envoyproxies.hetzner-proxy-config.spec = {
+    resources.envoyproxies.hetzner-proxy-config = lib.mkIf args.configure { spec = {
       provider = {
         type = "Kubernetes";
         kubernetes = {
           envoyService = {
             type = "LoadBalancer";
-            annotations = {
-              "load-balancer.hetzner.cloud/use-private-ip" = "true";
-              "load-balancer.hetzner.cloud/location" = "nbg1";
-              "load-balancer.hetzner.cloud/algorithm-type" = "round_robin";
-              "load-balancer.hetzner.cloud/name" = "envoy-gateway-shared-lb";
-              "load-balancer.hetzner.cloud/uses-proxyprotocol" = "true";
-            };
+            annotations =
+              {
+                "load-balancer.hetzner.cloud/use-private-ip" = "true";
+                "load-balancer.hetzner.cloud/location" = args.loadBalancer.location;
+                "load-balancer.hetzner.cloud/algorithm-type" = "round_robin";
+                "load-balancer.hetzner.cloud/name" = args.loadBalancer.name;
+                "load-balancer.hetzner.cloud/uses-proxyprotocol" = "true";
+              }
+              // args.loadBalancer.annotations;
           };
-          envoyPDB.minAvailable = 2;
+          envoyPDB.minAvailable = args.envoy.pdbMinAvailable;
           envoyDeployment = {
-            replicas = 3;
+            replicas = args.envoy.replicas;
             strategy.rollingUpdate = {
               maxSurge = 1;
               maxUnavailable = 0;
@@ -97,8 +161,8 @@
             ];
           };
           envoyHpa = {
-            minReplicas = 3;
-            maxReplicas = 9;
+            minReplicas = args.envoy.replicas;
+            maxReplicas = args.envoy.hpa.maxReplicas;
             metrics = [
               {
                 type = "Resource";
@@ -106,7 +170,7 @@
                   name = "cpu";
                   target = {
                     type = "Utilization";
-                    averageUtilization = 60;
+                    averageUtilization = args.envoy.hpa.targetCPU;
                   };
                 };
               }
@@ -114,11 +178,11 @@
           };
         };
       };
-    };
+    }; };
 
     resources.dragonflies.envoy-ratelimit-db.spec = {
       image = "docker.dragonflydb.io/dragonflydb/dragonfly:v1.35.1";
-      replicas = 1;
+      replicas = args.dragonfly.replicas;
       resources = {
         requests = {
           memory = "512Mi";

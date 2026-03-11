@@ -45,14 +45,39 @@
         strategyType = "OnDelete";
         nodeSelector = {
           # "hcloud/node-group" = "gameserver-node";
-          "kubernetes.io/hostname" = "control-plane-2";
+          ops = "Djulia_";
+          # "kubernetes.io/hostname" = "control-plane-2";
+          "kubernetes.io/hostname" = "worker-1";
         };
         minecraftServer = {
           eula = "true";
-          version = "26.1-pre-1";
-          difficulty = "normal";
-          whitelist = ["Djulia_" "guitesnuit"] |> lib.concatStringsSep ",";
+          version = "26.1";
+          type = "FABRIC";
+          difficulty = "hard";
+          viewDistance = 32;
+          maxPlayers = 5;
+          memory = "8096M";
           ops = "Djulia_";
+          whitelist = ["Djulia_" "guitesnuit"] |> lib.concatStringsSep ",";
+          modUrls = [
+            "https://github.com/gnembon/fabric-carpet/releases/download/v26.1/fabric-carpet-26.1+v260402.jar"
+            # "https://cdn.modrinth.com/data/P7dR8mSH/versions/G0yfY6x2/fabric-api-0.145.3%2B26.1.1.jar"
+            # "https://cdn.modrinth.com/data/MBAkmtvl/versions/9GKnh8vV/balm-fabric-26.1-26.1.0.6.jar"
+            # "https://cdn.modrinth.com/data/nPZr02ET/versions/lxYeKU5D/netherportalfix-fabric-26.1-26.1.0.1.jar"
+            # "https://cdn.modrinth.com/data/XoHTb2Ap/versions/quBcj0Fx/calcmod-1.5.0%2Bfabric.26.1.jar"
+            # "https://cdn.modrinth.com/data/TQTTVgYE/versions/6FpFtZPE/fabric-carpet-26.1-beta-1%2Bv251217.jar"
+          ];
+        };
+
+        resources = {
+          requests = {
+            memory = "8096M";
+            cpu = "2500m";
+          };
+          limits = {
+            memory = "8096M";
+            cpu = "5000m";
+          };
         };
 
         rcon = {
@@ -68,6 +93,33 @@
         };
       };
     };
+
+    # resources.gateways.minecraft.spec = {
+    #   gatewayClassName = args.gatewayClassName;
+    #   listeners = [
+    #     {
+    #       name = "http";
+    #       protocol = "HTTP";
+    #       port = 80;
+    #       allowedRoutes.namespaces.from = "All";
+    #     }
+    #     {
+    #       name = "https";
+    #       protocol = "HTTPS";
+    #       port = 443;
+    #       allowedRoutes.namespaces.from = "All";
+    #       tls = {
+    #         mode = "Terminate";
+    #         certificateRefs = [
+    #           {
+    #             kind = "Secret";
+    #             name = args.tlsCertSecret;
+    #           }
+    #         ];
+    #       };
+    #     }
+    #   ];
+    # };
 
     resources.services.minecraft-nodeport.spec = {
       type = "NodePort";

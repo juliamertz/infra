@@ -20,6 +20,16 @@ output "kubeconfig" {
   sensitive = true
 }
 
+output "talosconfig-thenewnorm" {
+  value     = module.thenewnorm_production_k8s.talosconfig
+  sensitive = true
+}
+
+output "kubeconfig-thenewnorm" {
+  value     = module.thenewnorm_production_k8s.kubeconfig
+  sensitive = true
+}
+
 
 output "talos_machine_configurations_control_plane" {
   value     = module.production_k8s.talos_machine_configurations_control_plane

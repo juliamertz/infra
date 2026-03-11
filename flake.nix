@@ -44,16 +44,26 @@
     packages = forAllSystems ({
       pkgs,
       lib,
-      stdenv,
       ...
     }: let
       kubelib = import ./kubernetes/util.nix {inherit pkgs lib kubenix;};
-      packages = self.packages.${stdenv.hostPlatform.system};
+      # packages = self.packages.${stdenv.hostPlatform.system};
+      mkCluster = imports: kubelib.evalKubenix imports;
+      personal = mkCluster [./kubernetes/clusters/personal.nix];
+      thenewnorm = mkCluster [./kubernetes/clusters/thenewnorm.nix];
+      mc = mkCluster [./kubernetes/modules/apps/minecraft-server];
     in {
-      manifest = kubelib.evalKubenix [./kubernetes/modules];
-      manifest-vm = kubelib.evalKubenix [./kubernetes/modules/apps/victoria-metrics];
-      manifest-mc = kubelib.evalKubenix [./kubernetes/modules/apps/minecraft-server];
-      renovateConfig = pkgs.callPackage ./renovate.nix {inherit packages;};
+      personal-crds = personal.crds;
+      personal = personal.resources;
+
+      thenewnorm-crds = thenewnorm.crds;
+      thenewnorm = thenewnorm.resources;
+
+      minecraft = mc.resources;
+
+      renovateConfig = pkgs.callPackage ./renovate.nix {
+        packages = {inherit personal;};
+      };
     });
 
     devShells = forAllSystems (pkgs: let
@@ -78,13 +88,15 @@
         ${lib.getExe pkgs.colordiff} --nobanner -N -u -I ' kubenix/' -I ' generation: ' "$@"
       '';
       k8s-build = pkgs.writeShellScriptBin "k8s-build" ''
-        nix build .#manifest && cat result | vals eval -f - > manifest.json
+        nix build "$1" -o result && cat result | vals eval -f - > resources.json
       '';
+      kubectl = lib.getExe pkgs.kubectl;
       k8s-apply = pkgs.writeShellScriptBin "k8s-apply" ''
-        k8s-build && ${lib.getExe pkgs.kubectl} apply --server-side --force-conflicts -f manifest.json
+        k8s-build "$1" && ${kubectl} apply --server-side --force-conflicts -f resources.json
       '';
       k8s-diffcmd = pkgs.writeShellScriptBin "k8s-diff" ''
-        k8s-build && KUBECTL_EXTERNAL_DIFF='${k8s-diff}' ${lib.getExe pkgs.kubectl} diff --server-side --force-conflicts -f manifest.json
+        k8s-build "''${1:-personal}" \
+          && KUBECTL_EXTERNAL_DIFF='${k8s-diff}' ${kubectl} diff --server-side --force-conflicts -f resources.json
       '';
 
       renovate-sync = pkgs.writeShellScriptBin "renovate-sync" ''

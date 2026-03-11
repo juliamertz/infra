@@ -137,11 +137,11 @@ in {
                 resources = {
                   requests = {
                     cpu = "250m";
-                    memory = "400Mi";
+                    memory = "500Mi";
                   };
                   limits = {
                     cpu = "500m";
-                    memory = "600Mi";
+                    memory = "750Mi";
                   };
                 };
                 livenessProbe = {

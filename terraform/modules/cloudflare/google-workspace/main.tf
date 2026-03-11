@@ -20,6 +20,13 @@ module "records" {
       content       = "v=spf1 include:_spf.google.com ~all"
       ttl           = 300
     }
+    domain_key = {
+      type          = "TXT"
+      name          = "google._domainkey"
+      domain_suffix = false
+      content       = var.domain_key
+      ttl           = 300
+    }
     verification = {
       type          = "TXT"
       name          = var.domain

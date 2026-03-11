@@ -2,7 +2,6 @@
   config,
   kubenix,
   crds,
-  util,
   lib,
   ...
 }: {

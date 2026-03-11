@@ -44,12 +44,17 @@
         crds = import ./types;
       };
     };
-  in
-    output.config.kubernetes.result
-    // {
-      passthru = {
-        module = output;
-      };
-    };
+    objects = output.config.kubernetes.objects;
+    mkManifest = name: items:
+      pkgs.writeText "${name}-generated.json" (builtins.toJSON {
+        apiVersion = "v1";
+        kind = "List";
+        inherit items;
+      });
+  in {
+    crds = mkManifest "crds" (builtins.filter isCrd objects);
+    resources = mkManifest "resources" (builtins.filter (r: !isCrd r) objects);
+    passthru.module = output;
+  };
 in
   util // {inherit evalKubenix;}

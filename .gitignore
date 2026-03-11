@@ -15,3 +15,9 @@ target
 .DS_Store
 .env
 etcd.backup
+crds
+crds.json
+resources
+resources.json
+world-backup-2
+backup.sql

@@ -2,6 +2,7 @@
   config,
   kubenix,
   crds,
+  lib,
   ...
 }: {
   imports = with kubenix.modules; [
@@ -10,12 +11,23 @@
     crds
   ];
 
-  kubernetes = {
+  options.submodule.args = with lib; {
+    s3Bucket = mkOption {
+      type = types.str;
+      default = "backups-0snsf7rceJ";
+    };
+    endpointUrl = mkOption {
+      type = types.str;
+      default = "https://s3.eu-central-003.backblazeb2.com";
+    };
+  };
+
+  config.kubernetes = {
     resources.objectStores.backblaze-b2.spec = {
       retentionPolicy = "30d";
       configuration = {
-        destinationPath = "s3://backups-0snsf7rceJ/barman";
-        endpointURL = "https://s3.eu-central-003.backblazeb2.com";
+        destinationPath = "s3://${config.submodule.args.s3Bucket}/barman";
+        endpointURL = config.submodule.args.endpointUrl;
         s3Credentials = {
           accessKeyId = {
             name = "barman-credentials";
@@ -31,7 +43,7 @@
     };
   };
 
-  submodule = {
+  config.submodule = {
     name = "barman";
     passthru.kubernetes.objects = config.kubernetes.objects;
   };

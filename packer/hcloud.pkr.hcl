@@ -34,7 +34,7 @@ variable "image_url_x86" {
 
 variable "server_location" {
   type    = string
-  default = "fsn1"
+  default = "nbg1"
 }
 
 locals {

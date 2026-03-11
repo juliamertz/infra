@@ -2,6 +2,7 @@
   config,
   kubenix,
   crds,
+  lib,
   ...
 }: {
   imports = with kubenix.modules; [
@@ -10,7 +11,14 @@
     crds
   ];
 
-  kubernetes = {
+  options.submodule.args = with lib; {
+    domainFilters = mkOption {
+      type = types.listOf types.str;
+      default = [];
+    };
+  };
+
+  config.kubernetes = {
     namespace = "external-dns";
 
     resources.namespaces.external-dns.metadata.labels = {
@@ -36,16 +44,7 @@
           "--exclude-target-net=10.0.0.0/16"
           "--exclude-record-types=AAAA"
         ];
-        domainFilters = [
-          "juliamertz.dev"
-          "juliamertz.nl"
-          "juliamertz.com"
-          "merlijnvoncken.nl"
-          "merlijnvoncken.com"
-          "vertrouwdbouwen.com"
-          "thenewnorm.nl"
-          "valnetten.nl"
-        ];
+        domainFilters = config.submodule.args.domainFilters;
         sources = [
           "crd"
           "service"
@@ -69,7 +68,7 @@
     };
   };
 
-  submodule = {
+  config.submodule = {
     name = "external-dns";
     passthru.kubernetes.objects = config.kubernetes.objects;
   };

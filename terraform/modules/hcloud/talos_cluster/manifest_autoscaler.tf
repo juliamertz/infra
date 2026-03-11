@@ -53,7 +53,7 @@ resource "helm_release" "autoscaler" {
         }
       }))
       HCLOUD_NETWORK  = hcloud_network.this.id
-      HCLOUD_FIREWALL = hcloud_firewall.valheim_firewall.id
+      HCLOUD_FIREWALL = hcloud_firewall.firewall.id
     }
     autoscalingGroups = [
       {

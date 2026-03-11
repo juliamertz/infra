@@ -11,9 +11,9 @@
   ];
 
   kubernetes = {
-    namespace = "vertrouwd-bouwen";
+    namespace = "thenewnorm";
 
-    resources.namespaces.vertrouwd-bouwen = {};
+    resources.namespaces.thenewnorm = {};
 
     resources.serviceAccounts.deploy-service-account = {};
 
@@ -34,8 +34,18 @@
         verbs = ["*"];
       }
       {
+        apiGroups = ["cert-manager.io"];
+        resources = ["certificates"];
+        verbs = ["*"];
+      }
+      {
         apiGroups = ["gateway.networking.k8s.io"];
-        resources = ["httproutes"];
+        resources = ["httproutes" "gateways"];
+        verbs = ["*"];
+      }
+      {
+        apiGroups = ["gateway.envoyproxy.io"];
+        resources = ["envoyproxies" "clienttrafficpolicies"];
         verbs = ["*"];
       }
       {
@@ -75,7 +85,7 @@
       }
       {
         apiGroups = ["gateway.networking.k8s.io"];
-        resources = ["httproutes"];
+        resources = ["httproutes" "gateways"];
         verbs = ["get" "list" "watch"];
       }
       {
@@ -90,12 +100,35 @@
       }
     ];
 
+    resources.clusterRoles.gateway-deployer.rules = [
+      {
+        apiGroups = ["gateway.networking.k8s.io"];
+        resources = ["gatewayclasses"];
+        verbs = ["*"];
+      }
+    ];
+
+    resources.clusterRoleBindings.gateway-deployer-binding = {
+      subjects = [
+        {
+          kind = "ServiceAccount";
+          name = "deploy-service-account";
+          namespace = "thenewnorm";
+        }
+      ];
+      roleRef = {
+        kind = "ClusterRole";
+        name = "gateway-deployer";
+        apiGroup = "rbac.authorization.k8s.io";
+      };
+    };
+
     resources.roleBindings.deploy-sa-binding = {
       subjects = [
         {
           kind = "ServiceAccount";
           name = "deploy-service-account";
-          namespace = "vertrouwd-bouwen";
+          namespace = "thenewnorm";
         }
       ];
       roleRef = {

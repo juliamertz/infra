@@ -8,6 +8,11 @@ provider "hcloud" {
   token = var.development_hcloud_token
 }
 
+provider "hcloud" {
+  alias = "thenewnorm"
+  token = var.thenewnorm_hcloud_token
+}
+
 provider "cloudflare" {
   api_token = var.cloudflare_token
 }
@@ -50,8 +55,58 @@ module "production_k8s" {
   pod_ipv4_cidr     = "10.0.16.0/20"
   service_ipv4_cidr = "10.0.8.0/21"
 
+  extra_firewall_rules = [
+    {
+      description = "Allow Incoming Requests to Headscale Derp Server"
+      direction   = "in"
+      protocol    = "tcp"
+      port        = "30478"
+      source_ips  = ["0.0.0.0/0", "::/0"]
+    },
+  ]
+
   providers = {
     hcloud = hcloud.production
+  }
+}
+
+module "thenewnorm_production_k8s" {
+  source = "./modules/hcloud/talos_cluster"
+
+  talos_version      = "1.12.3"
+  kubernetes_version = "1.35.1"
+
+  hcloud_token = var.thenewnorm_hcloud_token
+
+  cluster_name     = "thenewnorm.nl"
+  cluster_api_host = "kube.thenewnorm.nl"
+
+  datacenter_name = local.datacenter
+
+  control_plane_count          = 0
+  control_plane_server_type    = "cx23"
+  control_plane_allow_schedule = false
+
+  control_plane_nodes = [
+    { type = "cx23" },
+    { type = "cx23" },
+    { type = "cx23" },
+    # { type = "cx23" },
+    # { type = "cx23" },
+  ]
+
+  worker_nodes = [
+    { type = "cx43" },
+    { type = "cx43" },
+  ]
+
+  network_ipv4_cidr = "10.0.0.0/16"
+  node_ipv4_cidr    = "10.0.1.0/24"
+  pod_ipv4_cidr     = "10.0.16.0/20"
+  service_ipv4_cidr = "10.0.8.0/21"
+
+  providers = {
+    hcloud = hcloud.thenewnorm
   }
 }
 
@@ -116,6 +171,18 @@ module "thenewnorm-google-workspace" {
   source       = "./modules/cloudflare/google-workspace"
   domain       = "thenewnorm.nl"
   verification = "aOyucWyvyUROherG-GOlfnKrqBD47218NiS2FyUQx0s"
+  domain_key   = "v=DKIM1;k=rsa;p=MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA0JWgmft18wHTtL64iRZUzZW6gnXpk0UZxpBJd7F49TGH3nbrhc0V59xX/eMEPPHVDTMccroLzvKf2JzQMlCrdobkxyrC10lwDW0NBoQozCdw5yUJVPP5Dl5+Bp513M//1q5NweCsQTjjdpu59DRbPT2WbEgPd9/Ztarofd/th3OR52UM8o3XeeJkgOGRSYVYjfXaM0JF9bb0VBku8T9y225AzhzOHqrsxX2wcmm6/GdDR/XMyGlPyWttuuzisH8ohYw/gjaSppqapwVDqyhKNXDcjzSXcc/DQQr6PrEWt4qN7thQaONIJRZ0vduQVFOGrBF8LMICIscbXjlOvb8KEQIDAQAB"
+
+  zone_id = var.vertrouwdbouwen_com_zone_id
+  providers = {
+    cloudflare = cloudflare
+  }
+}
+
+module "thenewnorm-clerk" {
+  source       = "./modules/cloudflare/clerk"
+  domain       = "thenewnorm.nl"
+  key = "gc5nuohb5hjl"
 
   zone_id = var.vertrouwdbouwen_com_zone_id
   providers = {

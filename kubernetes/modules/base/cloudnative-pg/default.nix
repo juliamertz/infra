@@ -18,10 +18,15 @@
 
     objects = let
       version = "1.28.1";
-      manifests = util.fetchYAML {
-        url = "https://github.com/cloudnative-pg/cloudnative-pg/releases/download/v${version}/cnpg-${version}.yaml";
-        sha256 = "sha256-JeDDPCNK7zt8PgXJlZsYOj3/MYca1StwPXZvCk9Ab5I=";
-      };
+      manifests =
+        (util.fetchYAML {
+          url = "https://github.com/cloudnative-pg/cloudnative-pg/releases/download/v${version}/cnpg-${version}.yaml";
+          sha256 = "sha256-JeDDPCNK7zt8PgXJlZsYOj3/MYca1StwPXZvCk9Ab5I=";
+        })
+        ++ util.fetchYAML {
+          url = "https://github.com/cloudnative-pg/plugin-barman-cloud/releases/download/v0.5.0/manifest.yaml";
+          sha256 = "sha256-26wmaBHU+CSyLDFToFaoUoNZV68+X3Y90q0woB5Q+v8=";
+        };
     in
       manifests |> builtins.filter util.isCrd;
 

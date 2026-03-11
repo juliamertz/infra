@@ -186,7 +186,7 @@ variable "control_plane_server_type" {
   EOF
   validation {
     condition = contains([
-      "cx11", "cx21", "cx22", "cx31", "cx32", "cx41", "cx42", "cx51", "cx52",
+      "cx11", "cx21", "cx22", "cx23", "cx31", "cx32", "cx41", "cx42", "cx51", "cx52",
       "cpx11", "cpx21", "cpx31", "cpx41", "cpx51",
       "cax11", "cax21", "cax31", "cax41",
       "ccx13", "ccx23", "ccx33", "ccx43", "ccx53", "ccx63"
@@ -227,7 +227,7 @@ variable "worker_server_type" {
   EOF
   validation {
     condition = contains([
-      "cx11", "cx21", "cx22", "cx31", "cx32", "cx41", "cx42", "cx51", "cx52",
+      "cx11", "cx21", "cx22", "cx23", "cx31", "cx32", "cx41", "cx42", "cx51", "cx52",
       "cpx11", "cpx21", "cpx31", "cpx41", "cpx51",
       "cax11", "cax21", "cax31", "cax41",
       "ccx13", "ccx23", "ccx33", "ccx43", "ccx53", "ccx63",

@@ -3,7 +3,7 @@
   packages,
 }: let
   helmRepos =
-    packages.manifest.passthru.module.config.kubernetes.generated.items
+    packages.personal.passthru.module.config.kubernetes.generated.items
     |> builtins.filter (i: i.kind == "HelmRepository")
     |> map (i: {
       name = i.metadata.name;

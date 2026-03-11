@@ -14,10 +14,6 @@ variable "domain" {
   type = string
 }
 
-variable "verification" {
-  type = string
-}
-
-variable "domain_key" {
+variable "key" {
   type = string
 }

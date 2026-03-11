@@ -2,6 +2,7 @@
   kubenix,
   config,
   crds,
+  lib,
   ...
 }: {
   imports = with kubenix.modules; [
@@ -10,7 +11,14 @@
     crds
   ];
 
-  kubernetes = {
+  options.submodule.args = with lib; {
+    email = mkOption {
+      type = types.str;
+      default = "info@juliamertz.dev";
+    };
+  };
+
+  config.kubernetes = {
     namespace = "cert-manager";
 
     resources.namespaces.cert-manager = {};
@@ -68,7 +76,7 @@
 
     resources.clusterIssuers.letsencrypt-prod.spec = {
       acme = {
-        email = "info@juliamertz.dev";
+        email = config.submodule.args.email;
         preferredChain = "";
         privateKeySecretRef.name = "letsencrypt-prod";
         server = "https://acme-v02.api.letsencrypt.org/directory";
@@ -84,7 +92,7 @@
     };
   };
 
-  submodule = {
+  config.submodule = {
     name = "cert-manager";
     passthru.kubernetes.objects = config.kubernetes.objects;
   };

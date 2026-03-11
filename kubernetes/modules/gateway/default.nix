@@ -2,10 +2,12 @@
   config,
   kubenix,
   crds,
+  lib,
   util,
   ...
 }: let
   inherit (util) configMapValueRef;
+  args = config.submodule.args;
 in {
   imports = with kubenix.modules; [
     submodule
@@ -13,8 +15,38 @@ in {
     crds
   ];
 
-  kubernetes = let
-    name = "shared";
+  options.submodule.args = with lib; {
+    name = mkOption {
+      type = types.str;
+      default = "shared";
+    };
+
+    gatewayClassName = mkOption {
+      type = types.str;
+      default = "envoy";
+    };
+
+    tlsCertSecret = mkOption {
+      type = types.str;
+      default = "tls-cert-gateway";
+    };
+
+    rateLimit = {
+      requests = mkOption {
+        type = types.int;
+        default = 500;
+      };
+
+      unit = mkOption {
+        type = types.enum ["Second" "Minute" "Hour" "Day"];
+        default = "Minute";
+      };
+    };
+
+  };
+
+  config.kubernetes = let
+    name = args.name;
     targetRef = {
       group = "gateway.networking.k8s.io";
       kind = "Gateway";
@@ -22,7 +54,7 @@ in {
     };
   in {
     resources.gateways.${name}.spec = {
-      gatewayClassName = "envoy";
+      gatewayClassName = args.gatewayClassName;
       listeners = [
         {
           name = "http";
@@ -40,7 +72,7 @@ in {
             certificateRefs = [
               {
                 kind = "Secret";
-                name = "tls-cert-gateway";
+                name = args.tlsCertSecret;
               }
             ];
           };
@@ -56,8 +88,8 @@ in {
         global.rules = [
           {
             limit = {
-              requests = 500;
-              unit = "Minute";
+              requests = args.rateLimit.requests;
+              unit = args.rateLimit.unit;
             };
           }
         ];
@@ -84,7 +116,7 @@ in {
     };
   };
 
-  submodule = {
+  config.submodule = {
     name = "gateway";
     passthru.kubernetes.objects = config.kubernetes.objects;
   };
