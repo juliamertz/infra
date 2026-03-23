@@ -25,7 +25,7 @@
     resources.helmReleases.dragonfly-operator.spec = {
       chart.spec = {
         chart = "dragonfly-operator";
-        version = "v1.4.0";
+        version = "v1.5.0";
         sourceRef = {
           kind = "HelmRepository";
           name = "dragonfly";
