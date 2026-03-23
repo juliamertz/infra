@@ -30,7 +30,7 @@
     resources.helmReleases.longhorn.spec = {
       chart.spec = {
         chart = "longhorn";
-        version = "1.11.0";
+        version = "1.11.1";
         sourceRef = {
           kind = "HelmRepository";
           name = "longhorn";
