@@ -5,7 +5,7 @@ resource "helm_release" "flux_system" {
   create_namespace = true
   repository       = "https://fluxcd-community.github.io/helm-charts"
   chart            = "flux2"
-  version          = "2.17.2"
+  version          = "2.18.3"
 
   values = [yamlencode({
     sourceController          = { create = true }
