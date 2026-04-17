@@ -23,7 +23,7 @@
     resources.helmReleases.gateway-helm.spec = {
       chart.spec = {
         chart = "gateway-helm";
-        version = "1.7.0";
+        version = "1.7.2";
         sourceRef = {
           kind = "HelmRepository";
           name = "envoyproxy";
