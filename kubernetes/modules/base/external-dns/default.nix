@@ -32,7 +32,7 @@
     resources.helmReleases.external-dns.spec = {
       chart.spec = {
         chart = "external-dns";
-        version = "1.20.0";
+        version = "1.21.1";
         sourceRef = {
           kind = "HelmRepository";
           name = "external-dns";
