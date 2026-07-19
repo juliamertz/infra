@@ -20,7 +20,8 @@ in {
     firewall.trustedInterfaces = ["enp7s0"];
   };
 
-  boot.loader.grub.devices = ["/dev/sda1"];
+  boot.loader.systemd-boot.enable = true;
+  boot.loader.efi.canTouchEfiVariables = true;
 
   fileSystems."/" = {
     device = "/dev/sda3";
