@@ -4,7 +4,6 @@
     nixpkgs-cross.url = "github:nixos/nixpkgs/90ade7da38aa49c2e2693a04a44662a0e61530e9";
     systems.url = "github:nix-systems/default";
     filter.url = "github:numtide/nix-filter";
-    steiger.url = "github:brainhivenl/steiger/feat/nix-oci-buildtools";
     kubenix.url = "github:hall/kubenix";
     sops.url = "github:Mic92/sops-nix";
     crane.url = "github:ipetkov/crane";
@@ -16,7 +15,6 @@
 
   outputs = {
     self,
-    steiger,
     nixpkgs,
     nixpkgs-cross,
     kubenix,
@@ -29,7 +27,6 @@
     inherit (nixpkgs) lib;
     overlays = [
       (import rust-overlay)
-      steiger.overlays.default
     ];
     mkCraneLib = pkgs': (crane.mkLib pkgs').overrideToolchain (p: p.rust-bin.stable."1.90.0".default);
 
@@ -110,14 +107,13 @@
           pkgs.yq
           pkgs.treefmt
           pkgs.alejandra
-          pkgs.packer
+          # pkgs.packer
           pkgs.hcloud
           pkgs.talosctl
           pkgs.nix-eval-jobs
           pkgs.awscli
           pkgs.wget
           pkgs.vals
-          pkgs.steiger
           k8s-build
           k8s-apply
           k8s-diffcmd
@@ -125,40 +121,6 @@
           hcloud-upload-image
           tofu
         ];
-      };
-    });
-
-    steigerImages = steiger.lib.eachCrossSystem (import systems) (localSystem: crossSystem: let
-      pkgsTarget = import nixpkgs-cross {
-        inherit overlays;
-        system = crossSystem;
-      };
-      pkgsCross = import nixpkgs-cross {
-        inherit overlays crossSystem localSystem;
-      };
-
-      craneLib = mkCraneLib pkgsCross;
-
-      controllers = pkgsCross.callPackage ./controllers/package.nix {
-        inherit craneLib filter;
-      };
-    in {
-      controllers = pkgsCross.ociTools.buildImage {
-        name = controllers.pname;
-        tag = "latest";
-
-        layers = [
-          pkgsTarget.dockerTools.caCertificates
-          pkgsTarget.nix
-          pkgsTarget.vals
-          controllers
-        ];
-        pathsToLink = [
-          "/bin"
-          "/etc"
-        ];
-
-        config.Cmd = ["/bin/${controllers.pname}"];
       };
     });
   };

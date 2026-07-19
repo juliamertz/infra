@@ -87,7 +87,16 @@ provider "registry.opentofu.org/hashicorp/http" {
   version     = "3.5.0"
   constraints = ">= 3.5.0"
   hashes = [
+    "h1:JSui9Kmmvc4TDx6QhxyQaW5Mbka+6e2q9hoWvcFRI9M=",
+    "h1:S0yLjN9Fu6sZ+3SWq2zcFjNrZS8EyeGnBBlkErpNNXE=",
+    "h1:StUoUwy4UcNDl1gn1kuwOl6B37w2zhZTcY8/jabWJy0=",
+    "h1:YTB70v5NGaoI3T11B7pnwBnSL1ZEN0mp23Yrto05aY0=",
+    "h1:bSHOZnfmhragoS/ZaMQEffXMipITkKF6jhcmpxAWh9c=",
+    "h1:czB6w6tVJrPWFImze+cf2fIGqcJ3VxugKRgc6bDxZoE=",
+    "h1:dm7SwSSfnRFNwgKO7HOy98OEANn9Z6TI7rQAOaletsI=",
     "h1:eClUBisXme48lqiUl3U2+H2a2mzDawS9biqfkd9synw=",
+    "h1:jXH9n2GTk7N9tzTA6inAgftL6wqQi2c0+bTKRw74xfc=",
+    "h1:yvwvVZ0vdbsTUMru+7Cr0On1FVgDJHAaC6TNvy/OWzM=",
     "zh:0a2b33494eec6a91a183629cf217e073be063624c5d3f70870456ddb478308e9",
     "zh:180f40124fa01b98b3d2f79128646b151818e09d6a1a9ca08e0b032a0b1e9cb1",
     "zh:3e29e1de149dc10bf78620526c7cb8c62cd76087f5630dfaba0e93cda1f3aa7b",
