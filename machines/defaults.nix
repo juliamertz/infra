@@ -7,10 +7,10 @@ inputs: {
   dotfiles = inputs.dotfiles.packages.${pkgs.system};
 in {
   imports = [
-    # # inputs.srvos.nixosModules.server
+    # inputs.srvos.nixosModules.server
     # inputs.srvos.nixosModules.hardware-hetzner-cloud
     # inputs.srvos.nixosModules.mixins-terminfo
-    inputs.sops.nixosModules.sops
+    # inputs.sops.nixosModules.sops
   ];
 
   networking.hostName = name;
@@ -21,8 +21,8 @@ in {
     firewall.trustedInterfaces = ["enp7s0"];
   };
 
-  # age key is placed here as part of terraform init
-  sops.age.keyFile = lib.mkDefault "/etc/sops/age/keys.txt";
+  # # age key is placed here as part of terraform init
+  # sops.age.keyFile = lib.mkDefault "/etc/sops/age/keys.txt";
 
   services.fail2ban.enable = true;
 
@@ -59,9 +59,6 @@ in {
         "pipe-operators"
       ];
 
-      substituters = ["https://juliamertz.cachix.org"];
-      trusted-public-keys = ["juliamertz.cachix.org-1:l9jCGk7vAKU5kS07eulGJiEsZjluCG5HTczsY2IL2aw="];
-
       trusted-users = [
         "root"
         "julia"
@@ -72,10 +69,8 @@ in {
   nixpkgs.config.allowUnfree = true;
 
   environment.sessionVariables = {
-    # NIX_PATH = "nixpkgs=https://github.com/NixOS/nixpkgs/archive/nixos-unstable.tar.gz";
     TERM = "xterm-256color";
   };
 
   system.stateVersion = "25.05";
-  # time.timeZone = nodes.host-b.config.time.timeZone;
 }

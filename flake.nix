@@ -10,7 +10,7 @@
     nixpkgs,
     systems,
     ...
-  }: let
+  } @ inputs: let
     inherit (nixpkgs) lib;
     forAllSystems = fun:
       lib.genAttrs (import systems) (system:
@@ -19,6 +19,14 @@
           config.allowUnfree = true;
         }));
   in {
+    nixosConfigurations.main = nixpkgs.lib.nixosSystem {
+      system = "x86_64-linux";
+      modules = [
+        ./machines/main
+        (import ./machines/defaults.nix inputs)
+      ];
+    };
+
     devShells = forAllSystems (pkgs: let
       hcloud-upload-image = pkgs.callPackage ./pkgs/hcloud-upload-image.nix {};
 
