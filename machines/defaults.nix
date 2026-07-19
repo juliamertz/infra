@@ -1,7 +1,5 @@
 inputs: {
   pkgs,
-  name,
-  lib,
   ...
 }: let
   dotfiles = inputs.dotfiles.packages.${pkgs.system};
@@ -13,7 +11,7 @@ in {
     # inputs.sops.nixosModules.sops
   ];
 
-  networking.hostName = name;
+  networking.hostName = "main";
 
   networking = {
     useHostResolvConf = false;
