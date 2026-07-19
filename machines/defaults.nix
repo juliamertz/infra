@@ -1,5 +1,6 @@
 inputs: {
   pkgs,
+  lib,
   ...
 }: let
   dotfiles = inputs.dotfiles.packages.${pkgs.system};
@@ -17,6 +18,13 @@ in {
     useHostResolvConf = false;
     interfaces.enp7s0.useDHCP = true;
     firewall.trustedInterfaces = ["enp7s0"];
+  };
+
+  boot.loader.grub.devices = ["/dev/sda1"];
+
+  fileSystems."/" = {
+    device = "/dev/sda3";
+    fsType = "ext4";
   };
 
   # # age key is placed here as part of terraform init
