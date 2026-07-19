@@ -6,23 +6,11 @@ creation_rules:
     key_groups:
       - age:
           - *julia
-  - path_regex: secrets/kubenix.yaml
-    key_groups:
-      - age:
-          - *julia
-  - path_regex: secrets/wireguard.yaml
-    key_groups:
-      - age:
-          - *julia
   - path_regex: secrets/nettenshop.yaml
     key_groups:
       - age:
           - *julia
   - path_regex: secrets/tfvars.yaml
-    key_groups:
-      - age:
-          - *julia
-  - path_regex: secrets/attic.env
     key_groups:
       - age:
           - *julia
