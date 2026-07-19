@@ -5,6 +5,7 @@
     systems.url = "github:nix-systems/default";
     filter.url = "github:numtide/nix-filter";
     sops.url = "github:Mic92/sops-nix";
+    srvos.url = "github:nix-community/srvos";
   };
 
   outputs = {
