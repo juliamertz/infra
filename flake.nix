@@ -1,6 +1,7 @@
 {
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+    dotfiles.url = "github:juliamertz/dotfiles";
     systems.url = "github:nix-systems/default";
     filter.url = "github:numtide/nix-filter";
     sops.url = "github:Mic92/sops-nix";
