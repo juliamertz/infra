@@ -4,7 +4,7 @@
       interval = "5m";
       chart.spec = {
         chart = "prometheus-blackbox-exporter";
-        version = "11.8.0";
+        version = "11.17.1";
         sourceRef = {
           kind = "HelmRepository";
           name = "prometheus-community";
