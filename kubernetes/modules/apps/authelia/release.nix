@@ -9,7 +9,7 @@
       interval = "1h";
       chart.spec = {
         chart = "authelia";
-        version = "0.11.4";
+        version = "0.11.20";
         sourceRef = {
           kind = "HelmRepository";
           name = "authelia";
