@@ -20,7 +20,7 @@
     resources.helmReleases.metrics-server.spec = {
       chart.spec = {
         chart = "metrics-server";
-        version = "3.13.0";
+        version = "3.14.0";
         sourceRef = {
           kind = "HelmRepository";
           name = "metrics-server";
