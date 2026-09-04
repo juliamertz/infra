@@ -55,7 +55,7 @@
     resources.helmReleases.barman-plugin.spec = {
       chart.spec = {
         chart = "plugin-barman-cloud";
-        version = "0.5.0";
+        version = "0.8.0";
         sourceRef = {
           kind = "HelmRepository";
           name = "cloudnative-pg";
