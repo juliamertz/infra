@@ -41,7 +41,7 @@
     resources.helmReleases.cloudnative-pg.spec = {
       chart.spec = {
         chart = "cloudnative-pg";
-        version = "0.27.1";
+        version = "0.29.1";
         sourceRef = {
           kind = "HelmRepository";
           name = "cloudnative-pg";
